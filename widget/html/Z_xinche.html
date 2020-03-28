@@ -1,0 +1,232 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        #header {
+            font-size: 20px;
+            /* background-image: url(../image/7.png); */
+            background-color: #ff8000;
+            color: #fff;
+            padding: 0 20px;
+            width: 100%;
+            padding-top: 20px;
+        }
+
+        .icon {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .aui-list-item-inner {
+            padding: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <div id="apibox">
+        <div v-if='data' v-for="(items,index) in data" class="spbox" :key='index' :spid='items.id'
+            style="display: flex;background-color: #fff;padding:15px;margin-bottom: 1px;">
+            <div style="width: 120px;height: 80px;flex-shrink: 0;border-radius: 10px;overflow: hidden;">
+                <img :src="server+ items.zhaopai_url" width="100%" height="100%" alt="">
+            </div>
+            <div
+                style=" padding-left: 10px;flex-grow: 1;display: flex;flex-direction: column; justify-content: space-between;">
+                <div class="aui-font-size-14" style="font-weight: bold;">
+                    <span style="padding-right: 10px;color: #03a9f4; ">{{items.typeName}}</span>
+                    <span>{{items.specName}}</span>
+                </div>
+                <div class="aui-font-size-12">
+                    <span style="margin-right: 10px;">{{items.transMode}}</span>{{items.engine}}
+                </div>
+                <div class="aui-font-size-12">
+                    商家价<span class="aui-font-size-14" style="color: red;margin-right: 10px;font-weight: bold;">
+                        {{jiage(items.jiage)}}万</span> 指导价{{items.guidePrice}}
+                </div>
+                <div class="aui-font-size-12">
+                    {{items.juli}}Km
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        var bMap = api.require('bMap');
+        var button = api.require('UIButton');
+        let type = api.pageParam.type;
+        let tiaojian = api.pageParam.tiaojian;
+        var lat;
+        var lon;
+        api.refreshHeaderLoading();
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...',
+            showTime: false
+        }, function (ret, err) {
+
+            //在这里从服务器加载数据，加载完成后调用api.refreshHeaderLoadDone()方法恢复组件到默认状态
+
+            if (api.systemType == 'ios') {
+                bMap.initMapSDK(function (ret) {
+                    if (ret.status) {
+                        get_fujin_xinche()
+                    }
+                });
+            } else {
+                get_fujin_xinche()
+            }
+
+
+        });
+
+        function get_fujin_xinche() {
+
+            let lon, lat;
+            new Promise(function (resolve, reject) {
+                bMap.getLocation({
+                    accuracy: '100m',
+                    autoStop: true,
+                    filter: 1
+                }, function (ret, err) {
+                    if (ret.status) {
+                        lon = ret.lon;
+                        lat = ret.lat
+                        resolve(ret)
+                    } else {
+                        reject('获取GPS失败');
+                    }
+                })
+            }).then(function (res) {
+                return new Promise(function (resolve, reject) {
+                    bMap.getNameFromCoords({
+                        lon: res.lon,
+                        lat: res.lat
+                    }, function (ret, err) {
+                        if (ret.status) {
+                            resolve(ret)
+                        } else {
+                            reject('获取adcode失败');
+                        }
+                    })
+
+                })
+
+            }).then(function (res) {
+
+                api.ajax({
+                    url: server + '/api/fujin_xinche_ershouche',
+                    method: 'post',
+                    timeout: 10,
+                    dataType: 'json',
+                    returnAll: false,
+                    data: {
+                        values: {
+                            adCode: res.adCode,
+                            che_leibie: type,
+                            tiaojian: tiaojian
+                        }
+                    }
+                }, function (ret, err) {
+                    if (ret) {
+                        // TODO
+                        api.refreshHeaderLoadDone()
+                        ret.forEach(element => {
+                            if (element.zhaopai_url == '') {
+                                element.zhaopai_url = '/images/moren.png'
+                            } else {
+                                let aa = element.zhaopai_url.split(',');
+                                element.zhaopai_url = aa[0]
+                            }
+                            element.juli = getDistance(lat, lon, element.lat, element.lon)
+                        });
+                        ret.sort((a, b) => { return a.juli - b.juli })
+                        apibox.data = ret
+                    } else {
+                        api.refreshHeaderLoadDone()
+
+                        apibox.msg = '无数据'
+                    }
+                });
+
+
+
+            })
+
+        }
+
+        var apibox = new Vue({
+            el: "#apibox",
+            data: {
+                server: server,
+                data: '',
+                msg: "没有找到您需要的数据"
+            },
+            updated: function () {
+                var chakandom = $api.domAll('.chakan');
+                Array.prototype.forEach.call(chakandom, function (btn) {
+                    btn.addEventListener('click', function (event) {
+                        var user = event.currentTarget.getAttribute('user')
+                        api.openWin({
+                            name: 'dianpu',
+                            url: './Z_dianpu.html',
+                            bounces: false,
+                            pageParam: {
+                                biaoti: '店铺',
+                                html: 'Z_dianpu',
+                                user: user
+                            }
+                        });
+                    })
+                });
+
+
+
+
+
+                $api.addEvt($api.byId('quzheli'), 'click', function () {
+                    let lat = apibox.mapdata.lat
+                    let lon = apibox.mapdata.lon
+                    let name = apibox.mapdata.name
+                    map_start_info(lat, lon, name)
+                });
+            },
+            methods: {
+                jiage: function (sss) {
+                    let jiage_to_wan = (sss - 0) / 10000;
+                    let b = Math.floor((sss - 0) / 10000 * 100) / 100
+                    return b
+                }
+            },
+            computed: {
+
+
+            },
+        });
+
+
+    };
+</script>
+
+</html>

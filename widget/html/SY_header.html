@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        .header {
+            height: 50px;
+            padding: 0px 20px;
+            font-size: 20px;
+            /* background-image: url(../image/7.png); */
+            background-color: #03a9f4;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-image: linear-gradient(#03a9f4, #67D1E8);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header" class="header">
+        <header>福利车险代理</header>
+        <div id="weizhi" class="aui-font-size-14"></div>
+    </div>
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/city.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        var bMap = api.require('bMap');
+        $api.setStorage('weizhi', '北京市');
+        if (api.systemType=='ios') {
+           bMap.initMapSDK(function (ret) {
+                if (ret.status) {
+                    getweizhi()
+                }
+            }); 
+        } else {
+            getweizhi()
+        }
+
+        function getweizhi() {
+            var bMap = api.require('bMap');
+            bMap.getLocation({
+                accuracy: '100m',
+                autoStop: true,
+                filter: 1
+            }, function (ret, err) {
+                if (ret.status) {   
+                    bMap.getNameFromCoords({
+                        lon: ret.lon,
+                        lat: ret.lat
+                    }, function (ret2, err) {
+                        if (ret2.status) {
+                            // province: '', //字符串类型；省份
+                            // city: '', //字符串类型；城市
+                            $api.setStorage('weizhi', ret2.city);
+                            $api.setStorage('weizhi_sheng', ret2.province);
+                            $api.html($api.dom('#weizhi'), ret2.city);
+                            api.sendEvent({
+                                name: 'dizhi',
+                                extra: {
+                                    name: ret2.city,
+                                    id: ''
+                                }
+                            });
+
+                        }
+                    });
+                } else {
+                    
+                    $api.html($api.dom('#weizhi'), '北京市');
+                }
+            });
+        }
+
+
+
+        api.addEventListener({
+            name: 'dizhi'
+        }, function (ret, err) {
+            var weizhi = $api.getStorage('weizhi');
+            $api.html($api.dom('#weizhi'), weizhi);
+        });
+        $api.addEvt($api.dom('#weizhi'), 'click', function () {
+            api.openWin({
+                name: 'citylist',
+                url: './Z_citylist.html',
+                bounces: false,
+                animation: {
+                    type: "movein", //动画类型（详见动画类型常量）
+                    subType: "from_top", //动画子类型（详见动画子类型常量）
+                    duration: 500 //动画过渡时间，默认300毫秒
+                }
+            });
+        });
+        //var header = $api.byId('header');
+        //适配iOS 7+，Android 4.4+状态栏
+        //var headerPos = $api.offset(header);
+        // var main = $api.byId('main');
+        //$api.fixStatusBar(header);
+    }
+</script>
+
+</html>

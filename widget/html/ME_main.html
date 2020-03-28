@@ -1,0 +1,482 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <script src="../script/vue.js"></script>
+    <style>
+        #header {
+            font-size: 20px;
+            /* background-image: url(../image/7.png); */
+            background-color: #ff8000;
+            color: #fff;
+            padding: 0 20px;
+            width: 100%;
+            padding-top: 20px;
+        }
+
+        .aui-list-item-inner {
+            padding: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div id="apibox">
+        <div v-show="data" style="padding:10px">
+            <div v-for='item in data' class="aui-text-primary"
+                style="padding: 10px;display: flex;background-color: #fff;border-radius: 10px;position: relative;">
+                <div style="width: 50px;height: 50px;">
+                    <img width="100%" height="100%" :src=" server+'/qiche_logo/'+item.pinpaiid+'.png'" alt="" srcset="">
+                </div>
+                <div style="margin-left: 10px;display: flex;flex-direction: column; align-items: stretch;">
+                    <div class="aui-font-size-14">
+                        <!-- {{item.secBrand}} <span style="margin:0 10px">|</span> -->
+                        {{item.typeName}}
+                    </div>
+                    <div class="aui-font-size-12">
+                        {{item.specName}}
+                    </div>
+
+                </div>
+                <div class="aui-font-size-12"
+                    style="position: absolute;top:0;right: 0;padding:5px 10px;background-color: #03a9f4;border-bottom-left-radius: 10px;border-top-right-radius: 10px;color:#fff">
+                    未认证</div>
+            </div>
+
+        </div>
+        <div v-show="!data" id="add_che" style="padding: 15px;">
+            <div class="aui-text-primary"
+                style="display: flex;flex-direction: column;align-items: center;padding: 15px;display: flex;background-color: #fff;border-radius: 10px;">
+                <div><i class="aui-iconfont aui-icon-plus" style="font-size: 30px;"></i></div>
+                <div style="margin-top: 10px;" class="aui-font-size-12">添加车辆,以便我们更好的为您服务</div>
+            </div>
+        </div>
+    </div>
+    <div class="aui-content aui-margin-b-15">
+
+
+    </div>
+
+
+    <div class="aui-content aui-margin-b-15">
+        <ul class="aui-list aui-list-in" style="background-color: #fff;">
+            <li id="wodebaojia" class="aui-list-item aui-list-item-arrow">
+                <div class="aui-list-item-label-icon">
+                    <i class="aui-iconfont aui-icon-home"></i>
+                </div>
+                <div class="aui-list-item-inner">
+                    我的报价
+                </div>
+            </li>
+            <li id="baojiaxuqiu" class="aui-list-item aui-list-item-arrow">
+                <div class="aui-list-item-label-icon">
+                    <i class="aui-iconfont aui-icon-home"></i>
+                </div>
+                <div class="aui-list-item-inner">
+                    报价需求
+                </div>
+            </li>
+            <li id="kehubaodan" class="aui-list-item aui-list-item-arrow">
+                <div class="aui-list-item-label-icon">
+                    <i class="aui-iconfont aui-icon-home"></i>
+                </div>
+                <div class="aui-list-item-inner">
+                    客户保单
+                </div>
+            </li>
+            <li id="tijianyi" class="aui-list-item aui-list-item-arrow">
+                <div class="aui-list-item-label-icon">
+                    <i class="aui-iconfont aui-icon-home"></i>
+                </div>
+                <div class="aui-list-item-inner">
+                    提建议
+                </div>
+            </li>
+
+        </ul>
+    </div>
+
+    <div class="aui-content aui-margin-b-15">
+        <ul class="aui-list aui-list-in" style="background-color: #fff;">
+            <li id="wo_dianpu" class="aui-list-item aui-list-item-arrow">
+                <div class="aui-list-item-label-icon">
+                    <i class="aui-iconfont aui-icon-home"></i>
+                </div>
+                <div class="aui-list-item-inner">
+                    我的店铺
+                </div>
+            </li>
+            <li id="add_dianpu" class="aui-list-item aui-list-item-arrow">
+                <div class="aui-list-item-label-icon">
+                    <i class="aui-iconfont aui-icon-home"></i>
+                </div>
+                <div class="aui-list-item-inner">
+                    添加店铺
+                </div>
+            </li>
+            <li id="add_shangpin" class="aui-list-item aui-list-item-arrow">
+                <div class="aui-list-item-label-icon">
+                    <i class="aui-iconfont aui-icon-home"></i>
+                </div>
+                <div class="aui-list-item-inner">
+                    添加商品
+                </div>
+            </li>
+
+            <li id="add_jiayouzhan" class="aui-list-item aui-list-item-arrow">
+                <div class="aui-list-item-label-icon">
+                    <i class="aui-iconfont aui-icon-home"></i>
+                </div>
+                <div class="aui-list-item-inner">
+                    添加加油站
+                </div>
+            </li>
+            <li id="add_jiuyuan_tuandui" class="aui-list-item aui-list-item-arrow">
+                <div class="aui-list-item-label-icon">
+                    <i class="aui-iconfont aui-icon-home"></i>
+                </div>
+                <div class="aui-list-item-inner">
+                    添加救援团队
+                </div>
+            </li>
+            <!-- <li id="erweima" class="aui-list-item aui-list-item-arrow">
+                <div class="aui-list-item-label-icon">
+                    <i class="aui-iconfont aui-icon-home"></i>
+                </div>
+                <div class="aui-list-item-inner">
+                    二维码
+                </div>
+            </li> -->
+        </ul>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/ejs.min.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+
+        let userinfo = {
+            user: $api.getStorage('user'),
+            md5password: $api.getStorage('md5password')
+        }
+        var apibox = new Vue({
+            el: '#apibox',
+            data: {
+                server: server,
+                path: '/qiche_logo/',
+                data: '',
+
+            },
+            updated: function () {
+
+            }
+        })
+
+        api.addEventListener({
+            name: 'add_user_che'
+        }, function (ret, err) {
+            userinfo = {
+                user: $api.getStorage('user'),
+                md5password: $api.getStorage('md5password')
+            }
+            let chexing = ret.value.chexing
+            apibox.data = []
+            apibox.data.push(chexing);
+            api.ajax({
+                url: server + '/api/add_user_che',
+                method: 'post',
+                timeout: 30,
+                dataType: 'json',
+                data: {
+                    values: {
+                        user_che: chexing,
+                        userinfo: userinfo
+                    }
+                },
+                returnAll: false
+            }, function (ret, err) {
+
+            });
+
+        });
+        api.addEventListener({
+            name: 'autologin'
+        }, function (ret, err) {
+            post_user_che(userinfo)
+        });
+        api.addEventListener({
+            name: 'tuichudenglu'
+        }, function (ret, err) {
+            apibox.data = ''
+        });
+        api.addEventListener({
+            name: 'loginOK'
+        }, function (ret, err) {
+            post_user_che(userinfo)
+        });
+        function post_user_che(userinfo) {
+            api.ajax({
+                url: server + '/api/get_user_che',
+                method: 'post',
+                timeout: 30,
+                dataType: 'json',
+                data: {
+                    values: {
+                        userinfo: userinfo
+                    }
+                },
+                returnAll: false
+            }, function (ret, err) {
+                if (ret.length > 0) {
+                    apibox.data = ret // TODO 
+                }
+            });
+        }
+        $api.addEvt($api.byId('add_che'), 'click', function () {
+
+            if ($api.getStorage('islogin') != 'true') {
+                toast('你还未登陆，请先登录')
+                loginwin();
+                return
+            }
+            api.openWin({
+                name: 'qiche_pinpai',
+                url: 'Z_pt_header.html',
+                bounces: false,
+                pageParam: {
+                    biaoti: '汽车品牌',
+                    html: 'Z_qiche_pinpai',
+                    data: {
+                        type: 'cheliang',
+                        page: 'me_main',
+                        event: 'add_user_che'
+                    }
+                }
+            });
+
+        });
+
+
+        // $api.addEvt($api.byId('erweima'), 'click', function () {
+
+        //     var FNScanner = api.require('FNScanner');
+        //     FNScanner.encodeImg({
+        //         content: 'http://134.175.217.178:3000/login',
+        //         saveToAlbum: true,
+        //         saveImg: {
+        //             path: 'fs://album222.png',
+        //             w: 200,
+        //             h: 200
+        //         }
+        //     }, function (ret, err) {
+        //         if (ret.status) {
+        //             alert(JSON.stringify(ret));
+        //         } else {
+        //             alert(JSON.stringify(err));
+        //         }
+        //     });
+
+        // });
+
+
+        $api.addEvt($api.byId('wodebaojia'), 'click', function () {
+
+            if ($api.getStorage('islogin') != 'true') {
+                toast('你还未登陆，请先登录')
+                loginwin();
+                return
+            }
+            api.openWin({
+                name: 'wodebaojia',
+                url: './Z_pt_header.html',
+                bounces: false,
+                pageParam: {
+                    biaoti: '我的报价',
+                    html: 'Z_wodebaojia'
+                }
+            });
+        });
+
+        $api.addEvt($api.byId('kehubaodan'), 'click', function () {
+
+
+            if ($api.getStorage('islogin') != 'true') {
+                toast('你还未登陆，请先登录')
+                loginwin();
+                return
+            }
+            api.openWin({
+                name: 'kehubaodan',
+                url: './Z_pt_header.html',
+                bounces: false,
+                pageParam: {
+                    biaoti: '客户保单',
+                    html: 'Z_kehubaodan'
+                }
+            });
+        });
+        $api.addEvt($api.byId('baojiaxuqiu'), 'click', function () {
+
+
+            if ($api.getStorage('islogin') != 'true') {
+                toast('你还未登陆，请先登录')
+                loginwin();
+                return
+            }
+            api.openWin({
+                name: 'baojiaxuqiu',
+                url: './Z_baojiaxuqiu.html',
+                bounces: false,
+
+            });
+        });
+
+
+        $api.addEvt($api.byId('xiezixun'), 'click', function () {
+            if ($api.getStorage('islogin') != 'true') {
+                toast('你还未登陆，请先登录')
+                loginwin();
+                return
+            }
+            api.openWin({
+                name: 'add_zixun',
+                url: './Z_new_header.html',
+                bounces: false,
+                pageParam: {
+                    biaoti: '写咨询',
+                    html: 'add_zixun'
+                }
+            });
+
+        })
+
+        $api.addEvt($api.byId('tijianyi'), 'click', function () {
+
+            if ($api.getStorage('islogin') != 'true') {
+                toast('你还未登陆，请先登录')
+                loginwin();
+                return
+            }
+            api.openWin({
+                name: 'z_tijianyi',
+                url: './Z_pt_header.html',
+                bounces: false,
+                pageParam: {
+                    biaoti: '提建议',
+                    html: 'add_jianyi'
+                }
+            });
+
+        })
+
+        $api.addEvt($api.byId('add_dianpu'), 'click', function () {
+
+            if ($api.getStorage('islogin') != 'true') {
+                toast('你还未登陆，请先登录')
+                loginwin();
+                return
+            }
+            api.openWin({
+                name: 'add_dianpu',
+                url: './Z_pt_header.html',
+                bounces: false,
+                pageParam: {
+                    biaoti: '添加店铺',
+                    html: 'add_dianpu'
+                }
+            });
+        })
+
+        $api.addEvt($api.byId('add_jiuyuan_tuandui'), 'click', function () {
+
+            if ($api.getStorage('islogin') != 'true') {
+                toast('你还未登陆，请先登录')
+                loginwin();
+                return
+            }
+            api.openWin({
+                name: 'add_jiuyuan_tuandui',
+                url: './Z_pt_header.html',
+                bounces: false,
+                pageParam: {
+                    biaoti: '添加救援团队',
+                    html: 'add_jiuyuan_tuandui'
+                }
+            });
+
+        })
+
+        $api.addEvt($api.byId('add_jiayouzhan'), 'click', function () {
+
+            if ($api.getStorage('islogin') != 'true') {
+                toast('你还未登陆，请先登录')
+                loginwin();
+                return
+            }
+            api.openWin({
+                name: 'add_jiayouzhan',
+                url: './Z_pt_header.html',
+                bounces: false,
+                pageParam: {
+                    biaoti: '添加加油站',
+                    html: 'add_jiayouzhan'
+                }
+            });
+
+        })
+
+
+
+        //我的店铺
+        $api.addEvt($api.byId('wo_dianpu'), 'click', function () {
+
+            if ($api.getStorage('islogin') != 'true') {
+                toast('你还未登陆，请先登录')
+                loginwin();
+                return
+            }
+            api.openWin({
+                name: 'wodedianpu',
+                url: './Z_dianpu.html',
+                bounces: false,
+                pageParam: {
+                    biaoti: '我的店铺',
+                    html: 'Z_dianpu',
+                    user: $api.getStorage('user')
+                }
+            });
+
+        })
+
+        $api.addEvt($api.byId('add_shangpin'), 'click', function () {
+
+            if ($api.getStorage('islogin') != 'true') {
+                toast('你还未登陆，请先登录')
+                loginwin();
+                return
+            }
+            api.openWin({
+                name: 'add_shangpin',
+                url: './Z_pt_header.html',
+                bounces: false,
+                pageParam: {
+                    biaoti: '添加商品',
+                    html: 'add_shangpin'
+                }
+            });
+        })
+    };
+</script>
+
+</html>

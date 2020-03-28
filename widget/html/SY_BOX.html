@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+        body,html{
+            background-color: transparent
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+
+        //这里设置救援通知
+        let jiuyuan_tongzhi_id=[]
+        api.setGlobalData({
+            key: 'jiuyuan_tongzhi_id',
+            value: JSON.stringify(jiuyuan_tongzhi_id)
+        });
+        let jiuyuan_xinxi=[];
+        api.setGlobalData({
+            key: 'jiuyuan_xinxi',
+            value: JSON.stringify(jiuyuan_xinxi)
+        });
+
+
+        
+        api.openFrame({
+            name: 'SY_header',
+            url: './SY_header.html',
+            bounces: false,
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: Group.SY_BOX.headerh
+            }
+        });
+        var SY_GroupHtml = ['SY_main'];
+        cj_group(Group.SY_BOX.Group, SY_GroupHtml);
+        setTimeout(function(){
+            hiddenframegroup([Group.FX_BOX.header, Group.ME_BOX.header], [Group.FX_BOX.Group, Group.ME_BOX.Group])
+        }, 1000);
+
+        api.bringFrameToFront({
+            from:'SY_header',
+        });
+    }
+    function cj_group(GroupName, FramesName) {
+        var frames = [];
+        for (var i = 0, len = FramesName.length; i < len; i++) {
+            frames.push({
+                name: FramesName[i],
+                url: './' + FramesName[i] + '.html',
+                bounces: false
+            })
+        }
+        api.openFrameGroup({
+            name: GroupName,
+            scrollEnabled: false,
+            rect: {
+                x: 0,
+                y: Group.SY_BOX.headerh,
+                w: api.winWidth,
+                h: api.winHeight-55- Group.SY_BOX.headerh
+            },
+            preload: FramesName.length,
+            index: 0,
+            frames: frames
+        }, function (ret, err) {
+        })
+         
+    }
+</script>
+
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        .header {
+            height: 50px;
+            padding: 0px 20px;
+            font-size: 20px;
+            /* background-image: url(../image/7.png); */
+            background-color: #03a9f4;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-image: linear-gradient(#03a9f4, #67D1E8);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header" id="header">
+        <div>
+            <span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+            <span id="biaoti" style="margin-left:15px">标题</span>
+        </div>
+    </div>
+    <div id="apibox" class="aui-font-size-14"
+        style="height: 40px; display: flex;justify-content:space-around;align-items:center;background-color: #fff;">
+
+        <div id="moren" style="padding: 5px 10px;flex: 1;text-align: center;color: red;">
+            <span style="padding: 0 5px;">默认</span>
+        </div>
+        <div id="pinpai" style="padding: 5px 10px;flex: 1;text-align: center;">
+            <span style="padding: 0 5px;">{{chexing}}</span>
+            <i class="aui-iconfont aui-icon-down " style="font-size: 12px;"></i>
+        </div>
+        <div id="jiage" style="padding: 5px 10px;flex: 1;display:flex;justify-content: center;">
+            
+            <div >
+                <span style="padding: 0 5px;">{{jiage.title}}</span>
+                <i class="aui-iconfont aui-icon-down " style="font-size: 12px;"></i>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+
+        let type = api.pageParam.type;//xinche, ershou
+        var biaoti = api.pageParam.biaoti
+        let tiaojian = api.pageParam.tiaojian;
+        let html = api.pageParam.html
+        $api.html($api.byId('biaoti'), biaoti);
+        $api.addEvt($api.dom('#back'), 'click', function () {
+            api.closeWin();
+        });
+
+        var apibox = new Vue({
+            el: '#apibox',
+            data: {
+                chexing: '品牌',
+                jiage: {
+                    title: '价格',
+                },
+                tiaojian: {
+                    type: 'moren',
+                    min: 0,
+                    max: 0
+                }
+            },
+            updated: function () {
+
+            }
+        })
+
+
+        if (!tiaojian) {
+            tiaojian = {
+                type: 'moren',
+                min: 0,
+                max: 0
+            };
+            set_moren_tiaojian(tiaojian)
+        } else {
+            apibox.tiaojian = tiaojian
+            if (tiaojian.type == 'chexing') {
+                set_chexing_tiaojian(tiaojian)
+            } else if (tiaojian.type == 'jiage') {
+                set_jiage_tiaojian(tiaojian)
+            } else if(tiaojian.type == 'pinpai') {
+                set_chexing_tiaojian(tiaojian)
+            }
+        }
+        function open_data_frame(type, tiaojian) {
+            api.openFrame({
+                name: type,
+                url: './Z_xinche.html',
+                bounces: false,
+                rect: {
+                    x: 0,
+                    y: 91,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                reload: true,
+                pageParam: {
+                    type: type,
+                    tiaojian: tiaojian
+                }
+            });
+        }
+
+        api.addEventListener({
+            name: 'chexing'
+        }, function (ret, err) {
+            let chexing = ret.value.data.typeName;
+            apibox.chexing = chexing
+            let tiaojian = {
+                    type: 'chexing',
+                    chexing: chexing
+                }
+            set_chexing_tiaojian(tiaojian)
+        });
+
+        $api.addEvt($api.byId('moren'), 'click', function () {
+            set_moren_tiaojian(tiaojian)
+        });
+        $api.addEvt($api.byId('pinpai'), 'click', function () {
+            api.closeFrame({
+                name: 'fuchuang'
+            });
+            api.openWin({
+                name: 'qiche_pinpai',
+                url: 'Z_pt_header.html',
+                bounces: false,
+                animation: {
+
+                    type: "fade",                //动画类型（详见动画类型常量）
+                    subType: "from_top",       //动画子类型（详见动画子类型常量）
+                    duration: 300                //动画过渡时间，默认300毫秒
+
+                },
+                pageParam: {
+                    biaoti: '汽车品牌',
+                    html: 'Z_qiche_pinpai',
+                    data: {
+                        type: 'chexing',
+                        page: 'xinche',
+                        event: 'chexing'
+                    }
+                }
+            });
+
+        });
+
+        api.addEventListener({
+            name: 'jiage_xuanze'
+        }, function (ret, err) {
+            apibox.jiage.title = ret.value.key.min+'-'+ ret.value.key.max+'万'
+            let tiaojian = {
+                title: apibox.jiage.title,
+                type: 'jiage',
+                min: ret.value.key.min,
+                max: ret.value.key.max,
+            }
+           set_jiage_tiaojian(tiaojian)
+        });
+
+        $api.addEvt($api.byId('jiage'), 'click', function () {
+
+            api.openFrame({
+                name: 'fuchuang',
+                url: 'Z_jiage_shuaixuan.html',
+                bounces: false,
+                rect: {
+                    x: 0,
+                    y: 90,
+                    w: 'auto',
+                    h: 'auto'
+                },
+                pageParam: {
+                    ev: 'jiage_xuanze',
+                    type:type
+                }
+            });
+
+        });
+
+
+        function set_moren_tiaojian(tiaojian) {
+            api.closeFrame({
+                name: 'fuchuang'
+            });
+             tiaojian = {
+                type: 'moren',
+                min:0,
+                max:0
+            }
+            apibox.xuanzejiage = ''
+            apibox.chexing = '品牌'
+            document.getElementById('moren').style.color = 'red'
+            document.getElementById('jiage').style.color = ''
+            document.getElementById('pinpai').style.color = ''
+            open_data_frame(type, tiaojian)
+        }
+        function set_chexing_tiaojian(tiaojian) {
+            apibox.chexing = tiaojian.chexing
+            api.closeFrame({
+                name: 'fuchuang'
+            });
+            apibox.jiage.title ='价格'
+            document.getElementById('moren').style.color = ''
+            document.getElementById('jiage').style.color = ''
+            document.getElementById('pinpai').style.color = 'red'
+            open_data_frame(type, tiaojian)
+        }
+        function set_jiage_tiaojian(tiaojian) {
+            apibox.chexing = '品牌'
+            apibox.jiage.title=tiaojian.title
+            document.getElementById('moren').style.color = ''
+            document.getElementById('jiage').style.color = 'red'
+            document.getElementById('pinpai').style.color = ''
+            open_data_frame(type, tiaojian)
+        }
+    };
+</script>
+
+</html>

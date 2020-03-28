@@ -1,0 +1,217 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        .header {
+            height: 50px;
+            padding: 0px 20px;
+            font-size: 20px;
+            /* background-image: url(../image/7.png); */
+            background-color: #03a9f4;
+            color: #fff;
+            display: flex;
+            position: fixed;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            z-index: 999;
+            background-image: linear-gradient(#03a9f4, #67D1E8);
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header" id="header">
+        <div>
+            <span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+            <span id="biaoti" style="margin-left:15px">报价需求</span>
+        </div>
+
+    </div>
+
+
+    <div style="padding-top:50px;" id="xuqiu">
+        <div v-for="(items,index) in data"
+            style=" border-radius: 10px;overflow: hidden;margin: 15px ;background-color: #fff;">
+            <div style="padding: 10px 15px">{{items.paizhao}} {{items.baojia_id}}</div>
+            <div v-if='items.xsz' style="padding: 10px;">
+                <div class="bjxq_img" :dex='index' style="display: flex;justify-content: space-around;padding: 10px 0;">
+                    <img width="31%" height="80px" :src="server+items.xsz" alt="" srcset="">
+                    <img width="31%" height="80px" :src="server+items.sfz_zm" alt="" srcset="">
+                    <img width="31%" height="80px" :src="server+items.sfz_fm" alt="" srcset="">
+                </div>
+            </div>
+
+            <div class="aui-content " style="background-color: #fff;">
+                <ul class="aui-list aui-list-in ">
+                    <template v-for="bx in bx_xiangmu ">
+                        <template v-if="items[bx.type]==''||items[bx.type]=='不买'">
+
+                        </template>
+                        <template v-else>
+                            <li class="aui-list-item">
+
+                                <div class="aui-list-item-inner">
+                                    <div class="aui-list-item-title aui-font-size-14">{{bx.title}}</div>
+                                    <div class="aui-list-item-right">
+                                        {{items[bx.type]}}
+                                        <!-- <div class="aui-dot" style="position:relative;top:0; right:0"></div> -->
+                                    </div>
+                                </div>
+                            </li>
+                        </template>
+
+                    </template>
+                    <template v-if="items.bjmp_csx=='1'">
+                        <li class="aui-list-item">
+
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-title aui-font-size-14">{{bujimianpei.chesunxian.title}}</div>
+                                <div class="aui-list-item-right">
+                                    购买
+                                    <!-- <div class="aui-dot" style="position:relative;top:0; right:0"></div> -->
+                                </div>
+                            </div>
+                        </li>
+                    </template>
+                    <template v-if="items.bjmp_szx=='1'">
+                        <li class="aui-list-item">
+
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-title aui-font-size-14">{{bujimianpei.sanzhexian.title}}</div>
+                                <div class="aui-list-item-right">
+                                    购买
+                                    <!-- <div class="aui-dot" style="position:relative;top:0; right:0"></div> -->
+                                </div>
+                            </div>
+                        </li>
+                    </template><template v-if="items.bjmp_sjx=='1'">
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-title aui-font-size-14">{{bujimianpei.sijixian.title}}</div>
+                                <div class="aui-list-item-right">
+                                    购买
+                                    <!-- <div class="aui-dot" style="position:relative;top:0; right:0"></div> -->
+                                </div>
+                            </div>
+                        </li>
+                    </template><template v-if="items.bjmp_ckx=='1'">
+                        <li class="aui-list-item">
+
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-title aui-font-size-14">{{bujimianpei.chengkexian.title}}</div>
+                                <div class="aui-list-item-right">
+                                    购买
+                                    <!-- <div class="aui-dot" style="position:relative;top:0; right:0"></div> -->
+                                </div>
+                            </div>
+                        </li>
+                    </template>
+
+                </ul>
+            </div>
+            <div class="add_baojia" :baojiaid='index'
+                style="height: 50px;line-height: 50px;text-align: center; background-color: coral;">我来报价</div>
+        </div>
+
+    </div>
+
+
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    
+    apiready = function () {
+        $api.addEvt($api.dom('#back'), 'click', function () {
+            api.closeWin();
+        });
+
+        let config= get_config()
+        var xuqiu = new Vue({
+            el: '#xuqiu',
+            data: {
+                server: server,
+                error: false,
+                data: "",
+                bx_xiangmu: config.BX_xiangmu,
+                bujimianpei: config.bujimianpei,
+                imgurl: '../image/',
+                errormsg: '没有找到您需要的数据'
+
+            },
+            updated: function () {
+                var dh_li = $api.domAll('.add_baojia');
+                Array.prototype.forEach.call(dh_li, function (btn) {
+                    btn.addEventListener('click', function (event) {
+                        var baojiaid = event.currentTarget.getAttribute('baojiaid') - 0;
+                        api.openWin({
+                            name: 'add_baojia',
+                            url: './add_baojia.html',
+                            bounces: false,
+                            pageParam: {
+                                bx_data: (xuqiu.data)[baojiaid]
+                            }
+                        });
+                    })
+                })
+
+                var dh_li = $api.domAll('.bjxq_img');
+                Array.prototype.forEach.call(dh_li, function (btn) {
+                    btn.addEventListener('click', function (event) {
+                        var index = event.currentTarget.getAttribute('dex') - 0;
+                        var data_index = xuqiu.data[index]
+                        var images = [server + data_index.xsz, server + data_index.sfz_zm, server + data_index.sfz_fm]
+                        api.openWin({
+                            name: 'Z_photoBrowser_win',
+                            url: './Z_photoBrowser_win.html',
+                            bounces: false,
+                            pageParam: { images: images }
+                        });
+                    })
+                })
+            }
+        })
+
+
+
+
+        api.ajax({
+            url: server + '/api/baojiaxuqiu',
+            method: 'post',
+            timeout: 10,
+            dataType: 'json',
+            returnAll: false,
+        }, function (ret, err) {
+            if (ret) {
+                xuqiu.data = ret
+            } else {
+                api.toast({
+                    msg: '提交失败',
+                    duration: 2000,
+                    location: 'bottom'
+                });
+                $api.setStorage('user', '');
+            };
+        })
+
+
+
+
+    };
+</script>
+
+</html>

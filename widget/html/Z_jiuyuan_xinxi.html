@@ -1,0 +1,279 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        #header {
+            font-size: 20px;
+            /* background-image: url(../image/7.png); */
+            background-color: #ff8000;
+            color: #fff;
+            padding: 0 20px;
+            width: 100%;
+            padding-top: 20px;
+        }
+
+        .icon {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .aui-list-item-inner {
+            padding: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="apibox">
+        <div v-if="moshi=='list'">
+            <transition-group name='fade' tag="div">
+                <div v-for="(items,index) in data" class="chakan" :key='index' :user='items.user'
+                    style="display: flex;padding: 10px;margin-bottom: 10px; background-color: #fff">
+                    <!-- <div style="width: 150px;height: 90px;padding-right: 10px;flex-shrink: 0;">
+                        <img :src="server+ items.zhaopai_url" width="100%" height="100%" alt="">
+                    </div> -->
+                    <div style="flex-grow: 1;display: flex;flex-direction: column; justify-content: space-between;">
+                        <div class="aui-font-size-18">
+                            {{items.msg.type}}
+                        </div>
+                        <div class="aui-font-size-12">
+                            <!-- <span>{{items.msg.starttime}}</span>-<span>{{items.msg.endtime}}</span> | 距你{{items..msg.juli}}Km -->
+                        </div>
+                        {{items.msg.wodeweizhi.dizhi}}
+                        <!-- <div class="aui-font-size-12">
+                            <div v-for="ti in items.zhuyingyewu.split(',')"
+                                class="aui-label aui-label-success aui-label-outlined" style="margin:5px 10px 5px 0px">
+                                {{ti}}</div>
+                        </div> -->
+                        <div class="aui-font-size-14">
+                            接单
+                        </div>
+                    </div>
+                </div>
+            </transition-group>
+            <div style="text-align: center;color: darkgray;font-size: 14px;padding: 10px 0;">这里是底线了</div>
+        </div>
+        <div v-if="moshi=='map'">
+            <div v-if="mapdata" id="mapbox"
+                style="background-image: linear-gradient(#03a9f4, #67D1E8);color: #fff; width: 100%;height: 120px;overflow: hidden; position: fixed; bottom:0;left: 0;background-color: #fff;display: flex;padding: 10px; align-items:center;">
+                <div style="flex-grow: 1;">
+                    <div v-if="mapdata.msg.type" style="padding: 10px 0" class="aui-font-size-18">
+                        {{mapdata.msg.type}}
+                    </div>
+                    <div class="aui-font-size-14">
+                        <span>{{mapdata.msg.wodeweizhi.dizhi}}</span>
+                    </div>
+                </div>
+                <div style="flex-shrink: 1;">
+                    <div id="quzheli" class="aui-btn  aui-btn-outlined">去这里</div>
+                </div>
+            </div>
+            <div v-else
+                style="background-image: linear-gradient(#03a9f4, #67D1E8);color: #fff; width: 100%;height: 120px;overflow: hidden; position: fixed; bottom:0;left: 0;background-color: #fff;display: flex;padding: 10px; align-items:center;">
+                <div style="flex-grow: 1;">
+                    <div style="padding: 10px 0" class="aui-font-size-18">
+                        无数据
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        var bMap = api.require('bMap');
+        var button = api.require('UIButton');
+        var lat;
+        var lon;
+        api.refreshHeaderLoading();
+        api.addEventListener({
+            name: 'ismap'
+        }, function (ret, err) {
+            let ismap = ret.value.ismap;
+
+            if (ismap == 1) {
+                apibox.moshi = 'map'
+                let set_bottom_data = function (id) {
+                    apibox.mapdata = (apibox.data)[id]
+                }
+                open_jiuyuan_map(apibox.data, 'lon', 'lat', 'dizhi', set_bottom_data)
+
+            } else {
+                apibox.mapdata = '';
+                apibox.moshi = 'list';
+                bMap.hide()
+                button.hide({ id: 0 });
+                api.setFrameAttr({
+                    name: api.frameName,
+                    bounces: true
+                });
+            }
+        });
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...'
+        }, function (ret, err) {
+            let objjiuyuan_xinxi;
+            let jiuyuan_xinxi = api.getGlobalData({
+                    key: 'jiuyuan_xinxi'
+                });
+                
+            if (jiuyuan_xinxi) {
+                objjiuyuan_xinxi = JSON.parse(jiuyuan_xinxi)
+            } else {
+                objjiuyuan_xinxi = ''
+            }
+            
+            apibox.data = objjiuyuan_xinxi
+
+            apibox.mapdata = objjiuyuan_xinxi[0]
+            
+            //在这里从服务器加载数据，加载完成后调用api.refreshHeaderLoadDone()方法恢复组件到默认状态
+            api.refreshHeaderLoadDone()
+        });
+
+        var apibox = new Vue({
+            el: "#apibox",
+            data: {
+                moshi: 'list',
+                server: server,
+                loading: false,
+                error: false,
+                data: '',
+                mapdata: '',
+                errormsg: "没有找到您需要的数据"
+            },
+            updated: function () {
+                $api.addEvt($api.byId('quzheli'), 'click', function () {
+                    let lat = apibox.mapdata.msg.wodeweizhi.lat
+                    let lon = apibox.mapdata.msg.wodeweizhi.lon
+                    let name = '救援位置'
+                    map_start_info(lat, lon, name)
+                });
+            },
+            computed: {
+
+
+            },
+        });
+        
+
+        function open_jiuyuan_map(data, ziduan_lon, ziduan_lat, ziduan_name, set_bottom_data) {
+            var bMap = api.require('bMap');
+            api.setFrameAttr({
+                name: api.frameName,
+                bounces: false
+            });
+            if (bmap_isopen) {
+                set_bottom_data(0);
+                map_button_open();
+                bMap.show()
+            } else {
+                bmap_isopen = true
+                bMap.open({
+                    rect: {
+                        x: 0,
+                        y: 0,
+                        w: api.winWidth,
+                        h: api.frameHeight - 120
+                    },
+                    zoomLevel: 15,
+                    showUserLocation: true,
+                    fixedOn: api.frameName,
+                    fixed: true
+                }, function (ret) {
+                    if (ret.status) {
+                        map_button_open()
+                        set_bottom_data(0)
+                        setTimeout(() => {
+                            bMap.setCenter({ coords: { lon: (data[0].msg.wodeweizhi)[ziduan_lon], lat: (data[0].msg.wodeweizhi)[ziduan_lat] }, animation: TextTrackCue });
+                            bMap.popupBubble({ id: 0 });
+                        }, 1000);
+                        let annotations = [];
+                        for (let i = 0; i < data.length; i++) {
+                            let element = data[i];
+                            let sssdata = {}
+                            sssdata.id = i;
+                            sssdata.lon = (element.msg.wodeweizhi)[ziduan_lon];
+                            sssdata.lat = (element.msg.wodeweizhi)[ziduan_lat];
+                            sssdata.size = 40;
+                            annotations.push(sssdata);
+                            let BytesLength = getBytesLength('救援位置')
+                            bMap.setBubble({
+                                id: i,
+                                bgImg: 'widget://image/ui/ditu_wenzi_kuang.png',
+                                rect: {
+                                    x: 10,
+                                    y: 5,
+                                    w: 160,
+                                    h: 5
+                                },
+                                content: {
+                                    title: "救援位置",
+                                    // subTitle: '',
+                                    //illus: 'widget://image/ui/you.png'
+                                },
+                                styles: {
+                                    titleColor: '#FF0000',
+                                    titleSize: 18,
+                                    subTitleColor: '#999',
+                                    subTitleSize: 12,
+                                    illusAlign: 'left',
+                                    w: BytesLength * 25,
+                                    h: 60
+                                }
+                            }, function (ret1) {
+
+                            });
+                        }
+                        bMap.addAnnotations({
+                            annotations: annotations,
+                            icon: 'widget://image/ui/map_yuan.png',
+                            draggable: true
+                        }, function (ret) {
+                            if (ret) {
+                                set_bottom_data(ret.id)
+                                let lon = (data[ret.id].msg.wodeweizhi)[ziduan_lon]
+                                let lat = (data[ret.id].msg.wodeweizhi)[ziduan_lat]
+                                bMap.setCenter({
+                                    coords: {
+                                        lon: lon,
+                                        lat: lat
+                                    },
+                                    animation: true
+                                });
+                            }
+                        });
+
+                        bMap.stopLocation();
+
+                    }
+                });
+
+            }
+        }
+    };
+</script>
+
+</html>

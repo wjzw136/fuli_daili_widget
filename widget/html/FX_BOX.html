@@ -1,0 +1,158 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+
+    </style>
+</head>
+
+<body>
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/GVerify.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+
+    apiready = function () {
+        api.openFrame({
+            name: 'FX_header',
+            url: './FX_header.html',
+            bounces: false,
+            rect: {
+                x: 0,
+                y: 0,
+                w: 'auto',
+                h: 50
+            }
+        });
+
+        var xuhao = api.pageParam.xuhao
+        var items = [{
+            title: '轿车·SUV',
+            bg: '#ffffff',
+            bgSelected: '#ffffff'
+        }, {
+            title: '货车',
+            bg: '#ffffff',
+            bgSelected: '#ffffff'
+        }, {
+            title: '客车',
+            bg: '#ffffff',
+            bgSelected: '#ffffff'
+        }, {
+            title: '罐式汽车',
+            bg: '#ffffff',
+            bgSelected: '#ffffff'
+        }, {
+            title: '自卸汽车',
+            bg: '#ffffff',
+            bgSelected: '#ffffff'
+        }];
+        var frames = [{
+            name: 'jiaoche',
+            url: './FX_main.html',
+            bounces: true
+        }, {
+            name: 'huoche',
+            url: './FX_main.html',
+            bounces: true
+        }, {
+            name: 'keche',
+            url: './FX_main.html',
+            bounces: true
+        }, {
+            name: 'guanshi',
+            url: './FX_main.html',
+            bounces: true
+        }, {
+            name: 'zixie',
+            url: './FX_main.html',
+            bounces: true
+        }];
+
+        var NVNavigationBar = api.require('NVNavigationBar');
+        NVNavigationBar.open({
+            rect: {
+                x: 0,
+                y: 50,
+                w: api.winWidth,
+                h: 50
+            },
+            styles: {
+                orientation: 'horizontal',
+                bg: '#ffffff',
+                bgAlpha: 1,
+                font: {
+                    size: 16,
+                    sizeSelected: 20,
+                    color: '#70686A',
+                    colorSelected: '#ff8000',
+                    alpha: 1
+                },
+                itemSize: {
+                    w: api.winWidth / 4.5,
+                    h: 49
+                }
+            },
+            items: items,
+            selectedIndex: 0,
+            fixedOn: api.frameName,
+            id: Group.FX_BOX.Group
+        }, function (ret, err) {
+            api.setFrameGroupIndex({
+                name: Group.FX_BOX.Group,
+                index: ret.index,
+                scroll: true
+            });
+        });
+
+        api.openFrameGroup({
+            name: Group.FX_BOX.Group,
+            scrollEnabled: true,
+            rect: {
+                x: 0,
+                y: 100,
+                w: 'auto',
+                h: api.winHeight - 55 - 50 - 50
+            },
+            index: 0,
+            preload: 0,
+            frames: frames
+        }, function (ret, err) {
+
+            NVNavigationBar.setSelected({
+                id: Group.FX_BOX.Group,
+                index: ret.index,
+                selected: true
+            });
+        });
+
+
+        
+        setTimeout(function () {
+            hiddenframegroup([Group.FX_BOX.header, Group.ME_BOX.header], [Group.FX_BOX.Group, Group.ME_BOX.Group])
+        }, 2000);
+
+        api.bringFrameToFront({
+            from: 'SY_header',
+        });
+    }
+
+    // var verifyCode = new GVerify("yz_code");
+    // var res_yzm = verifyCode.validate(document.getElementById("yanzhengma").value);
+    //验证验证码
+</script>
+
+</html>

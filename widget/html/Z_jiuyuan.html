@@ -1,0 +1,785 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		.header {
+			height: 50px;
+			padding: 0px 20px;
+			font-size: 20px;
+			/* background-image: url(../image/7.png); */
+			background-color: #03a9f4;
+			color: #fff;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background-image: linear-gradient(#03a9f4, #67D1E8);
+		}
+
+		.xuanxiangActive {
+			border-bottom: #fff 2px solid;
+		}
+
+		.xuanxiang {
+			margin: 0 15px;
+			font: bold
+		}
+
+		.apibox {
+
+			color: #fff;
+			width: 100%;
+			height: 220px;
+			overflow: hidden;
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			display: flex;
+			flex-direction: column;
+		}
+
+		.box {
+			background-image: linear-gradient(#67D1E8, #03a9f4);
+			display: flex;
+			flex-direction: column;
+			flex-grow: 1;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="header" id="header">
+		<div>
+			<span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+			<span id="biaoti" style="margin-left:15px">救援</span>
+		</div>
+	</div>
+	<div id="apibox" class="apibox">
+		<div v-show="zhuangtai=='xuanze'" id="box" class="box">
+			<div class="aui-font-size-18"
+				style="display: flex;flex-shrink: 0; justify-content:center;width: 100%;margin-top:10px;">
+				<span id="dadian" class="xuanxiang xuanxiangActive">搭电</span>
+				<span id="tuoche" class="xuanxiang">拖车</span>
+				<span id="butai" class="xuanxiang">补胎</span>
+			</div>
+			<div
+				style="display: flex; flex-direction: column;flex-grow: 1;justify-content:space-around;padding: 10px 15px;">
+				<div class="aui-ellipsis-1">
+					<span style="padding:0 10px;border: #fff solid 1px; border-radius: 16px; ">费用<span
+							class="aui-font-size-20" style="padding: 0 10px;">{{zongjia}}</span>元</span>
+					<!-- <span class="aui-font-size-20 " style="margin:0 10px">{{mapdata.jiage}}元</span> -->
+					<span class="aui-font-size-20">{{mapdata.jiage}}<span class="aui-font-size-12">(基础费用)</span></span>
+					<span v-if='luchengfei' class="aui-font-size-20">+{{luchengfei}}<span
+							class="aui-font-size-12">(路程费)</span></span>
+					<span v-if='isyebanfei' class="aui-font-size-20">+{{mapdata.yebanfei}}<span
+							class="aui-font-size-12">(深夜费)</span></span>
+				</div>
+				<!-- <div>
+					<span style="border-radius: 16px;font-size: 12px;">{{mapdata.tiaojian+'超出部分'+mapdata.danjia+'元每公里'}}</span>
+				</div> -->
+				<div style="margin-top: 10px;display: flex;flex-wrap: nowrap;width: 100%;justify-content: space-between; "
+					id="wodeweizhi">
+					<div style="flex-flow: 1;" class="aui-ellipsis-1">
+						<span style="padding:0 10px;border: #fff solid 1px;border-radius: 16px;">救援位置</span>
+						<span v-show='wodeweizhi.dizhi'
+							style="border-bottom: solid 1px #fff;">{{wodeweizhi.dizhi}}</span>
+					</div>
+					<div style="flex-shrink: 0;">
+						<i class="aui-iconfont aui-icon-right"></i>
+					</div>
+				</div>
+				<div v-show='endweizhi.dizhi'
+					style="margin-top: 10px;display: flex;justify-content: space-between; flex-wrap: nowrap;width: 100%;"
+					id="endweizhi">
+					<div style="flex-flow: 1" class="aui-ellipsis-1">
+						<span style="padding:0 10px;border: #fff solid 1px;border-radius: 16px;">目的位置</span>
+						<span style="border-bottom: solid 1px #fff;">{{endweizhi.dizhi}}</span>
+					</div>
+					<div style="flex-shrink: 0;"><i class="aui-iconfont aui-icon-right"></i></div>
+				</div>
+			</div>
+			<div id="next" class="aui-font-size-18"
+				style="height: 50px;flex-shrink: 0; display: flex;justify-content: center;align-items: center;background-color: red; width: 100%;">
+				确认位置，下一步
+			</div>
+		</div>
+		<div v-show="zhuangtai=='hujiao'"
+			style="background-image:linear-gradient(#67D1E8, #03a9f4);flex-grow: 1;display: flex;flex-direction: column;align-items: center;">
+			<div style="padding: 0px 15px;margin-top: 10px;">{{hujiao.title}}</div>
+			<div style="flex-grow: 1;display: flex;justify-content: center;align-items: center;flex-direction: column;">
+				<div id="daojishi" v-if="hujiao.time!=0" class="aui-font-size-18">
+					{{hujiao.time}}
+				</div>
+				<div id="tishi">正在为你呼叫 {{hujiao.fanwei}} 公里内的救援团队</div>
+			</div>
+			<div class="aui-font-size-12">{{mapdata.tiaojian}},超过部分{{mapdata.danjia}}元每公里</div>
+			<div id="quxiao" class="aui-font-size-18"
+				style="height: 50px;flex-shrink: 0; display: flex;justify-content: center;align-items: center;background-color: red; width: 100%;">
+				取消呼叫
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript" src="../script/anime.min.js"></script>
+<script type="text/javascript">
+
+	apiready = function () {
+		var button = api.require('UIButton');
+		var bMap = api.require('bMap');
+		var socketManager = api.require('socketManager');
+
+		let user = $api.getStorage('user');
+		let md5password = $api.getStorage('md5password');
+		let socketid;
+		let userinfo = {
+			user: user,
+			md5password: md5password,
+			type: user
+		}
+		let isendweizhi = 0;
+		let timestamp;
+		let timer, timer2, timer3;
+		$api.addEvt($api.dom('#back'), 'click', function () {
+			api.closeWin();
+		});
+		var apibox = new Vue({
+			el: "#apibox",
+			data: {
+				server: server,
+				loading: false,
+				error: false,
+				zhuangtai: 'xuanze',
+				hujiao: {
+					title: '正在呼叫救援',
+					time: 60,
+					tishi: '',
+					fanwei: 5
+				},
+				data: {
+					dadian: {
+						type: 'dadian',
+						jiage: 30,
+						tiaojian: '5公里内，免收路程费',
+						danjia: 2,
+						mianfeilucheng: 5,
+						yebanfei: 10
+					},
+					tuoche: {
+						type: 'tuoche',
+						jiage: 100,
+						tiaojian: '5公里内，免收路程费',
+						danjia: 5,
+						mianfeilucheng: 5,
+						lucheng: '',
+						yebanfei: 20
+					},
+					butai: {
+						type: 'butai',
+						jiage: 50,
+						tiaojian: '5公里内，免收路程费',
+						danjia: 2,
+						mianfeilucheng: 5,
+						yebanfei: 10
+					}
+				},
+				mapdata: '',
+				timestamp: '',
+				wodeweizhi: {
+					dizhi: '正在获取位置信息',
+					dizhi_yuyi: '',
+					lon: '',
+					lat: ''
+				},
+
+				endweizhi: {
+					dizhi: '',
+					dizhi_yuyi: '',
+					lon: '',
+					lat: ''
+				},
+				errormsg: "没有找到您需要的数据"
+			},
+			updated: function () {
+				if (this.zhuangtai == 'xuanze') {
+					open_map_zhezhao('close')
+					clearInterval(timer)
+					clearInterval(timer2)
+					clearInterval(timer3)
+					apibox.hujiao.time = 60
+				} else {
+					open_map_zhezhao('open')
+				}
+
+
+
+
+			},
+			computed: {
+				luchengfei: function () {
+					let lucheng = this.data.tuoche.lucheng / 1000;
+					let danjia = this.data.tuoche.danjia
+					if (Math.round(lucheng) > this.data.tuoche.mianfeilucheng) {
+						return (Math.round(lucheng) - this.data.tuoche.mianfeilucheng) * danjia
+					} else {
+						return 0
+					}
+				},
+				isyebanfei: function () {
+					let d = new Date();
+					d.setTime(this.timestamp - 0)
+					let hours = d.getHours()
+					if (hours <= 7 || hours >= 21) {
+						return true
+					} else {
+						return false
+					}
+				},
+				zongjia: function () {
+					let jichufei = this.mapdata.jiage - 0
+					let yebanfei = this.mapdata.yebanfei - 0
+					let luchengfei = this.luchengfei - 0
+					if (this.isyebanfei) {
+						return jichufei + luchengfei + yebanfei
+					} else {
+						return jichufei + luchengfei
+					}
+				}
+
+			},
+		});
+
+		apibox.mapdata = apibox.data.dadian
+		anime({
+			targets: '#daojishi,#tishi',
+			scale: '1.1',
+			direction: 'alternate',
+			loop: true,
+			easing: 'easeInOutQuad',
+			duration: 1000
+		});
+
+		var xuanxiang = $api.domAll('.xuanxiang');
+		Array.prototype.forEach.call(xuanxiang, function (btn) {
+			btn.addEventListener('click', function (event) {
+				var id = event.currentTarget.getAttribute('id');
+				xuanxiang.forEach(element => {
+					$api.removeCls(element, 'xuanxiangActive');
+				});
+				$api.addCls(btn, 'xuanxiangActive');
+				apibox.data.tuoche.lucheng = ''
+				isendweizhi = 0;
+				api.setFrameAttr({
+					name: 'button_weizhi',
+					hidden: false
+				});
+
+				bMap.addEventListener({
+					name: 'viewChange'
+				}, function (ret) {
+					setCenterdizhi()
+				})
+
+				apibox.mapdata = (apibox.data)[id]
+				if (id == 'tuoche') {
+					apibox.endweizhi.dizhi = '请点击此处选择'
+				} else {
+					api.sendEvent({
+						name: 'button_weizhi',
+						extra: { key: 0 }
+					});
+					apibox.endweizhi.dizhi = ''
+					apibox.endweizhi.lon = ''
+					apibox.endweizhi.lat = ''
+				}
+				bMap.removeRoute({
+					ids: [1]
+				});
+				bMap.removeAnnotations({
+					ids: [2]
+				});
+				setCenterdizhi()
+			})
+		});
+
+		api.addEventListener({
+			name: 'keyback'
+		}, function (ret, err) {
+			if (apibox.zhuangtai!='xuanze') {
+				alert('你正在呼叫救援，请先取消再退出')
+			} else {
+				api.closeWin();
+			}
+		});
+
+		$api.addEvt($api.byId('wodeweizhi'), 'click', function () {
+			isendweizhi = 0;
+			toast('拖动地图确定位置');
+			api.sendEvent({
+				name: 'button_weizhi',
+				extra: { key: 0 }
+			});
+			bMap.addEventListener({
+				name: 'viewChange'
+			}, function (ret) {
+				setCenterdizhi()
+			})
+			bMap.removeRoute({
+				ids: [1]
+			});
+			api.setFrameAttr({
+				name: 'button_weizhi',
+				hidden: false
+			});
+		});
+		$api.addEvt($api.byId('endweizhi'), 'click', function () {
+			isendweizhi = 1;
+			toast('拖动地图确定位置');
+			api.sendEvent({
+				name: 'button_weizhi',
+				extra: { key: 1 }
+			});
+
+			bMap.addEventListener({
+				name: 'viewChange'
+			}, function (ret) {
+				setCenterdizhi()
+			})
+			bMap.removeRoute({
+				ids: [1]
+			});
+			api.setFrameAttr({
+				name: 'button_weizhi',
+				hidden: false
+			});
+		});
+
+		$api.addEvt($api.byId('next'), 'click', function () {
+			if (!$api.getStorage('user') || $api.getStorage('islogin') != 'true') {
+				api.confirm({
+					// title: '你还未登陆,是否登录',
+					msg: '你还未登陆,是否登录',
+					buttons: ['确定', '取消']
+				}, function (ret, err) {
+					if (ret.buttonIndex == 1) {
+						loginwin()
+					}
+				});
+				return
+			}
+			apibox.mapdata.wodeweizhi = apibox.wodeweizhi;
+			apibox.mapdata.zongjia = apibox.zongjia;
+			apibox.mapdata.isyebanfei = apibox.isyebanfei;
+			if (apibox.mapdata.type == 'tuoche') {
+				if (apibox.endweizhi.lon == '') {
+					toast('没有设置目的地')
+					return
+				} else {
+					apibox.mapdata.endweizhi = apibox.endweizhi;
+
+				}
+			}
+			apibox.zhuangtai = 'hujiao'
+			apibox.hujiao.title = '正在呼叫救援'
+			open_juyuan_socket()
+			timer = setInterval(() => {
+				if (apibox.hujiao.time <= 0) {
+					clearInterval(timer)
+					apibox.hujiao.fanwei = 10
+					apibox.hujiao.time = 120
+					let objdata = { data: apibox.mapdata, userinfo: userinfo, juli: apibox.hujiao.fanwei }
+					let str_mapdata = JSON.stringify(objdata)
+					socketManager.write({
+						sid: socketid,
+						data: str_mapdata
+					}, function (ret1, err) {
+					});
+					timer2 = setInterval(() => {
+						if (apibox.hujiao.time <= 0) {
+							clearInterval(timer2)
+							api.confirm({
+								title: '10公里内暂无人接单',
+								msg: '是否呼叫距您更远的救援团队',
+								buttons: ['确定', '取消']
+							}, function (ret, err) {
+								var index = ret.buttonIndex;
+								if (index == 1) {
+									apibox.hujiao.fanwei = 20
+									apibox.hujiao.time = 120
+									let objdata = { data: apibox.mapdata, userinfo: userinfo, juli: apibox.hujiao.fanwei }
+									let str_mapdata = JSON.stringify(objdata)
+									socketManager.write({
+										sid: socketid,
+										data: str_mapdata
+									}, function (ret1, err) {
+									});
+									timer3 = setInterval(() => {
+
+										if (apibox.hujiao.time <= 0) {
+											apibox.hujiao.title = '很抱歉！暂时无人接单'
+											clearInterval(timer3)
+										} else {
+											apibox.hujiao.time--
+										}
+									}, 1000)
+								} else {
+									apibox.zhuangtai = 'xuanze'
+								}
+							});
+
+						} else {
+							apibox.hujiao.time--
+						}
+					}, 1000);
+				} else {
+					apibox.hujiao.time--
+				}
+
+			}, 1000);
+		});
+		$api.addEvt($api.byId('quxiao'), 'click', function () {
+			var socketManager = api.require('socketManager');
+			socketManager.closeSocket({
+				sid: socketid
+			});
+			apibox.zhuangtai = 'xuanze'
+		});
+
+
+
+
+
+		function setCenterdizhi() {
+			bMap.getCenter(function (ret) {
+				api.showProgress({
+					title: ' 正在定位',
+					text: '获取位置信息',
+					modal: true
+				});
+				if (isendweizhi == 1) {
+					bMap.addAnnotations({
+						annotations: [{
+							id: 2,
+							lon: ret.lon,
+							lat: ret.lat
+						}],
+						icon: 'widget://image/ui/map_zhong.png',
+						draggable: true
+					}, function (ret) {
+
+					});
+					bMap.setAnnotationCoords({
+						id: 2,
+						lon: ret.lon,
+						lat: ret.lat
+					});
+
+				} else {
+					bMap.setAnnotationCoords({
+						id: 1,
+						lon: ret.lon,
+						lat: ret.lat
+					});
+				}
+
+				bMap.getLocation({
+					accuracy: '100m',
+					autoStop: true,
+					filter: 1
+				}, function (ret, err) {
+					if (ret.status) {
+						apibox.timestamp = ret.timestamp
+					}
+				});
+
+				bMap.getNameFromCoords({
+					lon: ret.lon,
+					lat: ret.lat
+				}, function (ret2, err) {
+					if (ret2.status) {
+						api.hideProgress();
+						let dizhi = ret2.city + ret2.district + ret2.streetName + '(' + ret2.sematicDescription + ')'
+						if (isendweizhi == 0) {
+							apibox.wodeweizhi.dizhi = dizhi;
+							apibox.wodeweizhi.dizhi_yuyi = ret2.sematicDescription;
+							apibox.wodeweizhi.lon = ret.lon
+							apibox.wodeweizhi.lat = ret.lat
+						} else if (isendweizhi == 1) {
+							apibox.endweizhi.dizhi = dizhi;
+							apibox.endweizhi.dizhi_yuyi = ret2.sematicDescription;
+							apibox.endweizhi.lon = ret.lon
+							apibox.endweizhi.lat = ret.lat
+							bMap.removeRoute({
+								ids: [1]
+							});
+
+							bMap.searchRoute({
+								id: 1,
+								type: 'drive',
+								policy: 'ecar_fee_first',
+								start: {
+									lon: apibox.wodeweizhi.lon,
+									lat: apibox.wodeweizhi.lat
+								},
+								end: {
+									lon: apibox.endweizhi.lon,
+									lat: apibox.endweizhi.lat
+								}
+							}, function (ret, err) {
+								if (ret.status) {
+									apibox.mapdata.lucheng = ret.plans[0].distance
+									bMap.drawRoute({
+										id: 1,
+										autoresizing: true,
+										index: 0,
+										styles: {
+											start: {
+												icon: 'widget://image/ui/map_yuan.png',
+												size: 20
+											}, line: {          //（可选项）JSON对象；路线样式配置，不传则显示默认值  
+												color: '#0000FF', //（可选项）字符串类型；折线的颜色，支持rgb、rgba、#；默认值：'#0000FF'
+												width: 3,     //（可选项）数字类型；折线的宽度，默认：3
+												dash: false,     //（可选项）布尔类型；是否显示为虚线；默认：false
+												// textureImg: '' //（可选项）字符串类型；纹理图片路径，要求本地路径（fs://、widget://）；默认：无
+											},
+											node: {          //（可选项）JSON类型；节点样式，不传则不显示。注意节点并不一定是转弯点。
+												size: 0,        //（可选项）数字类型；节点大小；默认：17 (android不支持)
+												icon: 'widget://image/ui/node.png'         //（可选项）字符串类型；节点图标，要求本地路径（fs://、widget://）;默认：百度图标
+											},
+											end: {
+												icon: 'widget://image/ui/map_zhong.png',
+												size: 20
+											}
+										}
+									}, function (ret) {
+									});
+									api.setFrameAttr({
+										name: 'button_weizhi',
+										hidden: true
+									});
+									setTimeout(() => {
+										bMap.removeEventListener({
+											name: 'viewChange'
+										});
+										bMap.getZoomLevel(function (ret) {
+											bMap.setZoomLevel({
+												level: ret.level - 0.3
+											});
+										});
+									}, 1000);
+								}
+							});
+						}
+					}
+				});
+
+			})
+		}
+		bMap.open({
+			rect: {
+				x: 0,
+				y: 50,
+				w: api.winWidth,
+				h: api.frameHeight - 270
+			},
+			zoomLevel: 16,
+			showUserLocation: true,
+			fixedOn: api.frameName,
+			fixed: true
+		}, function (ret) {
+			if (ret.status) {
+
+				add_map_button();//添加地图上的‘救援位置’
+				add_button()
+
+				bMap.getLocation({
+					accuracy: '10m',
+					autoStop: true,
+					filter: 1
+				}, function (ret, err) {
+					if (ret.status) {
+						bMap.addAnnotations({
+							annotations: [{
+								id: 1,
+								lon: ret.lon,
+								lat: ret.lat
+							}],
+							icon: 'widget://image/ui/map_yuan.png',
+							draggable: true
+						}, function (ret) {
+
+						});
+						bMap.setCenter({
+							coords: {
+								lon: ret.lon,
+								lat: ret.lat
+							},
+							animation: true
+						});
+
+						bMap.addEventListener({
+							name: 'viewChange'
+						}, function (ret) {
+							setCenterdizhi()
+						})
+
+
+					}
+				});
+			}
+		});
+
+
+		function add_map_button() {
+			api.openFrame({
+				name: 'button_weizhi',
+				url: './button/button_weizhi.html',
+				rect: {
+					x: (api.frameWidth - 100) / 2,
+					y: (api.frameHeight - 270) / 2 - 15,
+					w: 100,
+					h: 100
+				},
+				pageParam: {
+					name: 'test'
+				}
+			});
+		}
+		function add_button() {
+			button.open({
+				rect: {
+					x: api.frameWidth - 14 * 5 - 15,
+					y: api.frameHeight - 265,
+					w: 14 * 5,
+					h: 30
+				},
+				bg: {
+					normal: '#67D1E8'
+				},
+				corner: 10,
+				title: {
+					size: 14,
+					highlight: '自动定位',
+					active: '自动定位',
+					normal: '自动定位',
+					normalColor: '#fff'
+				},
+				fixedOn: api.frameName,
+				fixed: true,
+				move: true
+			}, function (ret, err) {
+				if (ret.eventType == 'click') {
+					bMap.showUserLocation({
+						isShow: true,
+						trackingMode: 'none'
+					});
+				}
+			});
+		}
+
+		function open_map_zhezhao(openclose) {
+			if (openclose == 'close') {
+				api.closeFrame({
+					name: 'map_zhezhao'
+				});
+			} else {
+				api.openFrame({
+					name: 'map_zhezhao',
+					bounces: true,
+					bgColor: 'rgba(236,236,236, 0.5)',
+					rect: {
+						x: 0,
+						y: 50,
+						w: 'auto',
+						h: api.frameHeight - 270
+					}
+				});
+			}
+		}
+
+		function open_juyuan_socket() {
+			socketManager.createSocket({
+				host: '192.168.137.1',
+				port: 8080
+			}, function (ret, err) {
+				if (ret) {
+					//连接成功
+					if (ret.state == 102) {
+						socketid = ret.sid
+						let objdata = { data: apibox.mapdata, userinfo: userinfo, juli: 5 }
+						let str_mapdata = JSON.stringify(objdata)
+						socketManager.write({
+							sid: socketid,
+							data: str_mapdata
+						}, function (ret1, err) {
+						});
+					}
+					if (ret.state == 103) {
+						if (JSON.parse(ret.data).state == 500) {
+							alert(JSON.parse(ret.data).msg)
+							return
+						}
+						if (JSON.parse(ret.data).state == 300) {
+							let msg = JSON.parse(ret.data).msg
+
+							if (msg.length > 0) {
+								let annotations = [];
+								let i = 1
+								msg.forEach(element => {
+									let ss = {
+										id: i,
+										lon: element.lon,
+										lat: element.lat
+									}
+									annotations.push(ss)
+									i++
+								});
+								bMap.addAnnotations({
+									annotations: annotations,
+									icon: 'widget://image/ui/map_dadian.png',
+									draggable: true
+								}, function (ret) {
+
+								});
+							}
+							return
+						}
+
+						if (JSON.parse(ret.data).state == 200) {
+							let msg = JSON.parse(ret.data).msg
+							api.notification({
+								notify: {
+									title: '救援团队',
+									content: msg,
+									vibrate: [100, 500, 200, 500, 300, 500, 400, 500]
+								}
+							});
+							return
+						}
+
+					}
+					//异常断开
+					if (ret.state == 203 || ret.state == 204) {
+						toast('被关闭')
+						apibox.zhuangtai = 'xuanze'
+					}
+
+					//连接成功
+				}
+			});
+		}
+
+	};
+</script>
+
+</html>

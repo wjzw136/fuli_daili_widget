@@ -1,0 +1,354 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		.margin-l-10 {
+			margin-left: 5px;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="apibox">
+		<ul class="aui-list aui-media-list aui-list-noborder" style="background-color: #fff">
+			<li class="aui-list-header">
+				<div style="border-left:coral solid 5px;padding-left:10px;color: coral" class="aui-font-size-16">
+					车辆信息填写
+				</div>
+			</li>
+		</ul>
+		<div class="aui-content aui-margin-b-15" style="background-color: #fff;">
+			<ul class="aui-list aui-form-list">
+				<!-- <li class="aui-list-header">带有输入框</li> -->
+				<li v-for='info in cheliang_xinxi' class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-label aui-font-size-14">
+							{{info.title}}
+						</div>
+						<div class="aui-list-item-input ">
+							<input class="aui-font-size-14" v-model="info.zhi" type="text"
+								:placeholder="'请填写行驶证上的'+info.title">
+						</div>
+					</div>
+				</li>
+				<!-- <div class="aui-btn aui-btn-info">默认按钮(info)</div> -->
+			</ul>
+
+
+		</div>
+
+
+
+		<ul class="aui-list aui-media-list aui-list-noborder" style="background-color: #fff">
+			<li class="aui-list-header">
+				<div style="border-left:coral solid 5px;padding-left:10px;color: coral" class="aui-font-size-16">
+					保险信息填写
+				</div>
+			</li>
+		</ul>
+		<div class="aui-content aui-margin-b-15" style="background-color: #fff;">
+			<ul class="aui-list aui-list-in ">
+				<li v-for="items in data" class="aui-list-item ">
+					<div :id="items.type" class="aui-list-item-inner aui-list-item-arrow">
+						<div class="aui-list-item-title aui-font-size-14">{{items.title}}</div>
+						<div v-if="!items.jieguo" class="aui-list-item-right">
+							点击选择
+							<!-- <div class="aui-dot" style="position:relative;top:0; right:0"></div> -->
+						</div>
+
+						<div v-else-if="items.jieguo=='不买'" class="aui-list-item-right" style="color: red;">
+							{{items.jieguo}}
+							<!-- <div class="aui-dot" style="position:relative;top:0; right:0"></div> -->
+						</div>
+						<div v-else class="aui-list-item-right aui-text-info">
+							{{items.jieguo}}
+							<!-- <div class="aui-dot" style="position:relative;top:0; right:0"></div> -->
+						</div>
+					</div>
+				</li>
+
+				<template v-for="items in data" v-if="items.bjmp">
+
+					<template v-if="items.jieguo!='不买'&&items.jieguo!=''">
+						<li class="aui-list-item">
+							<div class="aui-list-item-inner ">
+								<div class="aui-list-item-title aui-font-size-14">
+									不计免赔（{{items.title}}）
+								</div>
+								<div class="aui-list-item-right">
+									<label>
+										<input class="aui-radio" type="radio" v-model='items.bjmp.is_mai'
+											value="1"><span class="margin-l-10">购买</span>
+									</label>
+									<label style="margin-left: 15px;">
+										<input class="aui-radio" type="radio" v-model='items.bjmp.is_mai' checked
+											value="0"><span class="margin-l-10">不买</span>
+									</label>
+									<!-- <div class="aui-dot" style="position:relative;top:0; right:0"></div> -->
+								</div>
+							</div>
+						</li>
+					</template>
+				</template>
+			</ul>
+		</div>
+	</div>
+
+
+
+
+
+
+
+
+
+
+
+
+	<div style="display: flex;justify-content:space-around;margin-bottom: 15px;">
+		<div id="baojia" class="aui-btn aui-btn-info">试算</div>
+	</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js">
+</script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+
+
+	Vue.component('baoxianxinxi', {
+		// 选项
+		template: ''
+	})
+	
+
+	apiready = function () {
+		let config=get_config()
+
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				error: false,
+				data: config.BX_xiangmu,
+				// bujimianpei: bujimianpei,
+				cheliang_xinxi: config.cheliang_xinxi,
+				imgurl: '../image/',
+				errormsg: '没有找到您需要的数据'
+			}
+		})
+		var gllis = $api.domAll('.aui-list-item-arrow');
+		Array.prototype.forEach.call(gllis, function (btn) {
+			btn.addEventListener('click', function (event) {
+				var id = event.currentTarget.getAttribute('id');
+				var sss = (apibox.data)[id];
+				api.actionSheet(sss, function (ret, err) {
+					var index = ret.buttonIndex;
+					if (index == 1) {
+						// alert(sss.destructiveTitle)
+						sss.jieguo = sss.destructiveTitle
+						if (sss.hasOwnProperty('bjmp')) {
+							sss.bjmp.is_mai = 0
+						}
+
+
+					} else if (index >= (sss.buttons).length + 2) {
+						// alert('取消')
+					} else {
+						// alert(sss.buttons[index - 2])
+						sss.jieguo = sss.buttons[index - 2]
+
+					}
+
+				});
+			})
+		})
+
+		$api.addEvt($api.dom('#baojia'), 'click', function () {
+			var user = $api.getStorage('user');
+			var md5password = $api.getStorage('md5password');
+			if ($api.getStorage('islogin') != 'true') {
+				api.alert({
+					title: '提示',
+					msg: '你还没登录'
+				});
+				return
+			}
+
+
+
+
+
+
+
+			var BXdata = {};
+			for (var key in apibox.data) {
+				if (apibox.data.hasOwnProperty(key)) {
+					var element = (apibox.data)[key];
+					BXdata[key] = {}
+					BXdata[key].name = element.title
+					BXdata[key].jieguo = element.jieguo
+					if (apibox.data[key].hasOwnProperty('bjmp')) {
+						BXdata[key].bjmp = {};
+						BXdata[key].bjmp = element.bjmp.is_mai
+					}
+				}
+			}
+
+			
+
+			for (let key in apibox.cheliang_xinxi) {
+				if (apibox.cheliang_xinxi.hasOwnProperty(key)) {
+					if (key == 'chepaihao') {
+						if (!isVehicleNumber(apibox.cheliang_xinxi.chepaihao.zhi)) {
+							toast('车牌号填写错误')
+							return
+						} 
+					}
+					let element = (apibox.cheliang_xinxi)[key];
+					if (!element.zhi) {
+						toast('车辆信息填写不完整')
+						return
+					}
+				}
+			}
+			for (let key in BXdata) {
+				if (BXdata.hasOwnProperty(key)) {
+					let element = BXdata[key];
+					if (!element.jieguo) {
+						toast('保险信息填写不完整')
+						return
+					}
+				}
+			}
+
+			
+			api.ajax({
+				url: server + '/api/baojia',
+				method: 'post',
+				timeout: 10,
+				dataType: 'json',
+				returnAll: false,
+				data: {
+					values: {
+						user: user,
+						md5password: md5password,
+						BXdata: BXdata,
+						cheliang_xinxi: apibox.cheliang_xinxi
+					},
+					files: {
+						file: []
+					}
+				}
+			}, function (ret, err) {
+				if (ret) {
+					toast('提交成功');
+					api.closeWin();
+				} else {
+					toast('失败');
+				};
+			});
+
+		})
+
+
+
+
+	}
+
+	function show_actionSheet(data) {
+
+	}
+
+
+
+
+	function show_fenxiang() {
+
+		var dialogBox = api.require('dialogBox');
+		dialogBox.actionMenu({
+			rect: {
+				h: 120
+			},
+			items: [
+				{
+					text: '微信',
+					icon: 'widget://image/share/wx-circle.png'
+				},
+				{
+					text: 'QQ',
+					icon: 'widget://image/share/qq-friend.png'
+				},
+				{
+					text: '微博',
+					icon: 'widget://image/share/qq-weibo.png'
+				},
+				{
+					text: '短信',
+					icon: 'widget://image/share/message.png'
+				}
+			],
+			styles: {
+				bg: '#FFF',
+				column: 4,
+				itemText: {
+					color: '#000',
+					size: 14,
+					marginT: 10
+				},
+				itemIcon: {
+					size: 50
+				}
+
+			},
+			tapClose: true,
+		}, function (ret) {
+
+			if (ret.eventType == 'cancel') {
+				dialogBox.close({
+					dialogName: 'actionMenu'
+				});
+			} else if (ret.index == 0) {//微信
+				var wx = api.require('wx');
+				wx.shareImage({
+					apiKey: 'wx120563a9b357a081',
+					scene: 'session',
+					thumb: 'widget://image/share/message.png',
+					contentUrl: 'widget://image/share/message.png'
+				}, function (ret, err) {
+					if (ret.status) {
+						alert('分享成功');
+					} else {
+						alert(err.code);
+					}
+				});
+			}
+			else if (ret.index == 1) {//微信
+				var wx = api.require('wx');
+				wx.shareText({
+					apiKey: 'wx120563a9b357a081',
+					scene: 'timeline',
+					text: '我分享的文本'
+				}, function (ret, err) {
+					if (ret.status) {
+						alert('分享成功');
+					} else {
+						alert(err.code);
+					}
+				});
+			}
+		});
+
+
+	}
+</script>
+
+</html>

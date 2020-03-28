@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        .header {
+            height: 50px;
+            padding: 0px 20px;
+            font-size: 20px;
+            /* background-image: url(../image/7.png); */
+            background-color: #67D1E8;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* background-image: linear-gradient(#03a9f4, #67D1E8); */
+        }
+        
+
+        .icon {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .aui-list-item-inner {
+            padding: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header" id="header">
+        <div>
+            <span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+            <span id="biaoti" style="margin-left:15px"> </span>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        $api.addEvt($api.dom('#back'), 'click', function () {
+            api.closeWin();
+        });
+
+        var lat;
+        var lon;
+
+        var items = [{
+            title: '新车',
+            bg: '#67D1E8',
+            bgSelected: '#67D1E8'
+        }, {
+            title: '二手车',
+            bg: '#67D1E8',
+            bgSelected: '#67D1E8'
+        }];
+         var frames = [{
+            name: '新车',
+            url: './Z_maiche.html',
+            bounces: true
+        }, {
+            name: '二手车',
+            url: './Z_maiche.html',
+            bounces: true
+        }];
+
+        var NVNavigationBar = api.require('NVNavigationBar');
+        NVNavigationBar.open({
+            rect: {
+                x: 150,
+                y: 0,
+                w: api.winWidth,
+                h: 50
+            },
+            styles: {
+                orientation: 'horizontal',
+                bg: '#67D1E8',
+                bgAlpha: 1,
+                font: {
+                    size: 16,
+                    sizeSelected: 20,
+                    color: '#70686A',
+                    colorSelected: '#ff8000',
+                    alpha: 1
+                },
+                itemSize: {
+                    w: (api.winWidth-300) / 2,
+                    h: 49
+                }
+            },
+            items: items,
+            selectedIndex: 0,
+            fixedOn: api.frameName,
+            id: 'maiche'
+        }, function (ret, err) {
+            api.setFrameGroupIndex({
+                name: 'maiche',
+                index: ret.index,
+                scroll: true
+            });
+        });
+
+
+        api.openFrameGroup({
+            name: 'maiche',
+            scrollEnabled: true,
+            rect: {
+                x: 0,
+                y: 50,
+                w: 'auto',
+                h: api.winHeight-50
+            },
+            index: 0,
+            preload: frames.length,
+            frames: frames
+        }, function (ret, err) {
+            NVNavigationBar.setSelected({
+                id:'maiche',
+                index: ret.index,
+                selected: true
+            });
+        });
+
+        
+
+
+    };
+</script>
+
+</html>

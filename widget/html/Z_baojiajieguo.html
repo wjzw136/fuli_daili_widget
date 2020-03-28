@@ -1,0 +1,167 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		.header {
+			height: 50px;
+			padding: 0px 20px;
+			font-size: 20px;
+			/* background-image: url(../image/7.png); */
+			background-color: #03a9f4;
+			color: #fff;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background-image: linear-gradient(#03a9f4, #67D1E8);
+		}
+	</style>
+</head>
+
+<body>
+	<div class="header" id="header">
+		<div>
+			<span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+			<span id="biaoti" style="margin-left:15px">报价结果</span>
+		</div>
+	</div>
+	<div id="apibox" v-if='data' class="aui-content aui-margin-b-15" style="background-color: #fff;">
+		<div style="text-align: center;height: 50px;line-height: 50px;color:green">{{data.bxgs_name}}</div>
+		<ul class="aui-list aui-list-in ">
+			<template v-for="bx in bx_xiangmu ">
+				<template v-if="data[bx.type]==''||data[bx.type]==null">
+				</template>
+				<template v-else>
+					<li class="aui-list-item ">
+						<div class="aui-list-item-inner">
+							<div class="aui-list-item-title aui-font-size-14">{{bx.title}}</div>
+							<div class="aui-list-item-right">
+								{{data[bx.type]}}
+								<!-- <div class="aui-dot" style="position:relative;top:0; right:0"></div> -->
+							</div>
+						</div>
+
+					</li>
+				</template>
+			</template>
+
+			<template v-if="data.bjmp_csx>0">
+
+
+				<li class="aui-list-item ">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-title aui-font-size-14">不计免赔（{{bx_xiangmu.chesunxian.title}}）</div>
+						<div class="aui-list-item-right">
+							{{data.bjmp_csx}}
+							<!-- <div class="aui-dot" style="position:relative;top:0; right:0"></div> -->
+						</div>
+					</div>
+
+				</li>
+
+			</template>
+			<template v-if="data.bjmp_szx>0">
+
+				<li class="aui-list-item ">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-title aui-font-size-14">不计免赔（{{bx_xiangmu.sanzhexian.title}}）</div>
+						<div class="aui-list-item-right">
+							{{data.bjmp_szx}}
+							<!-- <div class="aui-dot" style="position:relative;top:0; right:0"></div> -->
+						</div>
+					</div>
+
+				</li>
+
+			</template>
+			<template v-if="data.bjmp_sjx>0">
+
+				<li class="aui-list-item ">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-title aui-font-size-14">不计免赔（{{bx_xiangmu.sijixian.title}}）</div>
+						<div class="aui-list-item-right">
+							{{data.bjmp_sjx}}
+							<!-- <div class="aui-dot" style="position:relative;top:0; right:0"></div> -->
+						</div>
+					</div>
+
+				</li>
+
+			</template>
+			<template v-if="data.bjmp_ckx>0">
+				<li class="aui-list-item ">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-title aui-font-size-14">不计免赔（{{bx_xiangmu.chengkexian.title}}）</div>
+						<div class="aui-list-item-right">
+							{{data.bjmp_ckx}}
+							<!-- <div class="aui-dot" style="position:relative;top:0; right:0"></div> -->
+						</div>
+					</div>
+				</li>
+			</template>
+			<li class="aui-list-item">
+				<div  class="aui-list-item-inner aui-text-pink">
+					<div style="display: flex;flex-flow: column;align-items: center;">
+						 <div>{{data.syx_fx}}</div>
+						 <div>商业险返现</div>
+					</div>
+					<div style="display: flex;flex-flow: column; align-items: center;">
+						<div>{{data.jqx_fx}}</div>
+						<div>交强险返现</div>
+					</div>
+					<div style="display: flex;flex-flow: column;align-items: center;">
+						<div>{{data.zongji}}</div>
+						<div>合计金额</div>
+					</div>
+				</div>
+			</li>
+		</ul>
+
+		<div style="display: flex;justify-content:space-around;margin: 15px 0;">
+			<div class="aui-btn aui-btn-info">同意此价格并获取支付码</div>
+		</div>
+	</div>
+
+
+
+
+
+
+
+
+	
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/GVerify.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+		let config=get_config();
+		var ssdata = api.pageParam.data;
+		$api.addEvt($api.dom('#back'), 'click', function () {
+			api.closeWin();
+		});
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				data: ssdata,
+				bujimianpei: config.bujimianpei,
+				bx_xiangmu: config.BX_xiangmu,
+			}
+		})
+	};
+	// var verifyCode = new GVerify("yz_code");
+	// var res_yzm = verifyCode.validate(document.getElementById("yanzhengma").value);
+	//验证验证码
+</script>
+
+</html>

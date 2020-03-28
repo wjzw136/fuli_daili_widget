@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="./css/api.css" />
+    <link rel="stylesheet" type="text/css" href="./css/aui.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="./css/public.css" /> -->
+    <style type="text/css">
+
+    </style>
+</head>
+
+<body>
+
+    <footer class="aui-bar aui-bar-tab">
+        <div class="aui-bar-tab-item aui-active" tapmode>
+            <i class="aui-iconfont aui-icon-home"></i>
+            <div class="aui-bar-tab-label">首页</div>
+        </div>
+        <div class="aui-bar-tab-item" tapmode>
+            <i class="aui-iconfont aui-icon-cert"></i>
+            <div class="aui-bar-tab-label">车险</div>
+        </div>
+        <div class="aui-bar-tab-item" tapmode>
+            <i class="aui-iconfont aui-icon-location"></i>
+            <div class="aui-bar-tab-label">附近</div>
+        </div>
+        <div class="aui-bar-tab-item" tapmode>
+            <div class="aui-dot"></div>
+            <i class="aui-iconfont aui-icon-my"></i>
+            <div class="aui-bar-tab-label">我的</div>
+        </div>
+
+    </footer>
+</body>
+<script type="text/javascript" src="./script/api.js"></script>
+<script type="text/javascript" src="./script/public.js"></script>
+<script type="text/javascript">
+
+    apiready = function () {
+
+        api.openWin({
+            name: 'kaipin',
+            url: './html/kaipin.html',
+            bounces: false,
+            pageParam: {key : 'value'}
+        });
+
+        // var header = $api.byId('header');
+        //适配iOS 7+，Android 4.4+状态栏
+        //var headerPos = $api.offset(header);
+        // var main = $api.byId('main');
+        //  $api.fixStatusBar(header);
+        // var mainPos = $api.offset(main);
+        var gllis = $api.domAll('.aui-bar-tab-item');
+        //切换点击
+
+        Array.prototype.forEach.call(gllis, function (btn) {
+            btn.addEventListener('click', function (event) {
+                var index = 0;
+                for (var i = 0, len = gllis.length; i < len; i++) {
+                    if (btn == gllis[i]) {
+                        index = i;
+                        // openheaderFrame(shouye_frames_name[index], HeaderHeight[index]);
+                        $api.addCls(gllis[index], 'aui-active');
+                        api.setFrameGroupIndex({
+                            name: root_Group,
+                            index: i,
+                            scroll: false
+                        });
+
+                        if (i == 0) {
+                            // cj_group(root_shouye_Group, root_shouye_GroupHtml)
+                            // showframe('group_name')
+                        } else if (i == 1) {
+                            // cj_group(root_fuli_Group, root_fuli_GroupHtml)
+                        } else {
+                            // cj_group(root_me_Group, root_me_GroupHtml)
+                        }
+                    } else {
+                        $api.removeCls(gllis[i], 'aui-active');
+                    }
+                }
+            })
+        })
+        var root_Group = 'root_Group'
+        var root_shouye_GroupHtml = ['SY_BOX', 'FX_BOX', 'FJ_BOX', 'ME_BOX']
+        cj_group(root_Group, root_shouye_GroupHtml)
+         api.ajax({
+            url: server + '/api/config',
+            method: 'post',
+            timeout: 10,
+            dataType: 'json',
+            returnAll: false,
+        }, function (ret, err) {
+            if (ret.zhuangtai) {
+                api.setGlobalData({
+                    key: 'config',
+                    value: ret.config
+                });
+            }
+        });
+    }
+    function cj_group(GroupName, FramesName) {
+        var frames = [];
+        for (var i = 0, len = FramesName.length; i < len; i++) {
+            frames.push({
+                name: FramesName[i],
+                url: './html/' + FramesName[i] + '.html',
+                bounces: false
+            })
+        }
+        api.openFrameGroup({
+            name: GroupName,
+            scrollEnabled: false,
+            rect: {
+                x: 0,
+                y: 0,
+                w: api.winWidth,
+                h: api.winHeight - 55
+            },
+            preload: FramesName.length,
+            index: 0,
+            frames: frames
+        }, function (ret, err) {
+            if (ret.index == 0) {
+                hiddenframegroup([Group.FX_BOX.header, Group.FJ_BOX.header, Group.ME_BOX.header], [Group.FX_BOX.Group, Group.FJ_BOX.Group, Group.ME_BOX.Group])
+                showframegroup([Group.SY_BOX.header], [Group.SY_BOX.Group])
+            } else if (ret.index == 1) {
+                hiddenframegroup([Group.SY_BOX.header, Group.ME_BOX.header, Group.FJ_BOX.header], [Group.SY_BOX.Group, Group.ME_BOX.Group, Group.FJ_BOX.Group])
+                showframegroup([Group.FX_BOX.header], [Group.FX_BOX.Group])
+            } else if (ret.index == 2) {
+                hiddenframegroup([Group.FX_BOX.header, Group.SY_BOX.header, Group.ME_BOX.header], [Group.FX_BOX.Group, Group.SY_BOX.Group, Group.ME_BOX.Group])
+                showframegroup([Group.FJ_BOX.header], [Group.FJ_BOX.Group])
+            } else if (ret.index == 3) {
+                hiddenframegroup([Group.FX_BOX.header, Group.SY_BOX.header, Group.FJ_BOX.header], [Group.FX_BOX.Group, Group.SY_BOX.Group, Group.FJ_BOX.Group])
+                showframegroup([Group.ME_BOX.header], [Group.ME_BOX.Group])
+            }
+
+        })
+
+    }
+
+
+
+</script>
+
+</html>

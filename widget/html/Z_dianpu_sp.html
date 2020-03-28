@@ -1,0 +1,198 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		body {
+			background-color: #fff;
+		}
+	</style>
+</head>
+
+<body>
+
+
+	<div v-cloak id="apibox"
+		style="display: flex;justify-content:space-between;width: 100%;flex-wrap: wrap;padding:15px">
+		<div v-if='data' class="spbox" v-for="items  in  data" style="width: 32%;margin-bottom: 15px;" :spid='items.id'>
+
+			<div> <img :src="server+items.zhaopai_url[0]" width="100%" height="100px"> </div>
+			<div>{{items.name}}</div>
+			<div style="color: red;">￥{{items.jiage}}</div>
+		</div>
+
+		<!-- <div class="border" style=" width: 32% ;padding-bottom: 10px;">
+			<div><img src="../image/0613224546_3.png" width="100%" height="120px" ; alt=""> </div>
+			<div class="aui-font-size-14 aui-ellipsis-1 " style="padding-top:5px">sdsdsd</div>
+			<div class="aui-font-size-16 aui-ellipsis-1 " style="padding-top: 5px;color: red;">￥222</div>
+		</div> -->
+
+		<div v-if='che' v-for="(items,index) in che" class="spbox" :key='index' :spid='items.id'
+			style="display: flex;margin-bottom: 15px; background-color: #fff;">
+			<div style="width: 120px;height: 80px;flex-shrink: 0;border-radius: 10px;overflow: hidden;">
+				<img :src="server+ items.zhaopai_url" width="100%" height="100%" alt="">
+			</div>
+			<div style=" padding-left: 10px;flex-grow: 1;display: flex;flex-direction: column; justify-content: space-between;">
+				<div class="aui-font-size-14" style="font-weight: bold;">
+					<span style="padding-right: 10px;color: #03a9f4; ">{{items.typeName}}</span>
+					<span>{{items.specName}}</span>
+				</div>
+				<div  class="aui-font-size-12">
+					<span style="margin-right: 10px;">{{items.transMode}}</span>{{items.engine}}
+				</div>
+				<div class="aui-font-size-12">
+					商家价<span class="aui-font-size-14" style="color: red;margin-right: 10px;font-weight: bold;"> {{jiage(items.jiage)}}万</span> 指导价{{items.guidePrice}}
+				</div>
+			</div>
+		</div>
+		
+		<div v-if='ershou' v-for="(items,index) in ershou" class="spbox" :key='index' :spid='items.id'
+			style="display: flex;margin-bottom: 15px; background-color: #fff;">
+			<div style="width: 120px;height: 80px;flex-shrink: 0;border-radius: 10px;overflow: hidden;">
+				<img :src="server+ items.zhaopai_url" width="100%" height="100%" alt="">
+			</div>
+			<div style="padding-left: 10px;flex-grow: 1;display: flex;flex-direction: column; justify-content: space-between;">
+				<div class="aui-font-size-14" style="font-weight: bold;">
+					<span style="padding-right: 10px;color: #03a9f4; ">{{items.typeName}}</span>
+					<span>{{items.specName}}</span>
+				</div>
+				<div class="aui-font-size-12">
+					<span style="margin-right: 10px;">{{items.transMode}}</span><span style="margin-right: 10px;">{{items.engine}}</span><span style="margin-right: 10px;">{{jiage(items.licheng)}}万公里</span>
+
+				</div>
+				<div class="aui-font-size-12">
+					</span>
+				</div>
+				<div class="aui-font-size-12">
+					商家价<span class="aui-font-size-14" style="color: red;margin-right: 10px;font-weight: bold;">
+						{{jiage(items.jiage)}}万</span> 指导价{{items.guidePrice}}
+				</div>
+			</div>
+		</div>
+		<div v-if="data==''&&che==''&& ershou==''" class="aui-font-size-12" style="display: flex;height: 100%;width: 100%; justify-content: center; align-items: stretch;">{{errormsg}}</div>
+	</div>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+
+		var user = api.pageParam.user
+		var leibie = api.pageParam.leibie
+		var apibox = new Vue({
+			el: "#apibox",
+			data: {
+				server: server,
+				loading: false,
+				error: false,
+				data: '',
+				errormsg: "加载中",
+				che: '',
+				ershou:''
+			},
+			updated: function () {
+				var chakandom = $api.domAll('.spbox');
+				Array.prototype.forEach.call(chakandom, function (btn) {
+					btn.addEventListener('click', function (event) {
+						let spid = event.currentTarget.getAttribute('spid')
+						let data = {
+							spid: spid,
+							leibie: leibie
+						}
+						api.openWin({
+							name: 'sp',
+							url: './Z_pt_header.html',
+							bounces: false,
+							pageParam: {
+								biaoti: '商品',
+								html: 'Z_dianpu_sp_xq',
+								spid: data
+							}
+						});
+					})
+				});
+			},
+			methods: {
+				jiage: function (sss) {
+					let jiage_to_wan= (sss-0)/10000;
+					let b= Math.floor((sss - 0) / 10000*100)/100
+					return b
+				}
+			},
+			computed: {
+				
+				// sss:function(ss) {
+				// 	return ss/10000
+				// }
+			},
+			
+		});
+		api.refreshHeaderLoading();
+
+		api.setRefreshHeaderInfo({
+			loadingImg: 'widget://image/refresh.png',
+			bgColor: '#ccc',
+			textColor: '#fff',
+			textDown: '下拉刷新...',
+			textUp: '松开刷新...',
+			showTime: false
+		}, function (ret, err) {
+
+			api.ajax({
+				url: server + '/api/get_dianpu_sp?user=' + user + '&leibie=' + leibie,
+				method: 'get',
+				timeout: 30,
+				dataType: 'json',
+				returnAll: false
+			}, function (ret, err) {
+				if (ret) {
+					for (let index = 0; index < ret.length; index++) {
+						const element = ret[index];
+						element.zhaopai_url = element.zhaopai_url.split(',')
+						element.jianjie_url = element.jianjie_url.split(',')
+					}
+					if (api.frameName == '新车') {
+						apibox.che = ret
+						apibox.data = ''
+						apibox.ershou = ''
+					}else if(api.frameName == "二手车"){
+						apibox.ershou = ret
+						apibox.data = ''
+						apibox.che = ''
+					}else {
+						apibox.ershou = ''
+						apibox.data = ret
+						apibox.che = ''	
+					}
+
+					api.refreshHeaderLoadDone()
+
+				} else {
+					apibox.data = ''
+					apibox.che = ''
+					apibox.ershou = ''
+					apibox.errormsg = '没有数据'
+					api.refreshHeaderLoadDone()
+				}
+
+			})
+
+
+
+		})
+
+
+	}
+</script>
+
+</html>

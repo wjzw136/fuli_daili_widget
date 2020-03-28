@@ -1,0 +1,221 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<link rel="stylesheet" type="text/css" href="../script/vue.js" />
+	<style>
+
+	</style>
+</head>
+
+<body>
+
+	<div id="bg" style="height: 100%;background-color: gainsboro;opacity: 0.8;">
+
+	</div>
+	<div style="background-color:#fff;position: fixed;top:0;left: 0;width: 100%;">
+
+
+		<div v-cloak id="apibox"
+			style="font-size: 14px;display: flex;justify-content: center;flex-direction: column; background-color: #fff;padding-top: 15px;">
+
+			<div style="display: flex;flex-wrap: wrap;padding: 15px;align-items: center;">
+				<div v-for='(item,index) in xuanxiang' style="text-align: center;width: 25%;margin: 5px 0;">
+					<div v-on:click='xuanze(index)'
+						style="border-radius: 20px; margin: 0 10px;padding: 8px 0px; background-color: gainsboro;">
+						{{item.title}}</div>
+				</div>
+			</div>
+
+			<div >
+				{{msg}}
+			</div>
+		</div>
+		<div style="position: relative;margin: 0 30px; background-color: #fff;">
+			<div style="position:relative;padding-top: 12px;">
+				<div id="dibu" style="height: 6px;background-color:darkgray;width: 100%;"></div>
+				<div style="display: flex;justify-content: space-between;font-size: 12px;">
+					<span>|</span><span>|</span><span>|</span><span>|</span><span>|</span><span>|</span>
+				</div>
+				<div id="beijing"
+					style="position: absolute; top:12px;left:0%; right: 0%; height: 6px;background-color:darkorchid;z-index: 999">
+				</div>
+			</div>
+			<div id="rangeleft"
+				style="position: absolute; top:0;left:-15px;width: 30px;height: 30px;border-radius: 15px;z-index: 1000; background-color: darkturquoise;text-align: center;">
+			</div>
+			<div id="rangeright"
+				style="position: absolute; top:0;right:-15px;width: 30px;height: 30px;border-radius: 15px;z-index: 1000; background-color: darkturquoise;">
+			</div>
+			<div
+				style="position: relative;;display:flex;justify-content: space-between;margin: 0px -10px; font-size: 10px;;margin-top: 5px;">
+				<span style="width: 20px;text-align: center;">0</span>
+				<span style="width: 20px;text-align: center;">20</span>
+				<span style="width: 20px;text-align: center;">40</span>
+				<span style="width: 20px;text-align: center;">60</span>
+				<span style="width: 20px;text-align: center;">80</span>
+				<span style="width: 20px;text-align: center;">不限</span>
+			</div>
+		</div>
+		<div style="display: flex;justify-content: center;padding: 15px;">
+			<div id="add" class="aui-btn aui-btn-info">确定</div>
+		</div>
+	</div>
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+		let ev = api.pageParam.ev
+		let type = api.pageParam.type;
+		let config=get_config()
+		let xuanxiang;
+		if (type=='xinche') {
+			xuanxiang= config.jiage_qujian.xinche_jiage_qujian
+		}else {
+			xuanxiang = config.jiage_qujian.ershouche_jiage_qujian
+		}
+			
+		
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				leftshuxian: 0,
+				rightshuxian: 0,
+				msg: '不限',
+				xuanxiang:xuanxiang
+			},
+			updated: function () {
+
+			},
+			methods: {
+				xuanze: function (ss) {
+					api.sendEvent({
+						name: ev,
+						extra: { key: apibox.xuanxiang[ss] }
+					});
+					api.closeFrame();
+				}
+			},
+		})
+		let rangeleft = $api.byId('rangeleft');
+		let rangeright = $api.byId('rangeright');
+		let dibu = $api.byId('dibu');
+		let timer;
+		let dibu_width = $api.offset(dibu).w;
+		let rangeleft_startpagex;
+		let rangeright_startpagex;
+		let rangeleft_x;
+		let rangeright_x;
+		let leftshuxian = 0;
+		let rightshuxian = 0;
+		rangeleft.addEventListener("touchstart", function (ev) {
+			rangeleft_startpagex = ev.touches[0].pageX
+			rangeleft_x = $api.cssVal(rangeleft, 'left');
+			rangeleft_x = rangeleft_x.replace(/px/, "") - 0;
+		});
+		rangeright.addEventListener("touchstart", function (ev) {
+			rangeright_startpagex = ev.touches[0].pageX
+			rangeright_x = $api.cssVal(rangeright, 'right');
+			rangeright_x = rangeright_x.replace(/px/, "") - 0;
+		});
+		rangeleft.addEventListener("touchmove", function (ev) {
+			let pageX = (ev.touches[0].pageX - 0 - rangeleft_startpagex).toFixed(0) - 0//px
+			let moveX = pageX + rangeleft_x
+			let bili = moveX / dibu_width * 100 - 15 / dibu_width * 100//left原点位置百分比;
+			leftshuxian = (moveX / dibu_width * 100).toFixed(0);
+			
+			if (leftshuxian >= 0 && leftshuxian < (100 - rightshuxian)) {
+				document.getElementById('rangeleft').style.left = bili + '%'
+				document.getElementById('beijing').style.left = bili + '%'
+				// apibox.leftshuxian = leftshuxian
+				show_wenzi()
+			}
+
+		});
+		rangeright.addEventListener("touchmove", function (ev) {
+			let pageX = (ev.touches[0].pageX - 0 - rangeright_startpagex - 0).toFixed(0) - 0//px
+			let moveX = rangeright_x - pageX
+			let bili = moveX / dibu_width * 100 - 15 / dibu_width * 100//left原点位置百分比;
+			rightshuxian = (moveX / dibu_width * 100).toFixed(0);
+			
+			if (rightshuxian >= 0 && rightshuxian < (100 - leftshuxian)) {
+				document.getElementById('rangeright').style.right = bili + '%'
+				document.getElementById('beijing').style.right = bili + '%'
+				// apibox.rightshuxian = 100 - rightshuxian
+				show_wenzi()
+			}
+
+		});
+
+		$api.addEvt($api.byId('bg'), 'click', function () {
+			api.closeFrame();
+
+		})
+
+
+		function show_wenzi() { //返回  标题和价格区间 并设置显示文字
+			let title;
+			let min;
+			let max;
+			if (rightshuxian < 0 ){
+				rightshuxian=0
+			}
+			if (leftshuxian < 0) {
+				leftshuxian = 0
+			}
+			if (rightshuxian <= 0 && leftshuxian <= 0) {
+				title = '不限'
+				min = 0;
+				max = 1000
+			} else if (leftshuxian > 0 && rightshuxian <= 0) {
+				title = leftshuxian + '万以上'
+				min = leftshuxian;
+				max = 1000
+			} else if (leftshuxian > 0 && rightshuxian > 0) {
+				title = leftshuxian + '-' + (100 - rightshuxian) + '万'
+				min = leftshuxian;
+				max = 100 - rightshuxian
+			} else if (leftshuxian <= 0 && rightshuxian > 0) {
+				title = (100 - rightshuxian) + '万以下'
+				min = leftshuxian;
+				max = 100 - rightshuxian
+			}else{
+				title = leftshuxian-0+ "-"+ (100 - rightshuxian) + '万'
+				min = leftshuxian;
+				max = 100 - rightshuxian
+			}
+			let data = {
+				title: title,
+				min: min,
+				max: max
+			}
+			apibox.msg = data.title;
+			return data
+		}
+		$api.addEvt($api.byId('add'), 'click', function () {
+		let data=show_wenzi()	
+			api.sendEvent({
+				name: ev,
+				extra: { key: data }
+			});
+			api.closeFrame();
+
+		})
+
+
+	};
+</script>
+
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        .header {
+            height: 50px;
+            padding: 0px 20px;
+            font-size: 20px;
+            /* background-image: url(../image/7.png); */
+            background-color: #ff8000;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        body {
+            background-color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="apibox">
+        <div style="padding: 60px 15px">
+            <div class=""
+                style="display: flex;justify-content: space-between;align-items: stretch;justify-items: stretch;box-sizing: border-box;  border: cornflowerblue solid 1px;border-radius: 40px;padding-left:15px;overflow: hidden;">
+                <input v-model='chepaihao' type="text" placeholder="填写牌照关键字">
+                <div id="chaxun"
+                    style="display: flex;align-items: center;justify-content: center; width: 120px; background-color: cornflowerblue;border: cornflowerblue solid 1px;color: #fff;">
+                    查询</div>
+            </div>
+        </div>
+
+
+
+        <div style="padding: 0 15px;">
+
+            <div v-if="errormsg"
+                style="display: flex;justify-content:center;font-size: 16px;height: 50px;border-radius: 25px;overflow: hidden;line-height: 50px;">
+                {{errormsg}}
+            </div>
+
+
+            <div v-if="!errormsg" v-for='items in data'
+                style="display: flex;justify-content:space-between;border:#03a9f4 1px solid ; font-size: 16px;height: 50px;border-radius: 25px;overflow: hidden;">
+                <div style="flex-grow: 1;padding:  0 15px; font-size: 20px;line-height: 50px;">{{items.paizhao}}</div>
+                <div style="display: flex;height: 100%;color: #fff;">
+                    <div :download='items.xiazaidizhi_jqx'
+                        style="padding: 0 15px; background-image: linear-gradient(#03a9f4, #67D1E8);line-height: 50px;border-top-left-radius: 25px;border-bottom-left-radius: 25px;">
+                        交强险保单</div>
+                    <div :download='items.xiazaidizhi_syx'
+                        style="padding: 0 15px;background-image: linear-gradient(#67D1E8, #03a9f4);line-height: 50px;">
+                        商业险保单</div>
+                </div>
+            </div>
+        </div>
+        <div style="padding: 0 15px;">
+
+        </div>
+
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    var apibox = new Vue({
+        el: '#apibox',
+        data: {
+            error: false,
+            chepaihao: '',
+            data: "",
+            imgurl: '../image/',
+            errormsg: ''
+        },
+        updated: function () {
+
+        }
+    })
+
+
+    apiready = function () {
+        $api.addEvt($api.dom('#back'), 'click', function () {
+            api.closeWin();
+        });
+        var user = $api.getStorage('user');
+
+
+        $api.addEvt($api.dom('#chaxun'), 'click', function () {
+            
+            if (!apibox.chepaihao) {
+                toast('请填写牌照关键字');
+                return
+            }
+            apibox.errormsg = '加载中'
+            var ajaxdata = {
+                url: '/api/kehubaodan',
+                data: {
+                    user: user,
+                    chepaihao: apibox.chepaihao
+                }
+            }
+            zdy_ajax(ajaxdata.url, ajaxdata.data, function (ret) {
+                if (ret.length > 0) {
+                    apibox.errormsg = ''
+                    apibox.data = ret
+                } else (
+                    apibox.errormsg = '没有数据'
+                )
+            })
+
+        });
+
+
+    };
+</script>
+
+</html>

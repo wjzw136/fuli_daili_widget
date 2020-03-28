@@ -1,0 +1,207 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		.lunbotu {
+			background-color: #fff;
+			width: 100%;
+			height: 250px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="lunbotu"></div>
+	<div id="apibox">
+		<div style="padding: 15px;margin-top: 15px;background-color: #fff;">
+			<div>{{data.name}}</div>
+
+
+			<div style="color: red;">
+				<span v-if="data.jiage>data.huaxianjia">
+					<span v-if='data.huaxianjia'>
+						￥{{data.huaxianjia}}
+						<span class="aui-font-size-14" style="text-decoration: line-through;">￥{{data.jiage}}</span>
+					</span>
+					<span v-else>￥{{data.jiage}}</span>
+
+			</div>
+		</div>
+		<div style="display: flex;background-color: #fff; width: 100%;margin-top: 15px;justify-content: space-between;align-items: center;">
+			<div v-if='dianpuinfo' style="display: flex;align-items: center;">
+				<div style="border-top-right-radius:30px;border-bottom-right-radius: 30px;overflow: hidden;">
+					<img :src="server+dianpuinfo.zhaopai_url" width="100px" height="60px" alt="" srcset="">
+				</div>
+				<div style="padding:0 15px">
+					<div class="aui-font-size-14">{{dianpuinfo.name}}</div>
+					<div class="aui-font-size-12">{{dianpuinfo.dizhi}}</div>
+				</div>
+
+			</div>
+			<div style="padding-right: 15px;" class="aui-font-size-14">
+				<span>进店看看</span><span>关注</span>
+			</div>
+		</div>
+
+		<div style="margin-top: 15px;">
+			<div v-for="imgs in jianjie_url">
+				<img width="100%" :src="imgs" alt="">
+			</div>
+		</div>
+
+		<!-- <div style="display: flex;position:fixed;bottom: 0;left: 0;width: 100%;align-items: center;">
+
+			<div style="border-top-right-radius:30px;border-bottom-right-radius: 30px;overflow: hidden;">
+				<img :src="server+dianpuinfo.zhaopai_url" width="100px" height="60px" alt="" srcset="">
+			</div>
+			<div style="padding:0 15px">
+				<div class="aui-font-size-14">{{dianpuinfo.name}}</div>
+				<div class="aui-font-size-12">{{dianpuinfo.dizhi}}</div>
+			</div>
+
+
+		</div> -->
+
+	</div>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+		var data = api.pageParam.spid;
+		var UIScrollPicture = api.require('UIScrollPicture');
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				server: server,
+				error: false,
+				data: '',
+				jianjie_url: '',
+				errormsg: '没有找到您需要的数据',
+				dianpuinfo: ''
+			},
+			methods: {
+
+			},
+			updated: function () {
+				var img = $api.domAll('img');
+				Array.prototype.forEach.call(img, function (btn) {
+					btn.addEventListener('click', function (event) {
+						let src = event.currentTarget.getAttribute('src')
+						let images = [];
+						images.push(src)
+						chakan_img(images)
+					})
+				});
+
+			}
+		})
+
+
+		api.ajax({
+			url: server + '/api/get_dp_sp_xq?spid=' + data.spid + '&leibie=' + data.leibie,
+			method: 'get',
+			timeout: 10,
+			dataType: 'json',
+			returnAll: false
+		}, function (ret, err) {
+			if (ret) {
+				var zhaopai_url = ret[0].zhaopai_url.split(',')
+				var jianjie_url = ret[0].jianjie_url.split(',')
+				var server_zhaopai_url = [];
+				var server_jianjie_url = [];
+				for (let index = 0; index < zhaopai_url.length; index++) {
+					const element = zhaopai_url[index];
+
+					if (element) {
+						server_zhaopai_url.push(server + element)
+					}
+				}
+				for (let index = 0; index < jianjie_url.length; index++) {
+					const element = jianjie_url[index];
+
+					if (element) {
+						server_jianjie_url.push(server + element)
+					}
+				}
+				apibox.jianjie_url = server_zhaopai_url
+				apibox.data = ret[0]
+
+				api.ajax({
+					url: server + '/api/get_dianpu?user=' + ret[0].user,
+					method: 'get',
+					timeout: 10,
+					dataType: 'json',
+					returnAll: false
+				}, function (ret1, err) {
+					if (ret1) {
+						apibox.dianpuinfo = ret1[0]
+					}
+				})
+
+				getlunbotu(server_zhaopai_url)
+			} else {
+
+			};
+		});
+	};
+
+	function getlunbotu(paths) {
+		var UIScrollPicture = api.require('UIScrollPicture');
+		UIScrollPicture.open({
+			rect: {
+				x: 0,
+				y: $api.dom('.lunbotu').offsetTop,
+				w: api.winWidth,
+				h: $api.dom('.lunbotu').offsetHeight
+			},
+			data: {
+				paths: paths,
+				captions: []
+			},
+			styles: {
+				caption: {
+					height: 30,
+					color: '#6ab494',
+					size: 14,
+					bgColor: '#ffffff',
+					position: 'bottom'
+				},
+				indicator: {
+					dot: {
+						w: 10,
+						h: 10,
+						r: 5,
+						margin: 5
+					},
+					align: 'center',
+					color: '#FFFFFF',
+					activeColor: '#DA70D6'
+				}
+			},
+			placeholderImg: 'widget://image/0613224546_3.png',
+			contentMode: 'scaleToFill',
+			interval: 3,
+			fixedOn: api.frameName,
+			loop: true,
+			fixed: false
+		}, function (ret, err) {
+			if (ret.eventType == 'click') {
+
+			}
+		});
+	}
+</script>
+
+</html>

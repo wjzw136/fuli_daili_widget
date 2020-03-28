@@ -1,0 +1,235 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		.header {
+			height: 50px;
+			padding: 0px 20px;
+			font-size: 20px;
+			/* background-image: url(../image/7.png); */
+			background-color: #03a9f4;
+			color: #fff;
+			display: flex;
+			position: fixed;
+			justify-content: space-between;
+			align-items: center;
+			width: 100%;
+			z-index: 999;
+			background-image: linear-gradient(#03a9f4, #67D1E8);
+
+		}
+	</style>
+</head>
+
+<body>
+
+
+	<div id="apibox" style="background-color: #fff;">
+		<div class="header" id="header">
+			<div>
+				<span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+				<span id="biaoti" style="margin-left:15px">{{data.jyz_name}}</span>
+			</div>
+			
+
+		</div>
+		<div class="chakan" style="display: flex;padding: 15px; padding-top: 75px">
+			<div style="width: 150px;height: 80px;padding-right: 10px;">
+				<img :src="server+ data.jyz_zhaopai_url" width="100%" height="100%" alt="">
+			</div>
+			<div style="flex-grow: 1;">
+				<div class="aui-font-size-16">
+					{{data.jyz_name}}
+				</div>
+				<div v-if='data.jyz_pingpai' class="aui-label aui-label-info aui-label-outlined">{{data.jyz_pingpai}}
+				</div>
+				<!-- <div class="aui-font-size-14">
+
+					<span>{{data.jyz_pingpai}}</span>
+				</div> -->
+
+				<div class="aui-font-size-14">
+					距你{{data.juli}}Km
+				</div>
+			</div>
+		</div>
+
+		<div style="background-color: #fff;margin-top: 15px;">
+			<ul class="aui-list aui-media-list aui-list-noborder">
+				<li class="aui-list-header bt-li">
+					<div class="aui-font-size-16 bt-li-div">
+						油价
+					</div>
+				</li>
+			</ul>
+
+			<div style="display: flex; width: 100%;flex-wrap: wrap;">
+				<div v-if='data.jyz_92jiage||data.jyz_95jiage||data.jyz_86jiage' class="border center "
+					style="padding:15px 15px 0 15px;">
+					<div v-if="data.jyz_92jiage" class="aui-font-size-14">
+						{{'92汽油价格'+ data.jyz_92jiage}}:{{'优惠'+data.jyz_92youhui}}
+					</div>
+					<div v-if="data.jyz_95jiage" class="aui-font-size-14">
+						{{'95汽油价格'+data.jyz_95jiage}}:{{'优惠'+data.jyz_95youhui}}
+					</div>
+					<div v-if="data.jyz_86jiage" class="aui-font-size-14">
+						{{'86汽油价格'+data.jyz_86jiage}}:{{'优惠'+data.jyz_86youhui}}
+					</div>
+				</div>
+				<div v-else style="padding:15px 15px 0 15px;">
+					暂无数据
+				</div>
+			</div>
+		</div>
+
+		<div style="background-color: #fff;margin-top: 15px;">
+			<ul class="aui-list aui-media-list aui-list-noborder">
+				<li class="aui-list-header bt-li">
+					<div class="aui-font-size-16 bt-li-div">
+						活动
+					</div>
+				</li>
+			</ul>
+
+			<div style="display: flex; width: 100%;flex-wrap: wrap;">
+				<div class="border center " style="padding: 15px;">
+
+					<div class="aui-font-size-14" style="margin:10px 0;">
+						活动1：加油满150送洗车一次（可发卡，随时洗）
+					</div>
+					<div class="aui-font-size-14 " style="margin:10px 0;">
+						活动2：加油满200送洗车一次（可发卡，随时洗）+玻璃水一瓶（2L）
+					</div>
+					<div class="aui-font-size-14" style="margin:10px 0;">
+
+						活动3：加油满300优惠30元
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div v-if='data.jyz_dizhi' style="background-color: #fff;margin-top: 15px;">
+			<ul class="aui-list aui-media-list aui-list-noborder">
+				<li class="aui-list-header bt-li">
+					<div class="aui-font-size-16 bt-li-div">
+						地址
+					</div>
+				</li>
+			</ul>
+			<div class="aui-font-size-14 " style="display: flex; width: 100%;flex-wrap: wrap;padding: 15px;justify-content: space-between;">
+				<div>
+					{{data.jyz_dizhi}}
+				</div>
+				<div id="quzheli" class="aui-text-info" style="flex-shrink: 0;">
+					去这里
+				</div>
+				
+			</div>
+		</div>
+		<!-- <div v-if="!loading">加载中</div> -->
+	</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	var apibox = new Vue({
+		el: "#apibox",
+		data: {
+			server: server,
+			loading: false,
+			error: false,
+			data: '',
+			errormsg: "没有找到您需要的数据"
+		},
+		updated: function () {
+			$api.addEvt($api.dom('#back'), 'click', function () {
+				api.closeWin();
+			});
+			$api.addEvt($api.dom('#quzheli'), 'click', function () {
+				var dialogBox = api.require('dialogBox');
+				dialogBox.actionMenu({
+					rect: {
+						h: 120
+					},
+					tapClose: true,
+					items: [
+						{
+							text: '高德地图',
+							icon: 'widget://image/ui/gaodelogo.png'
+						},
+						{
+							text: '百度地图',
+							icon: 'widget://image/ui/baidulogo.png'
+						}
+					],
+					styles: {
+						bg: '#FFF',
+						column: 3,
+						itemText: {
+							color: '#000',
+							size: 14,
+							marginT: 8
+						},
+						itemIcon: {
+							size: 50
+						}
+
+					}
+				}, function (ret) {
+					let mapdata = apibox.data
+					let name = mapdata.jyz_name;
+					let lat = mapdata.jyz_lat;
+					let lon = mapdata.jyz_lon;
+					function js_a_href(href) {
+						var a = document.createElement('a');
+						a.setAttribute('href', href);
+						a.setAttribute('id', 'js_a');
+						//防止反复添加
+						if (document.getElementById('js_a')) {
+							document.body.removeChild(document.getElementById('js_a'));
+						}
+						document.body.appendChild(a);
+						a.click();
+					}
+					if (ret.index == 0) {
+
+						let gd_gps = bd_decrypt(lon, lat)
+						let gaodehref = 'androidamap://navi?sourceApplication=flc&poiname=' + name
+							+ '&lat=' + gd_gps.lat
+							+ '&lon=' + gd_gps.lon
+							+ '&dev=0';
+						js_a_href(gaodehref)
+					} else if (ret.index == 1) {
+
+						let baiduhref = 'bdapp://map/direction?destination= name:' + name
+							+ '|latlng:' + lat
+							+ ',' + lon
+							+ '&coord_type=bd09ll&mode=driving&src=andr.baidu.openAPIdemo'
+						js_a_href(baiduhref)
+					}
+				});
+
+
+				
+			});
+		}
+	});
+	apiready = function () {
+		let ssdata = api.pageParam.data
+		apibox.data = ssdata
+
+		
+	};
+</script>
+
+</html>

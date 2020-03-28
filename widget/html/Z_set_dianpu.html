@@ -1,0 +1,526 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		.header {
+			height: 50px;
+			padding: 0px 20px;
+			font-size: 20px;
+			/* background-image: url(../image/7.png); */
+			position: fixed;
+			width: 100%;
+			background-color: #03a9f4;
+			color: #fff;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background-image: linear-gradient(#03a9f4, #67D1E8);
+		}
+
+		.aui-list {
+			background-color: #fff;
+		}
+
+		.xuanxiangActive {
+			border-bottom: #ff8000 2px solid;
+			color: #ff8000;
+		}
+
+		.xuanxiang {
+			margin: 0px 15px;
+			font: bold;
+			padding: 10px 0;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="apibox" class="aui-content">
+		<div
+			style="display: flex;position: relative; justify-content: center;align-items: center; flex-direction: column;background-color: #fff;">
+			<div style="width: 100%;height: 150px;overflow: hidden;">
+				<img id="touxiang" width="100%" height="100%" :src="server+ data.zhaopai_url" alt="">
+			</div>
+			<div id="genghuantouxiang" class="aui-font-size-14"
+				style="position: absolute;bottom: 10px; right: 10px;color: #fff;">更换招牌</div>
+		</div>
+
+		<div v-show='isdaoqi' class="aui-font-size-14"
+			style="display: flex;justify-content:space-between;padding: 15px;align-items: center;">
+			<div class="aui-text-success">您的店铺当前处于开业状态</div>
+			<div id="xieye" class="aui-btn aui-btn-danger">歇业</div>
+		</div>
+		<div v-show='!isdaoqi' class="aui-font-size-14"
+			style="display: flex;justify-content:space-between;padding: 15px;align-items: center;">
+			<div class="aui-text-danger">您的店铺当前处于歇业状态</div>
+			<div id="kaiye" class="aui-btn aui-btn-success">开业</div>
+		</div>
+		<div class="aui-content" style="background-color: #fff;">
+			<ul class="aui-list aui-list-in">
+				<li id="name" class="aui-list-item aui-list-item-middle">
+					<div class="aui-list-item-inner aui-list-item-arrow">
+						<div class="aui-list-item-title">店铺名称</div>
+						<div class="aui-list-item-right">
+							{{data.name}}
+						</div>
+					</div>
+				</li>
+				<li class="aui-list-item">
+					<div class="aui-list-item-label">
+						营业时间
+					</div>
+					<div class="aui-list-item-input">
+						<div style="display: flex;align-items: center;">
+							<input type="text" style="text-align: center;" id="starttime" v-model='data.starttime'
+								placeholder="开始">|<input type="text" style="text-align: center;" id="endtime"
+								v-model='data.endtime' placeholder="结束">
+						</div>
+					</div>
+				</li>
+				<li id="zhuyingyewu" class="aui-list-item aui-list-item-middle">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-title">主营业务</div>
+						<div class="aui-list-item-right">
+							{{data.zhuyingyewu}}
+						</div>
+					</div>
+				</li>
+				<li id="jianjie" class="aui-list-item aui-list-item-middle">
+					<div class="aui-list-item-inner aui-list-item-arrow">
+						<div class="aui-list-item-title">店铺简介</div>
+						<div class="aui-list-item-right">
+							{{data.jianjie}}
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+
+		<div>
+			<div id="bar" class="aui-font-size-16"
+				style="background-color: #fff; overflow-x: scroll; white-space: nowrap;">
+				<span v-for='item in zhuyingyewu' :id="item" class="xuanxiang">{{item}}</span>
+			</div>
+			<div v-if='sp' v-for="(items,xuhao)  in  sp"
+				style="background-color: #fff;margin-bottom: 5px; display: flex;width: 100%;flex-wrap: nowrap;padding:15px;justify-content: space-between;align-items: stretch;">
+				<div style="width: 150px;padding-right: 10px;flex-shrink: 0;">
+					<img :src="server+items.zhaopai_url[0]" width="100%" height="100px">
+				</div>
+				<div style="flex-grow: 1;" class="aui-font-size-14">
+					<div>{{items.name}}</div>
+					<div>{{items.jianjie}}</div>
+					<div style="color: red;">￥{{items.jiage}}</div>
+				</div>
+				<div
+					style="display: flex;flex-direction: column;justify-content: space-around;flex-shrink: 0;padding-left: 10px;">
+					<div class="bianji aui-label aui-label-info aui-label-outlined" :xuhao='xuhao' :spid="items.id">编辑
+					</div>
+					<div class="shanchu aui-label aui-label-info aui-label-outlined" :xuhao='xuhao' :spid="items.id">删除
+					</div>
+				</div>
+			</div>
+			<div v-else>没有数据</div>
+		</div>
+	</div>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+		let user = $api.getStorage('user');
+		let data = api.pageParam.data;
+		let config = get_config()
+
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				server: server,
+				data: data,
+				sp_leibie: config.sp_leibie,
+				sp: ''
+			},
+			updated() {
+				var xuanxiang = $api.domAll('.bianji');
+				Array.prototype.forEach.call(xuanxiang, function (btn) {
+					btn.addEventListener('click', function (event) {
+						// let spid = event.currentTarget.getAttribute('spid');
+						let xuhao = event.currentTarget.getAttribute('xuhao');
+						let user = $api.getStorage('user');
+						let data = apibox.sp
+						api.openWin({
+							name: 'updata_shangpin',
+							url: './Z_pt_header.html',
+							bounces: false,
+							pageParam: {
+								html: 'add_shangpin',
+								biaoti: '编辑商品',
+								spid: {
+									spinfo: (apibox.sp)[xuhao],
+									dpzhuyingyewu: apibox.data.zhuyingyewu,
+									isupdata: true
+								}
+							}
+						});
+					})
+				})
+
+				
+
+
+			},
+			computed: {
+				zhuyingyewu: function () {
+					let str = this.data.zhuyingyewu.replace(/\s*/g, "");
+					return str.split(',')
+				},
+				isdaoqi: function () {
+					let DQSJ = this.data.DQSJ;
+					let iskaiye=this.data.iskaiye
+					if (iskaiye=='0'||DQSJ-Date.now()<0) {
+						return false
+					} else {
+						return true
+					}
+				}
+			}
+		})
+
+		let el = $api.first($api.byId('bar'));
+		$api.addCls(el, 'xuanxiangActive');
+
+		get_sp(user, apibox.zhuyingyewu[0])
+		$api.addEvt($api.dom('#back'), 'click', function () {
+			api.closeWin();
+		});
+
+
+
+		$api.addEvt($api.dom('#kaiye'), 'click', function () {
+			api.ajax({
+				url: server + '/api/dianpu_kaiye',
+				method: 'post',
+				timeout: 30,
+				dataType: 'json',
+				data: {
+					values: {
+						user: $api.getStorage('user'),
+						md5password: $api.getStorage('md5password')
+					}
+				},
+				returnAll: false
+			}, function (ret, err) {
+				if (ret) {
+					if (ret.code == '100') {
+						api.confirm({
+							title: '你的店铺开业时间到期',
+							msg: '是否前去兑换',
+							buttons: ['确定', '取消']
+						}, function (ret, err) {
+							var index = ret.buttonIndex;
+
+							if (index == 1) {
+								api.openWin({
+									name: 'Z_pay_xz',
+									url: './Z_pay_xz.html',
+									bounces: false,
+									pageParam: {key : 'value'}
+								});
+							} 
+						});
+
+						return
+					}
+					if (ret.code == '666') {
+						apibox.data.DQSJ = ret.DQSJ
+						apibox.data.iskaiye = ret.iskaiye
+					}
+				}
+			});
+
+		});
+
+		$api.addEvt($api.dom('#xieye'), 'click', function () {
+			api.ajax({
+				url: server + '/api/dianpu_xieye',
+				method: 'post',
+				timeout: 30,
+				dataType: 'json',
+				data: {
+					values: {
+						user: $api.getStorage('user'),
+						md5password: $api.getStorage('md5password')
+					}
+				},
+				returnAll: false
+			}, function (ret, err) {
+				if (ret) {
+					if (ret.code == '666') {
+						apibox.data.DQSJ = ret.DQSJ
+						apibox.data.iskaiye = ret.iskaiye
+					}
+				}
+			});
+
+		});
+
+
+		$api.addEvt($api.dom('#name'), 'click', function () {
+			let reg = /[\u4e00-\u9fa5_a-zA-Z0-9_]{4,20}/;
+			dialogBoxinput2('店铺名称', '请输入名称', reg, function (ss) {
+				if (getBytesLength(ss) > 20 || getBytesLength(ss) < 8) {
+					alert('输入不符合要求');
+					return
+				}
+				updata_dianpu('name', ss)
+			})
+		});
+
+		$api.addEvt($api.dom('#jianjie'), 'click', function () {
+			let reg = /[\u4e00-\u9fa5_a-zA-Z0-9_,.，。]{8,100}/;;
+			dialogBoxinput2('店铺简介', '请输入店铺简介', reg, function (ss) {
+
+				updata_dianpu('jianjie', ss)
+			})
+		});
+
+		$api.addEvt($api.dom('#starttime'), 'click', function () {
+			api.openPicker({
+				type: 'time',
+				date: '2020-01-01 08:00',
+				title: '开始时间'
+			}, function (ret, err) {
+				if (ret) {
+					if (ret.minute < 10) {
+						ret.minute = "0" + ret.minute
+					}
+					let data = {
+						user: $api.getStorage('user'),
+						md5password: $api.getStorage('md5password'),
+						ziduan: starttime,
+						zhi: ret.hour + ':' + ret.minute
+					}
+					zdy_ajax(
+						'/api/updata_dianpu/starttime',
+						data,
+						function (ret2) {
+							if (ret2.zhuangtai) {
+								toast('修改成功');
+								apibox.data.starttime = ret.hour + ':' + ret.minute;
+							}
+						}
+					)
+
+				}
+			});
+		})
+
+		$api.addEvt($api.dom('#endtime'), 'click', function () {
+			api.openPicker({
+				type: 'time',
+				date: '2020-01-01 17:00',
+				title: '结束时间'
+			}, function (ret, err) {
+				if (ret) {
+					if (ret.minute < 10) {
+						ret.minute = "0" + ret.minute
+					}
+					let data = {
+						user: $api.getStorage('user'),
+						md5password: $api.getStorage('md5password'),
+						ziduan: endtime,
+						zhi: ret.hour + ':' + ret.minute
+					}
+					zdy_ajax(
+						'/api/updata_dianpu/endtime',
+						data,
+						function (ret2) {
+							if (ret2.zhuangtai) {
+								toast('修改成功');
+								apibox.data.endtime = ret.hour + ':' + ret.minute;
+							}
+						}
+					)
+
+				}
+			});
+		})
+
+		api.addEventListener({
+			name: 'updata_dianpu_zhaopai'
+		}, function (ret, err) {
+			apibox.data.zhaopai_url = ret.value.imgpath;
+		});
+
+		$api.addEvt($api.dom('#genghuantouxiang'), 'click', function () {
+
+			api.openWin({
+				name: 'Z_addimg',
+				url: './Z_addimg.html',
+				bounces: false,
+				pageParam: {
+					width: '350',
+					height: '150',
+					apiurl: '/api/updata_dianpu/zhaopai_url',
+					event: 'updata_dianpu_zhaopai'
+				}
+			});
+		});
+
+
+
+		function updata_dianpu(ziduan, zhi) {
+			let data = {
+				user: $api.getStorage('user'),
+				md5password: $api.getStorage('md5password'),
+				ziduan: ziduan,
+				zhi: zhi
+			}
+			zdy_ajax(
+				'/api/updata_dianpu/' + ziduan,
+				data,
+				function (ret2) {
+					if (ret2.zhuangtai) {
+						api.alert({
+							title: '提示',
+							msg: '修改成功'
+						});
+						let dialogBox = api.require('dialogBox');
+						dialogBox.close({ dialogName: 'input' })
+						apibox.data[ziduan] = data.zhi
+					}
+				}
+			)
+		}
+
+		var xuanxiang = $api.domAll('.xuanxiang');
+		Array.prototype.forEach.call(xuanxiang, function (btn) {
+			btn.addEventListener('click', function (event) {
+				var id = event.currentTarget.getAttribute('id');
+				let user = $api.getStorage('user');
+				xuanxiang.forEach(element => {
+					$api.removeCls(element, 'xuanxiangActive');
+				});
+				$api.addCls(btn, 'xuanxiangActive');
+				get_sp(user, id)
+
+			})
+		})
+
+		function get_sp(user, leibie) {
+			api.ajax({
+				url: server + '/api/get_dianpu_sp?user=' + user + '&leibie=' + leibie + '&ss=' + Math.random(),
+				method: 'get',
+				timeout: 10,
+				dataType: 'json',
+				returnAll: false
+			}, function (ret, err) {
+				if (ret.length > 0) {
+					for (let index = 0; index < ret.length; index++) {
+						const element = ret[index];
+						element.zhaopai_url = element.zhaopai_url.split(',')
+						element.jianjie_url = element.jianjie_url.split(',')
+					}
+					apibox.sp = ret
+					api.refreshHeaderLoadDone()
+				} else {
+					apibox.sp = ''
+					api.refreshHeaderLoadDone()
+				}
+
+			})
+		}
+		function setPrefs(title, placeholder, key) {
+			var dialogBox = api.require('dialogBox');
+			dialogBox.input({
+				keyboardType: 'default',
+				texts: {
+					title: title,
+					placeholder: placeholder,
+					leftBtnTitle: '取消',
+					rightBtnTitle: '确定'
+				},
+				styles: {
+					bg: '#fff',
+					corner: 5,
+					w: 400,
+					h: 140,
+					title: {
+						h: 30,
+						alignment: 'left',
+						size: 18,
+						color: '#000',
+						marginT: 15,
+					},
+					input: {
+						h: 30,
+						y: 30,
+						alignment: 'left',
+						marginT: 15,
+						marginLeft: 10,
+						marginRight: 10,
+						textSize: 14,
+						textColor: '#000',
+					},
+					dividingLine: {
+						width: 0.5,
+						color: '#696969'
+					},
+					left: {
+						bg: 'rgba(0,0,0,0)',
+						color: '#007FFF',
+						size: 16
+					},
+					right: {
+						bg: 'rgba(0,0,0,0)',
+						color: '#007FFF',
+						size: 16,
+						widhtBorder: 1
+					}
+				}
+			}, function (ret) {
+				if (ret.eventType == 'left') {
+					// var dialogBox = api.require('dialogBox');
+					dialogBox.close({
+						dialogName: 'input'
+					});
+				} else if (ret.eventType == 'right') {
+					let sssdata = apibox.fandian
+					let zhi = ret.text - 0
+					if (zhi >= 0 && zhi <= 100) {
+						sssdata[key] = zhi
+						api.setPrefs({
+							key: key,
+							value: ret.text - 0
+						});
+						dialogBox.close({
+							dialogName: 'input'
+						});
+					} else {
+						alert('请输入0-100的数字')
+					}
+
+
+
+
+				}
+			});
+		}
+
+	};
+
+
+
+</script>
+
+</html>

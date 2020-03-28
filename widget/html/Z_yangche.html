@@ -1,0 +1,131 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		.header {
+			height: 50px;
+			padding: 0px 20px;
+			font-size: 20px;
+			width: 100%;
+			top: 0;
+			left: 0;
+			/* background-image: url(../image/7.png); */
+			background-color: #03a9f4;
+			color: #fff;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background-image: linear-gradient(#03a9f4, #67D1E8);
+			position: fixed;
+		}
+
+		.icon {
+			width: 25%;
+			display: flex;
+			flex-direction: column;
+			padding: 0 10px;
+			margin-bottom: 15px;
+			align-items: center;
+		}
+
+		.box {
+			display: flex;
+			background-color: #fff;
+			/* justify-content: space-between; */
+			align-items: stretch;
+			padding: 0 5px;
+			flex-wrap: wrap;
+			margin-bottom: 10px;
+			padding-top: 15px;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="header" id="header">
+		<div>
+			<span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+			<span id="biaoti" style="margin-left:15px">养车</span>
+		</div>
+	</div>
+	<div id="apibox" style="margin-top: 50px;">
+		<div class="box" v-if='yangche' v-for='items in yangche'>
+			<div class="icon" id="xinche">
+				<div
+					style="align-self:stretch; border-radius: 5px;color: #fff;background-image: linear-gradient(#03a9f4, #67D1E8); height: 100%;display: flex;align-items: center;justify-content: center;">
+					{{items.title}}</div>
+			</div>
+			<div v-for='item in items.nextlist' class="icon leibie" :guanjianci="item.type" :title="item.title">
+				<img :src="server+item.imgurl" style="border-radius: 5px;" width="100%" height="80px" alt="">
+				<div style="margin-top: 10px;" class="aui-font-size-14">{{item.title}}</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+
+<script type="text/javascript">
+	apiready = function () {
+
+		var apibox = new Vue({
+			el: "#apibox",
+			data: {
+				server: server,
+				yangche: ''
+			},
+			updated() {
+				var leibie = $api.domAll('.leibie');
+				Array.prototype.forEach.call(leibie, function (btn) {
+					btn.addEventListener('click', function (event) {
+						let guanjianci = event.currentTarget.getAttribute('guanjianci')
+						let title = event.currentTarget.getAttribute('title')
+						api.openWin({
+							name: 'Z_sp_list',
+							url: './Z_sp_list.html',
+							bounces: false,
+							pageParam: {
+								title: title,
+								guanjianci: title
+							}
+						});
+					})
+				})
+			},
+			methods: {
+
+			},
+		})
+
+
+		api.ajax({
+			url: server + '/api/yangche/all',
+			method: 'post',
+			timeout: 30,
+			dataType: 'json',
+			returnAll: false
+		}, function (ret, err) {
+			if (ret) {
+				apibox.yangche = ret
+			}
+		});
+
+
+
+		$api.addEvt($api.dom('#back'), 'click', function () {
+			api.closeWin();
+		});
+	};
+</script>
+
+</html>

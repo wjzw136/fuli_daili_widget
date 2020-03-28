@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        .header {
+            height: 50px;
+            padding: 0px 20px;
+            font-size: 20px;
+            /* background-image: url(../image/7.png); */
+            background-color: #03a9f4;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-image: linear-gradient(#03a9f4, #67D1E8);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header" id="header">
+        <div>
+            <span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+            <span id="biaoti" style="margin-left:15px">标题</span>
+        </div>
+        <div>
+            <div id="weizhi" class="aui-font-size-14">地区</div>
+
+        </div>
+    </div>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        $api.addEvt($api.dom('#back'), 'click', function () {
+            api.closeWin();
+        });
+        var weizhi = $api.getStorage('weizhi');
+        $api.html($api.dom('#weizhi'), weizhi);
+        var biaoti = api.pageParam.biaoti
+        $api.html($api.byId('biaoti'), biaoti);
+        var framename = api.pageParam.html
+        api.openFrame({
+            name: framename,
+            url: framename + '.html',
+            bounces: false,
+            rect: {
+                x: 0,
+                y: 50,
+                w: 'auto',
+                h: 'auto'
+            },
+            pageParam: {
+                name: api.pageParam.name,
+                xuhao: api.pageParam.xuhao, //首页-政策页
+                chexing: api.pageParam.chexing//首页-车型点击
+            }
+        });
+
+        $api.addEvt($api.dom('#weizhi'), 'click', function () {
+            api.openWin({
+                name: 'citylist',
+                url: './Z_citylist.html',
+                bounces: false,
+                animation: {
+                    type: "movein", //动画类型（详见动画类型常量）
+                    subType: "from_top", //动画子类型（详见动画子类型常量）
+                    duration: 500 //动画过渡时间，默认300毫秒
+                }
+            });
+        });
+
+
+        api.addEventListener({
+            name: 'dizhi'
+        }, function (ret, err) {
+            $api.html($api.dom('#weizhi'), ret.value.name);
+        });
+    };
+</script>
+
+</html>

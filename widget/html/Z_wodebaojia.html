@@ -1,0 +1,194 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        .header {
+            height: 50px;
+            padding: 0px 20px;
+            font-size: 20px;
+            /* background-image: url(../image/7.png); */
+            background-color: #ff8000;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="apibox">
+        <div v-if='data' v-for="(items,aindex) in data" class="aui-content aui-margin-b-15" style="background-color: #fff">
+            <ul class="aui-list aui-media-list aui-list-noborder">
+                <li class="aui-list-header">
+                    <div style="padding-left:10px;color: coral" class="aui-font-size-16">
+                        {{items.paizhao}}-{{items.baojia_id}}
+                    </div>
+                    <div id="fenpei" class="aui-btn aui-btn-info aui-btn-outlined aui-btn-sm aui-font-size-12">车主返现分配
+                    </div>
+                    
+                </li>
+            </ul>
+            <ul class="aui-list aui-list-in  "  :danhao="items.danhao"
+                >
+                <template v-if="items.jieguo.length>0">
+                    <li v-for='(jieguo,bindex) in items.jieguo' class="aui-list-item baojiajieguo" :axuhao='aindex' :paizhao="items.paizhao" :bxuhao='bindex'>
+                        <div id="chesunxian" class="aui-list-item-inner aui-list-item-arrow">
+                            <div class="aui-list-item-title ">{{jieguo.bxgs_name}}</div>
+                            <div class="aui-list-item-right">
+                                总:{{jieguo.zongji}} 返:{{(jieguo.syx_fx-0)+(jieguo.jqx_fx-0)}}
+                            </div>
+                        </div>
+                    </li>
+                </template>
+                <template v-else>
+                    <li class="aui-list-item ">
+                        <div class="aui-list-item-inner ">
+                            暂无报价
+                        </div>
+
+                    </li>
+                </template>
+
+            </ul>
+        </div>
+        <div v-if='!data' style="text-align: center;">{{errormsg}}</div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    var apibox = new Vue({
+        el: '#apibox',
+        data: {
+            error: false,
+            data: "",
+            imgurl: '../image/',
+            errormsg: '没有找到您需要的数据'
+        },
+        updated: function () {
+            var dh_li = $api.domAll('.baojiajieguo');
+            Array.prototype.forEach.call(dh_li, function (btn) {
+                btn.addEventListener('click', function (event) {
+                    var axuhao = event.currentTarget.getAttribute('axuhao');
+                    var bxuhao = event.currentTarget.getAttribute('bxuhao');
+                    var paizhao = event.currentTarget.getAttribute('paizhao');
+                    
+
+                    api.openWin({
+                        name: 'baojiajieguo',
+                        url: './Z_baojiajieguo.html',
+                        bounces: false,
+                        pageParam: {
+                            data: (apibox.data)[axuhao]['jieguo'][bxuhao]
+                        }
+                    });
+                })
+            })
+
+            $api.addEvt($api.byId('fenpei'), 'click', function () {
+                var dialogBox = api.require('dialogBox');
+                dialogBox.input({
+                    keyboardType: 'default',
+                    texts: {
+                        title: '你的昵称',
+                        placeholder: '输入金额',
+                        leftBtnTitle: '取消',
+                        rightBtnTitle: '确定'
+                    },
+                    styles: {
+                        bg: '#fff',
+                        corner: 2,
+                        w: 300,
+                        h: 240,
+                        title: {
+                            h: 60,
+                            alignment: 'center',
+                            size: 14,
+                            color: '#000',
+                            marginT: 30,
+                        },
+                        input: {
+                            h: 60,
+                            y: 30,
+                            marginT: 15,
+                            marginLeft: 10,
+                            marginRight: 10,
+                            textSize: 14,
+                            textColor: '#000'
+                        },
+                        dividingLine: {
+                            width: 0.5,
+                            color: '#696969'
+                        },
+                        left: {
+                            bg: 'rgba(0,0,0,0)',
+                            color: '#007FFF',
+                            size: 12
+                        },
+                        right: {
+                            bg: 'rgba(0,0,0,0)',
+                            color: '#007FFF',
+                            size: 12
+                        }
+                    }
+                }, function (ret) {
+                    api.alert({
+                        msg: JSON.stringify(ret)
+                    });
+                    if (ret.eventType == 'left') {
+                        var dialogBox = api.require('dialogBox');
+                        dialogBox.close({
+                            dialogName: 'input'
+                        });
+                    }
+                });
+
+
+
+
+            });
+        }
+    })
+    apiready = function () {
+        $api.addEvt($api.dom('#back'), 'click', function () {
+            api.closeWin();
+        });
+        var user = $api.getStorage('user');
+
+        ajaxdata = {
+            url: '/api/wodebaojia',
+            data: {
+                user: user,
+                password: $api.getStorage('md5password')
+            }
+        }
+        zdy_ajax(ajaxdata.url, ajaxdata.data, function (ret) {
+            if (ret.length>0) {
+                apibox.data = ret
+            }else{
+                apibox.data=0
+                apibox.errormsg='暂无数据'
+            }
+
+
+        })
+
+
+
+
+    };
+</script>
+
+</html>

@@ -1,0 +1,850 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        #header {
+            font-size: 20px;
+            /* background-image: url(../image/7.png); */
+            background-color: #ff8000;
+            color: #fff;
+            padding: 0 20px;
+            width: 100%;
+            padding-top: 20px;
+        }
+
+        .icon {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .aui-list-item-inner {
+            padding: 15px 0;
+        }
+
+        input {
+            padding: 0;
+            margin: 0;
+            height: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <div id="apibox" v-cloak style="padding-bottom: 60px;">
+        <div v-if='data' v-for="(items,index) in data" class="spbox" :key='index' :spid='items.id'
+            style="background-color: #fff;margin-bottom: 15px;">
+
+            <div
+                style="padding:15px; flex-grow: 1;display: flex;flex-direction: column; justify-content: space-between;">
+                <div class="aui-font-size-14" style="display: flex;align-items: center;">
+                    <div
+                        style=" font-weight: bold;padding: 0px 15px;border:#03A9F4  solid 1px;border-radius: 20px;color: #03A9F4; margin-right: 10px; flex-shrink: 0; flex-grow: 0;">
+                        起点</div>
+                    <span style="padding-right: 10px;">{{items.startAddress}}</span>
+
+                </div>
+                <div class="aui-font-size-14" style="display: flex;align-items: center;margin-top: 10px;">
+                    <div
+                        style=" font-weight: bold;padding: 0px 15px;border:#03A9F4  solid 1px;border-radius: 20px;color: #03A9F4; margin-right: 10px; flex-shrink: 0; flex-grow: 0;">
+                        终点</div>
+                    <span style="padding-right: 10px;">{{items.endAddress?items.endAddress:'乘客自定'}}</span>
+
+                </div>
+                <!-- <div class="aui-font-size-12">
+                    <span style="margin-right: 10px;">{{items.startTime}}</span>
+                </div> -->
+
+
+            </div>
+            <div class="aui-font-size-12"
+                style="display: flex;justify-content: space-between;align-items: stretch;padding-left: 15px;background-color: gainsboro;color: #03A9F4;">
+                <div
+                    style="display: flex;flex-direction: column;justify-content: center;align-items: center;padding: 5px 0;">
+                    <div>开车时间</div>
+                    <div>{{kaicheshijian(items.startTime)}}</div>
+                </div>
+                <div
+                    style="display: flex;flex-direction: column;justify-content: center;align-items: center;padding: 5px 0;">
+                    <div>起点距您</div>
+                    <div>{{items.startjuli}}Km</div>
+                </div>
+
+
+                <div style="display: flex;flex-grow: 0;flex-shrink: 0;">
+                    <div v-show='botton1' id="cheliangxinxi"
+                        style="background-color:#ff8000;padding:10px 15px;color: #fff;display: flex;align-items: center;">
+                        {{botton1}}
+                    </div>
+                    <div id="lianxita" v-on:click='lianxita(items.phone)'
+                        style="background-color: #03A9F4;padding:10px 15px;color: #fff;display: flex;align-items: center;">
+                        {{botton2}}
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+        <div class="aui-font-size-12" style="text-align: center;">{{msg}}</div>
+
+        <div v-show='zhezhao' id="zhezhao"
+            style="position: fixed;top: 0;left: 0;bottom: 0;right: 0;opacity: 0.8;background-color: gainsboro; z-index: 1000;">
+        </div>
+
+        <div class="aui-font-size-14"
+            style="position: fixed;left: 0;bottom: 0;width: 100%;z-index: 2000;">
+            <div v-show='complete' style="padding:15px 15px 0 15px;margin-bottom: 15px;background-color: #fff;">
+                <div class="aui-font-size-16">
+                    选择地址
+                </div>
+                <div v-for="item in complete " v-on:click='get_address(item)' style="padding: 5px;">
+                    {{item}}
+                </div>
+            </div>
+
+            <div v-show='show_cheliang_list'
+                style="padding:15px 15px 0 15px;margin-bottom: 15px;background-color: #fff;">
+                <div class="aui-font-size-16">
+                    选择车辆
+                </div>
+
+                <div v-for="(item1,index) in cheliangxinxi " v-on:click='get_cheliang(index)'
+                    style="padding: 5px;display: flex;">
+                    <div style="width: 50px;height: 50px;">
+                        <img width="100%" height="100%" :src=" server+'/qiche_logo/'+item1.pinpaiid+'.png'" alt=""
+                            srcset="">
+                    </div>
+                    <div style="margin-left: 10px;display: flex;flex-direction: column; align-items: stretch;">
+                        <div class="aui-font-size-14">
+                            <!-- {{item.secBrand}} <span style="margin:0 10px">|</span> -->
+                            {{item1.typeName}}
+                        </div>
+                        <div class="aui-font-size-12">
+                            {{item1.specName}}
+                        </div>
+
+                    </div>
+                </div>
+
+
+            </div>
+
+            <div v-show="sou_start" style="background-color: #fff;">
+                <div v-show='fabu' style="display: flex;align-items: center;">
+
+                    <div style="color: #03A9F4;padding: 5px 15px;flex-shrink: 0; flex-grow: 0;">
+                        标题</div>
+                    <input style="height: auto;" class="aui-font-size-14" type="text" v-model='biaoti'
+                        placeholder="输入标题">
+
+
+                </div>
+                <div v-show="frameName=='che_to_ren'&&fabu" class="aui-font-size-14"
+                    style="display: flex;align-items: center;padding:5px 0;width: 50%;">
+
+                    <div style="color: #03A9F4;padding: 0 15px;flex-shrink: 0; flex-grow: 0;">
+                        车辆</div>
+                    <!-- <input class="aui-font-size-14" type="text" v-model='riqi' placeholder="日期"> -->
+                    <div id="xuanzecheliang">
+
+                        <div v-if='xuanzecheliang' style="padding: 5px;display: flex;align-items: center;">
+                            <div style="width: 40px;height: 40px;">
+                                <img width="100%" height="100%"
+                                    :src=" server+'/qiche_logo/'+xuanzecheliang.pinpaiid+'.png'" alt="" srcset="">
+                            </div>
+                            <div style="margin-left: 10px;display: flex;flex-direction: column; align-items: stretch;">
+                                <div class="aui-font-size-14">
+                                    <!-- {{item.secBrand}} <span style="margin:0 10px">|</span> -->
+                                    {{xuanzecheliang.typeName}}
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else>
+                            选择车辆
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex;align-items: center;justify-content: space-between;">
+
+                    <div class="aui-font-size-14" style="display: flex;align-items: center;padding:5px 0;width: 50%;">
+                        <div style="color: #03A9F4;padding: 0 15px;flex-shrink: 0; flex-grow: 0;">
+                            日期</div>
+                        <!-- <input class="aui-font-size-14" type="text" v-model='riqi' placeholder="日期"> -->
+                        <div id="xuanzeriqi">{{startTime.showriqi?startTime.showriqi:'选择日期'}}</div>
+                    </div>
+
+                    <div class="aui-font-size-14" style="display: flex;align-items: center;padding:5px 0;width: 50%;">
+
+                        <div style="color: #03A9F4;padding: 0 15px;flex-shrink: 0; flex-grow: 0;">
+                            时间</div>
+                        <!-- <input class="aui-font-size-14" type="text" v-model='riqi' placeholder="日期"> -->
+                        <div id="xuanzeshijian">{{startTime.showtime?startTime.showtime:'选择时间'}}</div>
+                    </div>
+
+                </div>
+
+                <div class="aui-font-size-14" style="display: flex;align-items: center;padding:5px 0;">
+
+
+                    <div style="color: #03A9F4;padding: 0 15px;flex-shrink: 0; flex-grow: 0;">
+                        起点</div>
+                    <input style="height: auto;" class="aui-font-size-14" type="text" v-model='start_address.address'
+                        placeholder="输入起点">
+                    <div id="dingwei" style="padding: 0 15px; flex-shrink: 0; flex-grow: 0;height: 100%;">
+                        <i class="aui-iconfont aui-icon-location aui-font-size-20"></i></div>
+                </div>
+                <div class="aui-font-size-14" style="display: flex;align-items: center;">
+                    <div style="color: #03A9F4;padding: 5px 15px;flex-shrink: 0; flex-grow: 0;">
+                        终点</div>
+                    <input style="height: auto;" class="aui-font-size-14" type="text" v-model='end_address.address'
+                        placeholder="输入终点">
+                    <div id="queding"
+                        style="color: #fff;padding: 0 15px;  flex-shrink: 0; flex-grow: 0;background-color: #03A9F4;align-self:stretch;display: flex;align-items: center;">
+                        {{botton_text}}</div>
+                </div>
+            </div>
+
+
+            <div
+                style="display: flex;color: #03A9F4;justify-content: space-around;align-items: center;padding: 15px; border-top: #03A9F4 1px solid;background-color: #fff;">
+                <div id="sou_start"><i class="aui-iconfont aui-icon-search"></i> 搜索</div>
+
+                <div id="fabu"><i class="aui-iconfont aui-icon-plus"></i> 发布</div>
+            </div>
+        </div>
+
+    </div>
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        var bMap = api.require('bMap');
+        var button = api.require('UIButton');
+        let type = api.frameName;
+        var lat;
+        var lon;
+        let adCode;
+        let qidian, zhongdian
+        api.refreshHeaderLoading();
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...',
+            showTime: false
+        }, function (ret, err) {
+
+            //在这里从服务器加载数据，加载完成后调用api.refreshHeaderLoadDone()方法恢复组件到默认状态
+
+            if (api.systemType == 'ios') {
+                bMap.initMapSDK(function (ret) {
+                    if (ret.status) {
+                        get_weizhi(function (res) {
+                            get_che_ren_huzhao(res.adCode, type)
+                        })
+                    }
+                });
+            } else {
+                get_weizhi(function (res) {
+                    get_che_ren_huzhao(res.adCode, type)
+                })
+            }
+        })
+        function get_weizhi(cb) {
+            new Promise(function (resolve, reject) {
+                bMap.getLocation({
+                    accuracy: '100m',
+                    autoStop: true,
+                    filter: 1
+                }, function (ret, err) {
+                    if (ret.status) {
+                        lon = ret.lon;
+                        lat = ret.lat
+                        adCode: ret.adCode;
+                        resolve(ret)
+                    } else {
+                        reject('获取GPS失败');
+                    }
+                })
+            }).then(function (res) {
+                return new Promise(function (resolve, reject) {
+                    bMap.getNameFromCoords({
+                        lon: res.lon,
+                        lat: res.lat
+                    }, function (ret, err) {
+                        if (ret.status) {
+                            apibox.city = ret.city
+                            cb(ret)
+                        } else {
+                            cb(false);
+                        }
+                    })
+
+                })
+
+            })
+        }
+
+
+
+
+
+        var apibox = new Vue({
+            el: "#apibox",
+            data: {
+                server: server,
+                data: '',
+                msg: "加载中",
+                sou_start: false,
+
+                fabu: false,
+                frameName: api.frameName,
+                start_address: {
+                    address: '',
+                    lon: '',
+                    lat: ''
+                },
+                end_address: {
+                    address: '',
+                    lon: '',
+                    lat: ''
+                },
+                biaoti: '',
+                city: '',
+                complete: '',
+                bianji: 'start_address',
+                startTime: {
+                    showtime: '',
+                    showriqi: '',
+                    riqi: '0',
+                    time: '0'
+                },
+                che_bianhao: '',
+                cheliangxinxi: "",
+                xuanzecheliang: '',
+                show_cheliang_list: false
+
+            },
+            updated: function () {
+                var chakandom = $api.domAll('.chakan');
+                Array.prototype.forEach.call(chakandom, function (btn) {
+                    btn.addEventListener('click', function (event) {
+                        var user = event.currentTarget.getAttribute('user')
+                        api.openWin({
+                            name: 'dianpu',
+                            url: './Z_dianpu.html',
+                            bounces: false,
+                            pageParam: {
+                                biaoti: '店铺',
+                                html: 'Z_dianpu',
+                                user: user
+                            }
+                        });
+                    })
+                });
+
+
+                $api.addEvt($api.byId('dingwei'), 'click', function () {
+                    get_weizhi(function (res) {
+                        if (!res) {
+                            return
+                        }
+
+                        apibox.start_address.address = res.district + res.sematicDescription
+                    })
+                });
+
+
+                // $api.addEvt($api.byId('quzheli'), 'click', function () {
+                //     let lat = apibox.mapdata.lat
+                //     let lon = apibox.mapdata.lon
+                //     let name = apibox.mapdata.name
+                //     map_start_info(lat, lon, name)
+                // });
+            },
+            methods: {
+                get_address: function (address) {
+                    if (this.bianji == 'start_address') {
+
+                        this.start_address.address = address;
+                    } else {
+
+                        this.end_address.address = address;
+                    }
+                },
+                juli: function (lat2, lon2) {
+                    return getDistance(lat, lon, lat2, lon2)
+                },
+                kaicheshijian: function (shijian) {
+                    if (shijian - 0 > 0) {
+                        return get_YMDHM(shijian - 0)
+                    } else {
+                        return shijian
+                    }
+                },
+                get_cheliang: function (index) {
+                    this.xuanzecheliang = (this.cheliangxinxi)[index]
+                    this.show_cheliang_list = false
+
+                },
+                lianxita: function (phone) {
+
+                    let resultList = api.hasPermission({
+                        list: ['phone']
+                    });
+
+                    if (resultList[0].granted) {
+                        api.call({
+                            type: 'tel_prompt',
+                            number: phone
+                        });
+                    } else {
+                        api.requestPermission({
+                            list: ['phone'],
+                            code: 1
+                        }, function (ret, err) {
+                            if (ret.never) {
+                                alert('您好，由于本软件没有权限调起拨打电话，你需要手动拨打' + phone + '联系车主')
+                                return
+                            }
+                            if (ret.list[0].granted) {
+                                api.call({
+                                    type: 'tel_prompt',
+                                    number: phone
+                                });
+                            } else {
+                                alert('您好，由于本软件没有权限调起拨打电话，你需要手动拨打' + phone + '联系车主')
+                            }
+                        });
+                    }
+
+
+                }
+
+
+            },
+            computed: {
+                zhezhao: function () {
+                    if (this.sou_start || this.fabu) {
+                        return true
+                    } else {
+                        return false
+                    }
+                },
+                botton_text: function () {
+                    if (this.fabu && this.frameName == 'che_to_ren') {
+                        return '车主发布'
+                    } else if (this.fabu && this.frameName == 'ren_to_che') {
+                        return '乘客发布'
+                    } else {
+                        return '搜索'
+                    }
+                },
+                botton1: function () {
+                    if (this.frameName == 'che_to_ren') {
+                        return '车辆概况'
+                    } else {
+                        return ''
+                    }
+                },
+                botton2: function () {
+                    if (this.frameName == 'che_to_ren') {
+                        return '联系车主'
+                    } else {
+                        return '联系TA'
+                    }
+                }
+
+            },
+            watch: {
+                'start_address.address': function (newValue, oldValue) {
+
+                    this.bianji = 'start_address'
+
+                    if (newValue == '') {
+                        this.complete = ''
+                        this.start_address.lon = ''
+                        this.start_address.lat = ''
+                        return
+                    }
+                    function autocomplete(city) {
+                        return new Promise((resolve, reject) => {
+                            bMap.autocomplete({
+                                keyword: newValue,
+                                // city: city
+                            }, function (ret) {
+                                if (ret.status) {
+                                    resolve(ret.results)
+                                } else {
+                                    reject(false)
+                                }
+                            });
+                        })
+                    }
+                    autocomplete(this.city).then(data => {
+
+                        apibox.complete = data
+                    }).catch(data => {
+
+                    })
+
+                },
+                'end_address.address': function (newValue, oldValue) {
+                    this.bianji = 'end_address'
+                    if (newValue == '') {
+                        this.complete = ''
+                        this.end_address.lon = ''
+                        this.end_address.lat = ''
+                        return
+                    }
+                    function autocomplete(city) {
+                        return new Promise((resolve, reject) => {
+                            bMap.autocomplete({
+                                keyword: newValue,
+                                // city: city
+                            }, function (ret) {
+                                if (ret.status) {
+                                    resolve(ret.results)
+                                } else {
+                                    reject(false)
+                                }
+                            });
+                        })
+                    }
+
+                    autocomplete(this.city).then(data => {
+
+                        apibox.complete = data
+                    }).catch(data => {
+
+                    })
+
+                }
+            },
+        });
+        $api.addEvt($api.byId('sou_start'), 'click', function () {
+
+            apibox.fabu = false
+
+            if (apibox.sou_start && apibox.fabu) {
+                apibox.sou_start = true
+            } else {
+                apibox.sou_start = true
+            }
+        });
+
+        $api.addEvt($api.byId('fabu'), 'click', function () {
+            if (apibox.fabu) {
+                apibox.sou_start = false
+                apibox.fabu = false
+            } else {
+                apibox.sou_start = true
+                apibox.fabu = true
+            }
+        });
+
+
+        $api.addEvt($api.dom('#xuanzeshijian'), 'click', function () {
+            let nowtime = get_YMDHM(Date.now() + 15 * 60 * 1000)
+            api.openPicker({
+                type: 'time',
+                date: nowtime,
+                title: '时间'
+            }, function (ret, err) {
+                if (ret) {
+                    if (ret.minute < 10) {
+                        ret.minute = "0" + ret.minute
+                    }
+                    if (ret.hour < 10) {
+                        ret.hour = "0" + ret.hour
+                    }
+                    let lingcheng = (new Date(new Date().setHours(0, 0, 0, 0))).getTime();
+                    let shijian = ret.hour * 60 * 60 * 1000 + ret.minute * 60 * 1000
+                    let nowstime = Date.now()
+                    if (shijian + apibox.startTime.riqi - nowstime > 14 * 60 * 1000) {
+                        apibox.startTime.showtime = ret.hour + ':' + ret.minute
+                        apibox.startTime.time = shijian
+                    } else {
+                        apibox.startTime.showtime = ''
+                        apibox.startTime.time = ''
+                        alert('请设置大于当前时间15分钟')
+                    }
+                }
+            });
+        })
+        $api.addEvt($api.dom('#xuanzeriqi'), 'click', function () {
+
+
+
+            let nowtime = get_YMDHM(Date.now())
+
+            api.openPicker({
+                type: 'date',
+                date: nowtime,
+                title: '日期'
+            }, function (ret, err) {
+                if (ret) {
+                    if (ret.month < 10) {
+                        ret.month = "0" + ret.month
+                    }
+                    if (ret.day < 10) {
+                        ret.day = "0" + ret.day
+                    }
+                    let lingcheng = (new Date(new Date().setHours(0, 0, 0, 0))).getTime();
+                    let riqi = (new Date(ret.year, ret.month - 1, ret.day)).getTime()
+                    if (riqi - lingcheng >= 0) {
+                        apibox.startTime.showriqi = ret.year + '-' + ret.month + '-' + ret.day
+                        apibox.startTime.riqi = riqi
+                    } else {
+                        apibox.startTime.showriqi = ''
+                        apibox.startTime.riqi = ''
+                        alert('不能设置早于今天的日期')
+                    }
+                }
+            });
+        })
+        $api.addEvt($api.dom('#xuanzecheliang'), 'click', function () {
+            let userinfo = {
+                user: $api.getStorage('user'),
+                md5password: $api.getStorage('md5password'),
+            }
+            api.ajax({
+                url: server + '/api/get_user_che',
+                method: 'post',
+                timeout: 30,
+                dataType: 'json',
+                data: {
+                    values: {
+                        userinfo: userinfo
+                    }
+                },
+                returnAll: false
+            }, function (ret, err) {
+                if (ret.length > 0) {
+                    apibox.cheliangxinxi = ret; // TODO 
+                    apibox.show_cheliang_list = true
+                }else{
+                    alert('你没有绑定车辆，请先在"我的"界面设置')
+                    apibox.show_cheliang_list = false
+                    apibox.cheliangxinxi=''
+                }
+            });
+
+
+
+        })
+        $api.addEvt($api.byId('zhezhao'), 'click', function () {
+            apibox.sou_start = false
+            apibox.show_cheliang_list = false
+            apibox.fabu = false
+            apibox.complete = ''
+        })
+        $api.addEvt($api.byId('queding'), 'click', function () {
+            // if (!apibox.start_address.address) {
+            //     toast('你没有输入起点，将为您展示有关终点的的');
+            //     return
+            // }
+            // if (!apibox.end_address.address) {
+            //     toast('请输入终点');
+            //     return
+            // }
+            if (apibox.fabu) {
+                if (apibox.frameName=='che_to_ren') {
+                    if (!apibox.xuanzecheliang) {
+                        api.toast({
+                            msg: '您没有选择车辆，请选择车辆',
+                            duration: 2000,
+                            location: 'bottom'
+                        });
+                        return
+                    }
+                }
+                if (!apibox.start_address.address) {
+                    api.toast({
+                        msg: '请填写起点信息',
+                        duration: 2000,
+                        location: 'bottom'
+                    });
+                    return
+                }
+                api.showProgress({
+                    title: ' 加载中',
+                    text: '',
+                    modal: true
+                });
+                function sss(city, start_address) {
+                    return new Promise(function (resolve, reject) {
+                        bMap.getCoordsFromName({
+                            // city: city,
+                            address: start_address.address
+                        }, function (ret, err) {
+                            if (ret.status) {
+                                start_address.lon = ret.lon;
+                                start_address.lat = ret.lat;
+                                resolve(ret)
+                            } else {
+                                resolve()
+                            }
+                        });
+                    })
+                }
+                apibox.sou_start = false
+                apibox.show_cheliang_list = false
+                apibox.fabu = false
+                apibox.complete = ''
+
+                Promise.all([sss(apibox.city, apibox.start_address), sss(apibox.city, apibox.end_address)])
+                    .then(data => {
+                        add_che_ren_huzhao(adCode, type, apibox.start_address, apibox.end_address, apibox.biaoti, apibox.startTime)
+                        api.hideProgress();
+                    }).catch(ss => {
+                        add_che_ren_huzhao(adCode, type, apibox.start_address, apibox.end_address, apibox.biaoti, apibox.startTime)
+                        api.hideProgress();
+                    })
+                return
+            }
+
+
+
+            if (apibox.fabu == false) {
+                api.showProgress({
+                    title: ' 加载中',
+                    text: '',
+                    modal: true
+                });
+                function sss(city, start_address) {
+                    return new Promise(function (resolve, reject) {
+                        bMap.getCoordsFromName({
+                            // city: city,
+                            address: start_address.address
+                        }, function (ret, err) {
+                            if (ret.status) {
+                                start_address.lon = ret.lon;
+                                start_address.lat = ret.lat;
+                                resolve(ret)
+                            } else {
+                                resolve()
+                            }
+                        });
+                    })
+                }
+                apibox.sou_start = false
+                apibox.fabu = false
+                apibox.complete = ''
+
+                Promise.all([sss(apibox.city, apibox.start_address), sss(apibox.city, apibox.end_address)])
+                    .then(data => {
+                        console.log(data)
+                        get_che_ren_huzhao(adCode, type, apibox.start_address, apibox.end_address, apibox.startTime)
+                    }).catch(ss => {
+                        get_che_ren_huzhao(adCode, type, apibox.start_address, apibox.end_address, apibox.startTime)
+                        api.hideProgress();
+                    })
+                return
+            }
+
+        });
+
+
+        function get_che_ren_huzhao(adCode, type, start_address, end_address, startTime) {
+
+            api.ajax({
+                url: server + '/api/che_ren_huzhao',
+                method: 'post',
+                timeout: 10,
+                dataType: 'json',
+                returnAll: false,
+                data: {
+                    values: {
+                        adCode: adCode,
+                        type: type,
+                        start_address: start_address ? start_address : { address: '', lon: '', lat: '' },
+                        end_address: end_address ? end_address : { address: '', lon: '', lat: '' },
+                        startTime: startTime ? startTime : 0
+                    }
+                }
+            }, function (ret, err) {
+                if (ret) {
+                    api.refreshHeaderLoadDone()
+                    ret.forEach(element => {
+                        element.startjuli = getDistance(lat, lon, element.startLat, element.startLon)
+                    });
+                    ret.sort((a, b) => { return a.startjuli - b.startjuli })
+                    api.hideProgress();
+                    apibox.data = ret
+                    apibox.msg = '这里是底线了'
+                } else {
+                    api.refreshHeaderLoadDone()
+                    api.hideProgress();
+                    apibox.msg = '无数据';
+                    apibox.data = ''
+                }
+            })
+        }
+        function add_che_ren_huzhao(adCode, type, start_address, end_address, biaoti, startTime) {
+            api.ajax({
+                url: server + '/api/add_che_ren_huzhao',
+                method: 'post',
+                timeout: 10,
+                dataType: 'json',
+                returnAll: false,
+                data: {
+                    values: {
+                        userinfo: {
+                            user: $api.getStorage('user'),
+                            md5password: $api.getStorage('md5password')
+                        },
+                        che_bianhao:apibox.xuanzecheliang.id,
+                        adCode: adCode,
+                        type: type,
+                        start_address: start_address,
+                        end_address: end_address,
+                        biaoti: biaoti,
+                        startTime: startTime,
+                    }
+                }
+            }, function (ret, err) {
+                if (ret.zhuangtai) {
+                    api.refreshHeaderLoadDone()
+                    api.hideProgress();
+                    api.toast({
+                        msg: '发布成功',
+                        duration: 2000,
+                        location: 'bottom'
+                    });
+
+                } else {
+                    api.refreshHeaderLoadDone()
+                    api.hideProgress();
+                    api.toast({
+                        msg: ret.msg,
+                        duration: 2000,
+                        location: 'bottom'
+                    });
+                }
+            })
+        }
+    };
+</script>
+
+</html>

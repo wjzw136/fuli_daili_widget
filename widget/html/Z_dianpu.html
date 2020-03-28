@@ -1,0 +1,219 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		.header {
+			height: 50px;
+			padding: 0px 20px;
+			font-size: 20px;
+			/* background-image: url(../image/7.png); */
+			background-color: #03a9f4;
+			color: #fff;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background-image: linear-gradient(#03a9f4, #67D1E8);
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="header" id="header">
+		<div>
+			<span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+			<span id="biaoti" style="margin-left:15px">店铺</span>
+		</div>
+		<div id="map" class="aui-font-size-16">地图查看</div>
+	</div>
+	<div id="apibox">
+		<div v-if="loading" class="chakan" style="color: #fff; display: flex;align-items:center ;background-image:linear-gradient(#67D1E8,#03a9f4) ;">
+			<div style="width: 150px;height: 80px;margin-right: 15px;border-top-right-radius: 40px;border-bottom-right-radius: 40px;overflow: hidden">
+				<img :src="server+ data.zhaopai_url" width="100%" height="100%" alt="">
+			</div>
+			<div style="flex-grow: 1">
+				<div class="aui-font-size-16">
+					{{data.name}}
+				</div>
+				<div class="aui-font-size-12">
+					营业时间：<span>{{data.starttime}}</span>-<span>{{data.endtime}}</span>
+				</div>
+				<div class="aui-font-size-12">
+					<span>{{data.jianjie}}</span>
+				</div>
+				<div class="aui-font-size-14">
+					<!-- 距你{{items.distance}} -->
+				</div>
+			</div>
+		</div>
+		<div v-if="!loading">加载中</div>
+	</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+
+	apiready = function () {
+		var user = api.pageParam.user;
+		let biaoti=api.pageParam.biaoti;
+		if (biaoti) {
+			$api.html($api.byId('biaoti'), biaoti);
+		}
+		$api.addEvt($api.dom('#back'), 'click', function () {
+			api.closeWin();
+		});
+
+
+
+		var apibox = new Vue({
+			el: "#apibox",
+			data: {
+				server: server,
+				loading: false,
+				error: false,
+				data: '',
+				errormsg: "没有找到您需要的数据"
+			},
+			updated: function () {
+				$api.addEvt($api.byId('map'), 'click', function () {
+					api.openWin({
+						name: 'Z_dianpu_map',
+						url: './Z_pt_header.html',
+						bounces: false,
+						pageParam: {
+							data: apibox.data,
+							biaoti: apibox.data.name,
+							html: 'Z_dianpu_map'
+						}
+					});
+				});
+
+
+
+			}
+		});
+		api.ajax({
+			url: server + '/api/get_dianpu?user=' + user,
+			method: 'get',
+			timeout: 10,
+			dataType: 'json',
+			returnAll: false
+		}, function (ret, err) {
+			if (ret) {
+				apibox.data = ret[0]
+				apibox.loading = true
+				open_NVNavigationBar(apibox.data.zhuyingyewu, user)
+			} else {
+				alert('你没有店铺');
+				api.closeWin();
+			}
+
+		})
+
+
+
+
+
+
+		function open_NVNavigationBar(zhuyingyewu, user) {
+		  let str=	zhuyingyewu.replace(/\s*/g, "");
+			let aaa = str.split(',')
+			// if (typeof aaa != 'Object') {
+			// 	return
+			// }
+			var sp_leibie = []
+			var frames = []
+			let enname=0;
+			aaa.forEach(element => {
+
+				let Bar = {
+					name: element,
+					url: './Z_dianpu_sp.html',
+					bounces: true,
+					pageParam: { leibie:element, user: user }
+				}
+				let leibie = {
+					title: element,
+					enname: 'name'+enname,
+					bg: '#ffffff',
+					bgSelected: '#ffffff'
+				}
+				frames.push(Bar)
+				sp_leibie.push(leibie)
+				enname++
+			});
+			var NVNavigationBar = api.require('NVNavigationBar');
+			NVNavigationBar.open({
+				rect: {
+					x: 0,
+					y: 130,
+					w: api.winWidth,
+					h: 50
+				},
+				styles: {
+					orientation: 'horizontal',
+					bg: '#ffffff',
+					bgAlpha: 1,
+					font: {
+						size: 16,
+						sizeSelected: 20,
+						color: '#70686A',
+						colorSelected: '#ff8000',
+						alpha: 1
+					},
+					itemSize: {
+						w: api.winWidth / 6,
+						h: 49
+					}
+				},
+				items: sp_leibie,
+				selectedIndex: 0,
+				fixedOn: api.frameName,
+				id: 'dianpu'
+			}, function (ret, err) {
+				api.setFrameGroupIndex({
+					name: 'dianpu',
+					index: ret.index,
+					scroll: true
+				});
+			});
+
+
+
+
+			api.openFrameGroup({
+				name: 'dianpu',
+				scrollEnabled: true,
+				rect: {
+					x: 0,
+					y: 181,
+					w: 'auto',
+					h: api.winHeight - 50 - 80 - 50
+			},
+				index: 0,
+				preload: 0,
+				frames: frames
+			}, function (ret, err) {
+
+				NVNavigationBar.setSelected({
+					id: 'dianpu',
+					index: ret.index,
+					selected: true
+				});
+			});
+		}
+		
+	};
+</script>
+
+</html>

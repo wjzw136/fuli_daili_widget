@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>发攻略</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+
+    <!-- <link rel="stylesheet" type="text/css" href="../css/aui-slide.css" /> -->
+    <style>
+        .bgcolor-fff {
+            background-color: #ffffff
+        }
+    </style>
+    <script src="../script/vue.js"></script>
+    <script type="text/javascript" src="../script/public.js"></script>
+</head>
+
+<body>
+
+    <div id="weizhang" class="aui-content aui-margin-b-15" style="background-color: #fff;">
+        <ul style="background-color: #fff;" class="aui-list aui-media-list aui-list-noborder">
+            <li class="aui-list-header bt-li">
+                <div class="aui-font-size-16 bt-li-div">
+                    违章查询
+                </div>
+            </li>
+        </ul>
+        <ul class="aui-list aui-form-list">
+
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        车牌号
+                    </div>
+                    <div class="aui-list-item-input" style="display: flex; align-items: center;">
+                        <!-- <div
+                            style="border-radius: 10px; padding: 5px 15px;margin-right: 10px; background-color: #03A9F4;color:#fff;flex-shrink:0">
+                            京</div> -->
+                        
+                        <input v-model="che.car_no" type="text" placeholder="请输入"/>
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        车辆类型
+                    </div>
+                    <div class="aui-list-item-input">
+                        <!-- <select v-model='che.car_type'>
+                            <option disabled value="请选择">请选择</option>
+                            <option v-for='leibie in zhuyingyewu'>{{leibie}}</option>
+
+                        </select> -->
+                        <input v-model="che.car_type" type="text" placeholder="请输入"/>
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        发动机号
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input v-model="che.engine_number"  type="text" placeholder="请输入" />
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        车架号
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input v-model="che.frame_number" type="text" placeholder="请输入" />
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+
+        <div style="margin:15px">
+            <div class="aui-btn aui-btn-info aui-btn-block aui-btn-sm">违章查询</div>
+        </div>
+
+    </div>
+
+    <ul style="background-color: #fff;" class="aui-list aui-media-list aui-list-noborder">
+        <li class="aui-list-header bt-li">
+            <div class="aui-font-size-16 bt-li-div">
+                其他代办
+            </div>
+        </li>
+    </ul>
+    <div class="aui-font-size-12 tishibox"
+        style="color: red; display: flex;justify-content: space-between;padding: 10px;flex-wrap: nowrap;align-items:center;">
+        <div>目前代办业务只能人工办理,请填写下列信息，工作人员会联系您</div>
+        <div class="aui-font-size-16 tishitiao">×</div>
+    </div>
+    <div class="aui-content aui-margin-b-15 bgcolor-fff">
+        <ul id='xinxi' class="aui-list aui-form-list ">
+            <li class="aui-list-item">
+                <div class="aui-list-item-label">
+                    业务
+                </div>
+                <div class="aui-list-item-inner">
+
+                    <div class="aui-list-item-input">
+                        <input v-model="data.biaoti" name="data.biaoti" type="text" placeholder="请输入">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        详细说明
+                    </div>
+                    <div class="aui-list-item-input">
+                        <textarea id="textarea" v-model="data.neirong" name="data.neirong"
+                            style="line-height: 30px; width: 100%; font-size: 20px;height: auto;" placeholder="请输入">
+                        </textarea>
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-label">
+                        联系方式
+                    </div>
+                    <div class="aui-list-item-input">
+                        <input v-model="data.dianhua" name="data.dianhua" type="number" placeholder="请输入">
+
+                    </div>
+                </div>
+            </li>
+            <div v-for='text_imgsrc_type in data.text_imgsrc_types'>
+                <li v-if="text_imgsrc_type.type==='img'" class="aui-list-item imgbox">
+                    <div class="aui-list-item-inner aui-list-item-btn">
+                        <img class="img" height="120px" width='100%' style="margin-right:15px"
+                            :src="text_imgsrc_type.imgsrc" alt="">
+                    </div>
+
+                </li>
+
+                <li v-if="text_imgsrc_type.type==='text'" class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-label">
+                            补充说明
+                        </div>
+                        <div class="aui-list-item-input">
+                            <textarea v-model="text_imgsrc_type.text" name="neirong"
+                                style="line-height: 30px; width: 100%; font-size: 20px;height: auto;"
+                                placeholder="想说的话">
+                            </textarea>
+                        </div>
+                    </div>
+                </li>
+            </div>
+
+            <li class="aui-list-item " id="anniou">
+                <div class="aui-list-item-inner aui-list-item-btn">
+                    <div>
+                        <div id="add_img" class="aui-btn aui-btn-info aui-margin-r-5">+图片</div>
+                        <div id="add_text" class="aui-btn aui-btn-info aui-margin-l-5">+文字</div>
+                    </div>
+                    <div id="fabu" class="aui-btn aui-btn-danger">提交</div>
+                </div>
+            </li>
+        </ul>
+       
+    </div>
+
+
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        let user = $api.getStorage('user');
+        list.data.user = user
+
+        
+
+    }
+
+
+    var weizhang=new Vue({
+        el:'#weizhang',
+        data:{
+            che:{
+                car_no:'',
+                car_type:'',
+                engine_number:'',
+                frame_number:''
+            }
+        }
+    })
+
+
+    var list = new Vue({
+        el: '#xinxi',
+        data: {
+            data: {
+                biaoti: '',
+                neirong: '',
+                text_imgsrc_types: [],
+                imgsrcs: [],
+                user: '',
+                dianhua: ''
+            }
+        }, updated() {
+            let el = document.getElementById('textarea');
+            // el.style.height = 'auto';
+            el.style.height = el.scrollHeight + "px";
+            // alert(el.style.height)
+            // el.style.height= el.style.lineHeight*$api.attr(el, 'rows');
+        },
+    })
+
+
+
+
+    $api.addEvt($api.dom('#fabu'), 'click', function () {
+        if (list.data.biaoti == '' || list.data.neirong == '') {
+            api.toast({
+                msg: '业务和简介不能为空哦',
+                duration: 2000,
+                location: 'bottom'
+            });
+            return
+        }
+        if (list.data.dianhua == '') {
+            api.toast({
+                msg: '联系方式不能为空',
+                duration: 2000,
+                location: 'bottom'
+            });
+            return
+        }
+        if (!/^1[3456789]\d{9}$/.test(list.data.dianhua)) {
+            api.toast({
+                msg: '联系方式填写有误',
+                duration: 2000,
+                location: 'bottom'
+            });
+            return
+        }
+        if (list.data.user == '') {
+            api.confirm({
+                title: '你还未登陆，是否去登陆',
+                // msg: '是否去登陆',
+                buttons: ['确定', '取消']
+            }, function (ret, err) {
+                var index = ret.buttonIndex;
+                if (index == 1) {
+                    loginwin()
+                }
+            });
+            return
+        }
+        api.showProgress({
+            title: '上传中',
+            text: '',
+            modal: true,
+            animationType: 'zoom'
+        });
+        api.ajax({
+            url: server + '/api/daiban',
+            method: 'post',
+            data: {
+                values: {
+                    data: list.data
+                },
+                files: {
+                    file: list.data.imgsrcs
+                }
+            },
+            timeout: 30,
+            dataType: 'json',
+            returnAll: false
+        }, function (ret, err) {
+            if (ret) {
+                api.showProgress({
+                    title: '上传完毕',
+                    text: '',
+                    modal: true,
+                    animationType: 'zoom'
+                });
+                setTimeout(function () {
+                    api.hideProgress();
+                    api.closeWin();
+                }, 1000);
+
+            } else {
+                api.showProgress({
+                    title: '上传出错',
+                    text: '',
+                    modal: true,
+                    animationType: 'zoom'
+                });
+                setTimeout(function () {
+                    api.hideProgress();
+                }, 1000);
+            };
+        });
+
+    })
+
+
+
+
+    $api.addEvt($api.dom('#add_img'), 'click', function () {
+        api.getPicture({
+            sourceType: 'library',
+            encodingType: 'jpg',
+            mediaValue: 'pic',
+            destinationType: 'url',
+            allowEdit: true,
+            quality: 50,
+            targetWidth: 500,
+            // targetHeight: ,
+            saveToPhotoAlbum: false
+        }, function (ret, err) {
+            if (ret.data != "") {
+                var add_img = { imgsrc: ret.data, type: 'img' }
+                list.data.text_imgsrc_types.splice(list.data.text_imgsrc_types.length, 0, add_img)//jixu
+                list.data.imgsrcs.push(ret.data);
+
+            } else {
+                api.toast({
+                    msg: '添加图片出错',
+                    duration: 2000,
+                    location: 'bottom'
+                });
+            }
+        });
+
+    })
+
+    $api.addEvt($api.dom('#add_text'), 'click', function () {
+
+        var add_text = { text: '', type: 'text' }
+        list.data.text_imgsrc_types.splice(list.data.text_imgsrc_types.length, 0, add_text)//jixu
+    })
+
+    $api.addEvt($api.dom('.tishitiao'), 'click', function () {
+        
+           $api.dom('.tishibox').style.display='none'
+    })
+
+</script>
+
+</html>

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>添加报价</title>
+    <link rel="stylesheet" type="text/css" href="api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-slide.css" />
+    <!-- <script src="../script/ejs.min.js"></script> -->
+    <script src="../script/vue.js"></script>
+    <script type="text/javascript" src="../script/zdy.js"></script>
+    <style>
+        .bgcolor-fff {
+            background-color: #ffffff
+        }
+
+        .box {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            width: 100%;
+            overflow: hidden;
+            font-size: 16px;
+            position: relative;
+            padding: 15px;
+        }
+
+        .biankuang {
+            width: 45%;
+            height: 150px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 15px;
+            /* border: #E44F26 solid 1px; */
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            color: #E44F26;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shanchu {
+            position: absolute;
+            top: 0;
+            z-index: 2;
+            right: 0;
+            padding: 0 5px;
+            color: gainsboro;
+            background-color: red;
+        }
+
+        .header {
+            height: 50px;
+            padding: 0px 20px;
+            font-size: 20px;
+            /* background-image: url(../image/7.png); */
+            background-color: #03a9f4;
+            color: #fff;
+            display: flex;
+            position: fixed;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            z-index: 999;
+            background-image: linear-gradient(#03a9f4, #67D1E8);
+
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="header" id="header">
+        <div>
+            <span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+            <span id="biaoti" style="margin-left:15px">报价</span>
+        </div>
+
+    </div>
+    <div id="apibox" style="background-color: #fff;padding-top:50px;">
+
+
+
+
+        <div>
+            <ul class="aui-list aui-form-list">
+                <li class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-label" style="color: green;">
+                            保险公司
+                        </div>
+                        <div class="aui-list-item-input">
+                            <select style="color: green;" v-model='bxgs_name'>
+                                <option disabled value="请选择">请选择</option>
+                                <option v-for='name in bxgs_list' style="color: green;">{{name}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </li>
+                <div class="aui-content " style="background-color: #fff;">
+
+
+                    <template v-for="bx in bx_xiangmu ">
+                        <template v-if="data[bx.type]==''||data[bx.type]=='不买'">
+
+                        </template>
+                        <template v-else>
+                            <div style="display: flex; align-items: center;font-size: 16px;">
+                                <div style="width:75%;padding: 0 15px;">
+                                    {{bx.title}} <span style="color: red;">（{{data[bx.type]}}）</span>
+                                </div>
+                                <div style="width: 25%; padding-right: 15px;">
+                                    <input v-model='baojia[bx.type]' value="0" style="text-align: right;color: red;"
+                                        type="number" placeholder="请输入报价">
+                                </div>
+                            </div>
+                        </template>
+
+                    </template>
+                    <template v-if="data.bjmp_csx=='1'">
+                        <div style="display: flex; align-items: center;font-size: 16px;">
+                            <div style="width: 75%;padding: 0 15px;">
+                                不计免赔（{{bx_xiangmu.chesunxian.title}}）<span style="color: red;">（购买）</span>
+                            </div>
+                            <div style="width: 25%; padding-right: 15px;">
+                                <input v-model='baojia.bjmp_csx' style="text-align: right;color: red;" type="number"
+                                    placeholder="请输入报价">
+                            </div>
+                        </div>
+                    </template>
+                    <template v-if="data.bjmp_szx=='1'">
+                        <div style="display: flex; align-items: center;font-size: 16px;">
+                            <div style="width: 75%;padding: 0 15px;">
+                                不计免赔（{{bx_xiangmu.sanzhexian.title}}）<span style="color: red;">（购买）</span>
+                            </div>
+                            <div style="width: 25%; padding-right: 15px;">
+                                <input v-model='baojia.bjmp_szx' style="text-align: right;color: red;" type="number"
+                                    placeholder="请输入报价">
+                            </div>
+                        </div>
+                    </template>
+                    <template v-if="data.bjmp_sjx=='1'">
+                        <div style="display: flex; align-items: center;font-size: 16px;">
+                            <div style="width: 75%;padding: 0 15px;">
+                                不计免赔（{{bx_xiangmu.sijixian.title}}）<span style="color: red;">(购买)</span>
+                            </div>
+                            <div style="width: 25%; padding-right: 15px;">
+                                <input v-model='baojia.bjmp_sjx' style="text-align: right;color: red;" type="number"
+                                    placeholder="请输入报价">
+                            </div>
+                        </div>
+                    </template>
+                    <template v-if="data.bjmp_ckx=='1'">
+                        <div style="display: flex; align-items: center;font-size: 16px;">
+                            <div style="width: 75%;padding: 0 15px;">
+                                不计免赔（{{bx_xiangmu.chengkexian.title}}）<span style="color: red;">(购买)</span>
+                            </div>
+                            <div style="width: 25%; padding-right: 15px;">
+                                <input v-model='baojia.bjmp_ckx' style="text-align: right;color: red;" type="number"
+                                    placeholder="请输入报价">
+                            </div>
+                        </div>
+                    </template>
+
+                    <div style="display: flex; align-items: center;font-size: 16px;height: 50px;padding: 0 15px;">
+                        <div style="width: 50%">
+                            商业险返点 <span style="color: red;"></span>
+                        </div>
+                        <div style="width: 80px;text-align:center;">{{syx_fd}}%</div>
+                        <i class="aui-iconfont aui-icon-left" @click="jianshao('syx')"></i>
+
+                        <div style="width: 40%; padding:0 15px;">
+                            <div class="aui-range" style="width: 100%;">
+                                <input type="range" class="aui-range" v-model='syx_fd' style="width: 100%;" value="0"
+                                    max="100" min="0" step="1" id="range" />
+                            </div>
+                        </div>
+                        <i class="aui-iconfont aui-icon-right" @click="zengjia('syx')"></i>
+
+                    </div>
+
+                    <div style="display: flex; align-items: center;font-size: 16px;height: 50px;padding: 0 15px;">
+                        <div style="width: 50%;">
+                            交强险返点 <span style="color: red;"></span>
+                        </div>
+                        <div style="width: 80px;text-align:center">{{jqx_fd}}%</div>
+                        <i class="aui-iconfont aui-icon-left" @click="jianshao('jqx')"></i>
+
+                        <div style="width: 40%; padding:0 15px;">
+                            <div class="aui-range" style="width: 100%;">
+                                <input type="range" class="aui-range" v-model='jqx_fd' style="width: 100%;" value="0"
+                                    max="100" min="0" step="1" id="range" />
+                            </div>
+                        </div>
+                        <i class="aui-iconfont aui-icon-right" @click="zengjia('jqx')"></i>
+                    </div>
+
+
+
+                    <div
+                        style="margin-top: 15px; border-top: darkgreen solid 1px;border-bottom: darkgreen solid 1px;  display: flex; align-items: center; justify-content: space-between; font-size: 18px;padding: 15px;">
+                        <div style="display: flex;align-items:center;flex-direction: column; width: 33%;">
+                            <div><big>总计</big> </div>
+                            <div style="color: red;">{{zongji}}</div>
+                        </div>
+                        <div style="display: flex;align-items:center;flex-direction: column; width: 33%;">
+                            <div><big>商业险返现</big> </div>
+                            <div style="color: red;">{{syx_fx}}</div>
+                        </div>
+                        <div style="display: flex;align-items:center;flex-direction: column; width: 33%;">
+                            <div><big>交强险返现</big> </div>
+                            <div style="color: red;">{{jqx_fx}}</div>
+                        </div>
+                    </div>
+                </div>
+            </ul>
+        </div>
+
+        <div style="display: flex;justify-content:space-around;padding: 15px;">
+            <div id="add" class="aui-btn aui-btn-info">确定</div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        var user = $api.getStorage('user');
+        var bMap = api.require('bMap');
+        var bx_data = api.pageParam.bx_data
+        let config = get_config()
+        
+        let BX_xinxi=config.BX_xinxi
+        bxgs_list = [];
+        for (const key in BX_xinxi) {
+            if (BX_xinxi.hasOwnProperty(key)) {
+                const element = BX_xinxi[key];
+                bxgs_list.push(element.name)
+            }
+        }
+        
+
+        var apibox = new Vue({
+            el: '#apibox',
+            data: {
+                error: false,
+                data: "",
+                baojia: {},
+                bujimianpei: config.bujimianpei,
+                bxgs_name: '请选择',
+                bx_xiangmu: config.BX_xiangmu,
+                bxgs_list: [],
+                syx_fd: 0,
+                jqx_fd: 0,
+                errormsg: '没有找到您需要的数据'
+            },
+            computed: {
+                zongji: function () {
+                    var zongjia = 0;
+                    for (const key in this.baojia) {
+                        if (this.baojia.hasOwnProperty(key)) {
+                            const element = this.baojia[key] - 0;
+                            zongjia = element + zongjia
+                        }
+                    }
+                    return zongjia
+                },
+                syx_fx: function () {
+                    var zongjia = 0;
+                    for (const key in this.baojia) {
+                        if (this.baojia.hasOwnProperty(key)) {
+                            if (key != 'jiaoqiangxian') {
+                                const element = this.baojia[key] - 0;
+                                zongjia = element + zongjia
+                            }
+
+                        }
+                    };
+
+
+                    return zongjia * (this.syx_fd - 0) / 100
+                },
+                jqx_fx: function () {
+                    var zongjia = 0;
+                    for (const key in this.baojia) {
+                        if (this.baojia.hasOwnProperty(key)) {
+                            if (key == 'jiaoqiangxian') {
+                                const element = this.baojia[key] - 0;
+                                zongjia = element + zongjia
+                            }
+
+                        }
+                    }
+
+
+                    return zongjia * (this.jqx_fd - 0) / 100
+                }
+
+            },
+            methods: {
+                zengjia: function (syx) {
+                    if (syx == 'syx') {
+                        if (apibox.$data.syx_fd > 99) {
+                            return
+                        }
+                        apibox.$data.syx_fd = apibox.$data.syx_fd - 0 + 1
+                    } else {
+                        if (apibox.$data.jqx_fd > 99) {
+                            return
+                        }
+                        apibox.$data.jqx_fd = apibox.$data.jqx_fd - 0 + 1
+
+                    }
+
+                },
+                jianshao: function (syx) {
+
+
+                    if (syx == 'jqx') {
+                        if (apibox.$data.jqx_fd < 1) {
+                            return
+                        }
+                        apibox.$data.jqx_fd = apibox.$data.jqx_fd - 1
+
+                    } else {
+                        if (apibox.$data.syx_fd < 1) {
+                            return
+                        }
+
+                        apibox.$data.syx_fd = apibox.$data.syx_fd - 1
+
+                    }
+                }
+            },
+            updated: function () {
+
+
+            }
+        })
+
+
+
+        apibox.bxgs_list = bxgs_list
+        apibox.data = bx_data
+
+
+        let syx_fd = api.getPrefs({
+            sync: true,
+            key: 'syx_mr_fandian'
+        });
+        let jqx_fd = api.getPrefs({
+            sync: true,
+            key: 'jqx_mr_fandian'
+        });
+
+
+        apibox.syx_fd = syx_fd;
+        apibox.jqx_fd = jqx_fd
+
+
+
+        $api.addEvt($api.dom('#add'), 'click', function () {
+
+            var inputdom = $api.domAll('input[type=number]');
+
+            function panduan() {
+                for (let i = 0; i < inputdom.length; i++) {
+                    const element = inputdom[i];
+                    if (element.value == '') {
+                        return false
+                    }
+
+                }
+                return true
+            }
+            var panduan = panduan()
+            var user = $api.getStorage('user')
+            var md5password = $api.getStorage('md5password')
+            if (!user) {
+                toast('你没有权限')
+                return
+            }
+            if (!panduan) {
+                toast('填写不完整')
+                return
+            }
+            if (apibox.bxgs_name == '请选择') {
+                toast('请选择保险公司')
+                return
+            }
+
+
+
+            api.ajax({
+                url: server + '/api/add_baojia',
+                method: 'post',
+                timeout: 10,
+                dataType: 'json',
+                returnAll: false,
+                data: {
+                    values: {
+                        baojia: apibox.baojia,
+                        user: user,
+                        md5password: md5password,
+                        xuqiuid: apibox.data.id,
+                        paizhao: apibox.data.paizhao,
+                        zongji: apibox.zongji,
+                        syx_fx: apibox.syx_fx,
+                        jqx_fx: apibox.jqx_fx,
+                        bxgs_name: apibox.bxgs_name
+                    }
+
+                }
+            }, function (ret, err) {
+                if (ret.zhuangtai) {
+                    api.hideProgress();
+                    alert('添加成功')
+                    api.closeWin();
+                } else {
+                    api.hideProgress();
+                    alert('非法添加')
+                };
+            });
+            showProgress('', '提交中')
+
+
+        })
+    }
+
+
+
+
+
+    $api.addEvt($api.dom('#back'), 'click', function () {
+        api.closeWin();
+    });
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        #header {
+            font-size: 20px;
+            /* background-image: url(../image/7.png); */
+            background-color: #03a9f4;
+            color: #fff;
+            padding: 10px 20px;
+            width: 100%;
+            height: 150px;
+            background-image: linear-gradient(#03a9f4, #67D1E8);
+
+        }
+
+        .slide-fade-enter-active {
+            transition: all .3s ease;
+        }
+
+        .slide-fade-leave-active {
+            transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+        }
+
+        .slide-fade-enter,
+        .slide-fade-leave-to
+        /* .slide-fade-leave-active for below version 2.1.8 */
+
+            {
+            transform: translateX(10px);
+            opacity: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="header">
+        <div v-cloak v-show="isdenglu">
+            <div style="display: flex;justify-content: space-between;align-items: center;">
+                <div class="flex_box" style="flex-shrink:1;width: 100%">
+                    <div style="width:60px;height:60px;flex-shrink:0;border-radius: 50%;overflow: hidden;">
+                        <img :src="server+userinfo.touxiang" width="100%" height="100%" alt="" srcset="">
+                    </div>
+                    <div style="padding:0 15px;width: 100%;">
+                        <div>{{userinfo.name}}</div>
+                        <div>{{userinfo.user_id}}</div>
+                    </div>
+                    <!-- <div id="qiandao" style="flex-shrink:0;padding: 0 15px">
+                        <div class="aui-btn aui-btn-outlined">
+                            签到
+                        </div>
+                    </div> -->
+                    <div id="chongzhi" style="flex-shrink:0;padding: 0 15px">
+                        <div class="aui-btn aui-btn-outlined">
+                            充值
+                        </div>
+                    </div>
+                </div>
+                <div id="set" style="flex-shrink:0;padding-left: 10px;">
+                    <i class="aui-iconfont aui-icon-gear" style="font-size: 30px"></i>
+                </div>
+            </div>
+            <div class="flex_box_space_around" style="color: #fff;margin-top: 10px">
+                <!-- <div style="text-align: center">
+                    <big class="aui-text-warning">
+                        {{tongzhi.tongzhi}}
+                    </big>
+                    <div class="aui-gird-lable aui-font-size-12">通知</div>
+                </div>
+                
+                <div id="kabao" style="text-align: center">
+                    <big class="aui-text-danger">
+                        {{kabao.kabao}}
+                    </big>
+                    <div class="aui-gird-lable aui-font-size-12">卡包</div>
+                </div> -->
+                <div id="jifen" style="text-align: center">
+                    <big class="aui-text-success">
+                        {{userinfo.jifen}}
+                    </big>
+                    <div class="aui-gird-lable aui-font-size-12">积分</div>
+                </div>
+            </div>
+        </div>
+        <div v-show="!isdenglu" id="denglu" style="height:130px" class="flex_box_space_between">
+            <div class="flex_box" style="flex-shrink:1;width: 100%;">
+                <div style="width:60px;height:60px;flex-shrink:0">
+                    <img src="../image/touxiang.png" width="100%" height="100%" style="border-radius: 50%" alt=""
+                        srcset="">
+                </div>
+                <div style="padding:0 15px;width: 100%;">
+                    <div>请登录</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+
+<script type="text/javascript">
+    var denglu = new Vue({
+        el: '#header',
+        data: {
+            server: server,
+            isdenglu: false,
+            userinfo: '',
+            kabao: '',
+            tongzhi: ''
+        }
+    })
+
+    apiready = function () {
+        var zhanghao = $api.getStorage('user')
+        let md5password = $api.getStorage('md5password');
+        let mapdata = api.pageParam.data
+        let userinfo = {
+            user: zhanghao,
+            md5password: md5password,
+            winname: api.winName
+        }
+        var socketManager = api.require('socketManager');
+
+        setTimeout(function () {
+            if (zhanghao) {
+                autologin(zhanghao)
+            }
+        }, 1000);
+        $api.addEvt($api.byId('qiandao'), 'click', function () {
+
+            api.openWin({
+                name: 'Z_qiandao',
+                url: './Z_new_header.html',
+                bounces: false,
+                pageParam: {
+                    biaoti: '签到',
+                    html: 'Z_qiandao'
+                }
+            });
+        })
+
+        $api.addEvt($api.byId('chongzhi'), 'click', function () {
+
+            api.openWin({
+                name: 'Z_pay_xz',
+                url: './Z_pay_xz.html',
+                bounces: false,
+            });
+        })
+        $api.addEvt($api.byId('kabao'), 'click', function () {
+            api.openWin({
+                name: 'kabao',
+                url: './Z_new_header.html',
+                bounces: false,
+                pageParam: {
+                    biaoti: '我的卡包',
+                    html: 'Z_kabao'
+                }
+            });
+        })
+
+        $api.addEvt($api.byId('set'), 'click', function () {
+            api.openWin({
+                name: 'Z_set',
+                url: './Z_set.html',
+                bounces: false,
+                pageParam: {
+                    userinfo: denglu.userinfo
+                }
+            });
+        })
+
+        $api.addEvt($api.byId('denglu'), 'click', function () {
+            loginwin()
+        })
+
+
+        api.addEventListener({
+            name: 'tuichudenglu'
+        }, function (ret, err) {
+            denglu.isdenglu = false
+            denglu.ueserinfo = ''
+            $api.setStorage('user', '');
+            $api.setStorage('md5password', '');
+            $api.setStorage('islogin', '');
+        });
+
+        api.addEventListener({
+            name: 'loginOK'
+        }, function (ret, err) {
+            denglu.isdenglu = true
+            denglu.userinfo = ret.value.key
+            $api.setStorage('touxiang', ret.value.key.touxiang);
+            // denglu.tongzhi = ret.value.key.tongzhi
+            // denglu.kabao = ret.value.key.kabao
+        });
+        api.addEventListener({
+            name: 'autologin'
+        }, function (ret, err) {
+            autologin($api.getStorage('user'))
+        });
+
+
+
+        api.setGlobalData({
+            key: 'socketisstart',
+            value: 'start'
+        });
+
+
+
+        function open_msg_box() {
+            api.openFrame({
+                name: 'msg_box',
+                url: 'msg_box.html',
+                bounces: false,
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: api.winWidth,
+                    h: api.winHeight
+                }
+            });
+        }
+
+
+
+
+    }
+</script>
+
+</html>

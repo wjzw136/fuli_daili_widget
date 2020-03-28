@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>添加商品</title>
+    <link rel="stylesheet" type="text/css" href="api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-slide.css" />
+    <style>
+        .bgcolor-fff {
+            background-color: #ffffff
+        }
+
+        .box {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            width: 100%;
+            overflow: hidden;
+            font-size: 16px;
+            position: relative;
+            padding: 15px;
+        }
+
+        .biankuang {
+            width: 45%;
+            height: 150px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 15px;
+            /* border: #E44F26 solid 1px; */
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            color: #E44F26;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .aui-list-item-label {
+            font-size: 0.7rem;
+        }
+
+        .shanchu {
+            position: absolute;
+            top: 0;
+            z-index: 2;
+            right: 0;
+            padding: 0 5px;
+            color: gainsboro;
+            background-color: red;
+        }
+    </style>
+    <script src="../script/ejs.min.js"></script>
+    <script src="../script/vue.js"></script>
+    <script type="text/javascript" src="../script/zdy.js"></script>
+</head>
+
+<body>
+
+    <div id="apibox"  v-show='show' style="background-color: #fff;">
+
+
+        <div class="box">
+            <div v-for='(url,index) in data.zhaopai_url' class=" biankuang">
+                <img :src="url" width="100%" height="100%" alt="" srcset="">
+                <!-- <i class="aui-iconfont aui-icon-plus" style="font-size: 30px;"></i> -->
+                <div class="shanchu_zhaopai shanchu" :index='index' v-on:click='shanchu_zhaopai(index)'>删除</div>
+            </div>
+            <div class="biankuang" id="sc_zhaopai">
+                <i class="aui-iconfont aui-icon-plus" style="font-size: 30px"></i>
+                <div>上传招牌</div>
+            </div>
+        </div>
+        <div>
+            <ul class="aui-list aui-form-list">
+                <div v-if="dianpuleibie=='汽贸'" style="padding: 15px;">
+                    <div id="xuanzecheliang" class="aui-btn aui-btn-primary aui-btn-block aui-btn-outlined aui-btn-sm">
+                        <span v-if="data.chexing">重新选择</span> <span v-else>选择车辆</span>
+                    </div>
+                    <!-- <input type="text" v-model='data.name' placeholder="请输入商品名称"> -->
+                </div>
+
+                <li v-else class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-label">
+                            商品名称
+                        </div>
+                        <div class="aui-list-item-input">
+                            <input type="text" v-model='data.name' placeholder="请输入商品名称">
+                        </div>
+                    </div>
+                </li>
+                <div v-if='data.chexing' class="aui-text-primary"
+                    style="padding: 15px; display: flex;align-items: center;">
+
+
+                    <div style="width: 60px;height: 60px;margin-right: 10px;">
+                        <img width="100%" height="100%" :src=" server+'/qiche_logo/'+data.chexing.pinpaiid+'.png'"
+                            alt="" srcset="">
+                    </div>
+                    <div class="aui-font-size-14">
+                        <div>
+                            {{data.chexing.typeName}}<span style="margin:0 10px">|</span>{{data.chexing.specName}}
+                        </div>
+                        <div>
+                            指导价：{{data.chexing.guidePrice}}
+                            <span style="margin:0 10px">|</span>
+                            {{data.chexing.secBrand}}
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <li class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-label">
+                            商品价格
+                        </div>
+                        <div class="aui-list-item-input">
+                            <input type="number" v-model='data.jiage' placeholder="请输入价格(单位元)">
+                        </div>
+                    </div>
+                </li>
+                <li class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-label">
+                            商品类别
+                        </div>
+                        <div class="aui-list-item-input">
+                            <select v-model='data.leibie'>
+                                <option disabled value="请选择">请选择</option>
+                                <option v-for='leibie in zhuyingyewu'>{{leibie}}</option>
+
+                            </select>
+                        </div>
+                        <!-- <div class="aui-list-item-input">
+                            <input type="number" v-model='data.jiage' placeholder="请输入价格">
+                        </div> -->
+                    </div>
+                </li>
+                <div v-if="data.leibie=='二手车'">
+                    <li id='shangpai_time' class="aui-list-item">
+                        <div class="aui-list-item-inner">
+                            <div class="aui-list-item-label">
+                                上牌时间
+                            </div>
+                            <div class="aui-list-item-input aui-font-size-14">
+                                <p v-if="data.ershou.shangpai_time==''">点击选择</p>
+                                <div>{{data.ershou.shangpai_time}}</div>
+                                <!-- <input type="button" id="shangpai_time" v-model='data.ershou.shangpai_time' placeholder="请输入上牌时间"> -->
+                            </div>
+                        </div>
+                    </li>
+                    <li id="nianjian_shijian" class="aui-list-item aui-font-size-14">
+                        <div class="aui-list-item-inner">
+                            <div class="aui-list-item-label">
+                                年检到期时间
+                            </div>
+                            <div class="aui-list-item-input">
+                                <p v-if="data.ershou.nianjian_shijian==''">点击选择</p>
+                                <div>{{data.ershou.nianjian_shijian}}</div>
+                                <!-- <input type="text" id="nianjian_shijian" v-model='data.ershou.nianjian_shijian' placeholder="请输入年检到期时间"> -->
+                            </div>
+                        </div>
+                    </li>
+                    <li id="baoxian_daoqi_time" class="aui-list-item aui-font-size-14">
+                        <div class="aui-list-item-inner">
+                            <div class="aui-list-item-label">
+                                保险到期时间
+                            </div>
+                            <div class="aui-list-item-input">
+                                <p v-if="data.ershou.baoxian_daoqi_time==''">点击选择</p>
+                                <div>{{data.ershou.baoxian_daoqi_time}}</div>
+                                <!-- <input type="text" id="baoxian_daoqi_time" v-model='data.ershou.baoxian_daoqi_time' placeholder="请输入保险到期时间"> -->
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item">
+                        <div class="aui-list-item-inner">
+                            <div class="aui-list-item-label">
+                                里程
+                            </div>
+                            <div class="aui-list-item-input">
+                                <input type="text" v-model='data.ershou.licheng' placeholder="请输入里程">
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item">
+                        <div class="aui-list-item-inner">
+                            <div class="aui-list-item-label">
+                                燃油
+                            </div>
+                            <div class="aui-list-item-input">
+                                <input type="text" v-model='data.ershou.ranyou' placeholder="请输入燃油">
+                            </div>
+                        </div>
+                    </li>
+                </div>
+                <li class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-label">
+                            商品简介
+                        </div>
+                        <div class="aui-list-item-input">
+                            <input type="text" v-model='data.jianjie' placeholder="请输入商品简介">
+                        </div>
+                    </div>
+                </li>
+                <li v-if="dianpuleibie=='汽修'" class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-label">
+                            品牌
+                        </div>
+                        <div class="aui-list-item-input">
+                            <input type="text" v-model='data.pinpai' placeholder="请输入品牌">
+                        </div>
+                    </div>
+                </li>
+                <li v-if="dianpuleibie=='汽修'" class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-label">
+                            关键词
+                        </div>
+                        <div class="aui-list-item-input">
+                            <input type="text" v-model='data.guanjianci' placeholder="请输入关键词">
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div style="padding: 20px;" class="aui-font-size-14">简介图片</div>
+        <div class="box">
+            <div v-for='(url,index) in data.jianjie_url' v-if='data.zhaopai_url' class="biankuang ">
+                <img :src="url" width="100%" height="100%" alt="" srcset="">
+                <!-- <i class="aui-iconfont aui-icon-plus" style="font-size: 30px;"></i> -->
+                <div class="shanchu_jianjie shanchu" :index='index' v-on:click='shanchu_jianjie(index)'>删除</div>
+            </div>
+            <div class="biankuang" id="sc_jianjie_pic">
+                <i class="aui-iconfont aui-icon-plus" style="font-size: 30px"></i>
+                <div>添加简介图片</div>
+            </div>
+        </div>
+        <div style="display: flex;justify-content:space-around;padding: 15px;">
+            <div id="add" class="aui-btn aui-btn-info">确定</div>
+        </div>
+
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        var user = $api.getStorage('user');
+        var bMap = api.require('bMap');
+        let isupdata = false;
+        let sp;
+        let zhuyingyewu;
+        let apibox_data;
+        if (api.pageParam.spid) {
+            isupdata = api.pageParam.spid.isupdata
+            sp = api.pageParam.spid.spinfo;
+            zhuyingyewu = api.pageParam.spid.dpzhuyingyewu
+        }
+        if (isupdata) {
+            let a = [];
+            let b = []
+            sp.zhaopai_url.forEach(element => {
+
+                if (element != '') {
+                    a.push(server + element)
+                }
+
+            });
+            sp.jianjie_url.forEach(element => {
+                if (element != '') {
+                    b.push(server + element)
+                }
+
+            });
+            sp.zhaopai_url = a
+            sp.jianjie_url = b
+            apibox_data = {
+                name: sp.name,
+                zhaopai_url: sp.zhaopai_url,
+                jianjie_url: sp.jianjie_url,
+                jianjie: sp.jianjie,
+                jiage: sp.jiage,
+                leibie: sp.leibie,
+                pinpai: sp.pinpai,
+                guanjianci: sp.guanjianci,
+                str_zhaopai_url: JSON.stringify(sp.zhaopai_url),
+                str_jianjie_url: JSON.stringify(sp.jianjie_url),
+                chexing: {
+                    status: sp.status,
+                    engine: sp.engine,
+                    transMode: sp.transMode,
+                    guidePrice: sp.guidePrice,
+                    driveMode: sp.driveMode,
+                    specName: sp.specName,
+                    secBrand: sp.secBrand,
+                    typeName: sp.typeName,
+                    brandName: sp.brandName,
+                    pinpaiid: sp.pinpaiid
+                },
+                ershou: {
+                    baoxian_daoqi_time: sp.baoxian_daoqi_time ? sp.baoxian_daoqi_time : '',
+                    ranyou: sp.ranyou ? sp.ranyou : '',
+                    shangpai_time: sp.shangpai_time ? sp.shangpai_time : '',
+                    nianjian_shijian: sp.nianjian_shijian ? sp.nianjian_shijian : '',
+                    licheng: sp.licheng ? sp.licheng : ''
+                },
+                spid: sp.id
+            }
+            // console.log(sp.pinpaiid)
+            if (sp.pinpaiid == undefined) {
+                apibox_data.chexing = ''
+            }
+        } else {
+            apibox_data = {
+                name: '',
+                zhaopai_url: [],
+                jianjie_url: [],
+                jianjie: '',
+                jiage: '',
+                leibie: '请选择',
+                guanjianci: '',
+                chexing: '',
+                ershou: {
+                    baoxian_daoqi_time: '',
+                    ranyou: '',
+                    shangpai_time: '',
+                    nianjian_shijian: '',
+                    licheng: ''
+                }
+            }
+        }
+
+
+        var apibox = new Vue({
+            el: '#apibox',
+            data: {
+                server: server,
+                error: false,
+                data: '',
+                zhuyingyewu: '',
+                dianpuleibie: '',
+                errormsg: '没有找到您需要的数据',
+                show: false
+            },
+            methods: {
+                shanchu_zhaopai: function (index) {
+                    apibox.data.zhaopai_url.splice(index, 1)
+                },
+                shanchu_jianjie: function (index) {
+                    apibox.data.jianjie_url.splice(index, 1)
+                }
+            },
+            updated: function () {
+                $api.addEvt($api.dom('#xuanzecheliang'), 'click', function () {
+                    api.openWin({
+                        name: 'qiche_pinpai',
+                        url: 'Z_pt_header.html',
+                        bounces: false,
+                        pageParam: {
+                            biaoti: '汽车品牌',
+                            html: 'Z_qiche_pinpai',
+                            data: {
+                                type: 'cheliang',
+                                event: 'add_shangpin'
+                            }
+                        }
+                    });
+                })
+
+                $api.addEvt($api.dom('#baoxian_daoqi_time'), 'click', function () {
+                    api.openPicker({
+                        type: 'date',
+                        date: '2020-01-01 08:00',
+                        title: '开始时间'
+                    }, function (ret, err) {
+                        if (ret) {
+                            if (ret.minute < 10) {
+                                ret.minute = "0" + ret.minute
+                            }
+                            apibox.data.ershou.baoxian_daoqi_time = ret.year + '-' + ret.month + '-' + ret.day;
+                        }
+                    });
+                })
+                $api.addEvt($api.dom('#shangpai_time'), 'click', function () {
+                    api.openPicker({
+                        type: 'date',
+                        date: '2020-01-01 08:00',
+                        title: '开始时间'
+                    }, function (ret, err) {
+                        if (ret) {
+                            if (ret.minute < 10) {
+                                ret.minute = "0" + ret.minute
+                            } if (ret.month < 10) {
+                                ret.month = "0" + ret.month
+                            }
+                            apibox.data.ershou.shangpai_time = ret.year + '-' + ret.month + '-' + ret.day;
+                        }
+                    });
+                })
+                $api.addEvt($api.dom('#nianjian_shijian'), 'click', function () {
+                    api.openPicker({
+                        type: 'date',
+                        date: '2020-01-01 08:00',
+                        title: '开始时间'
+                    }, function (ret, err) {
+                        if (ret) {
+                            if (ret.minute < 10) {
+                                ret.minute = "0" + ret.minute
+                            }
+                            apibox.data.ershou.nianjian_shijian = ret.year + '-' + ret.month + '-' + ret.day;
+                        }
+                    });
+                })
+
+            }
+        })
+        api.showProgress({
+            title: ' 加载中，请稍等',
+            // text: ' ',
+            modal: true
+        });
+        pd_dp(user).then(ret => {
+            let str = ret[0].zhuyingyewu.replace(/\s*/g, "")
+            let zhuyingyewu = str.split(',')
+            apibox.zhuyingyewu = zhuyingyewu
+            apibox.dianpuleibie = ret[0].leibie
+            apibox.data = apibox_data
+            apibox.show = true
+            api.hideProgress();
+        }).catch(ss => {
+            alert('店铺不存在');
+            api.closeWin();
+
+        })
+
+        api.addEventListener({
+            name: 'add_shangpin'
+        }, function (ret, err) {
+            let chexing = ret.value.chexing
+            apibox.data.chexing = chexing;
+            apibox.data.name = chexing.typeName + ' ' + chexing.specName
+        });
+
+
+        function get_dizhi_info() {
+            if (!isupdata) {
+                return
+            }
+            bMap.getLocation({
+                accuracy: '100m',
+                autoStop: true,
+                filter: 1
+            }, function (ret, err) {
+                if (ret.status) {
+                    apibox_data.map = {}
+                    apibox_data.map.lat = ret.lat;
+                    apibox_data.map.lon = ret.lon
+                    bMap.getNameFromCoords({
+                        lon: ret.lon,
+                        lat: ret.lat
+                    }, function (ret, err) {
+                        if (ret.status) {
+                            apibox_data.map.province = ret.province;
+                            apibox_data.map.city = ret.city;
+                            apibox_data.map.district = ret.district;
+                            apibox_data.map.streetName = ret.streetName;
+                            apibox_data.map.adCode = ret.adCode;
+                            //ret.adcode   //行政区域编码
+                            // ret.province              //字符串类型；省份
+                            // ret.city                  //字符串类型；城市
+                            // ret.district              //字符串类型；县区
+                            // ret.streetName            //字符串类型；街道名
+                        }
+                    });
+                }
+            });
+        }
+
+
+
+
+
+        $api.addEvt($api.dom('#sc_zhaopai'), 'click', function () {
+            if (apibox.data.zhaopai_url.length <= 5) {
+                add_img('zhaopai_url')
+            } else {
+                toast('最多添加6张图片')
+            }
+        })
+        $api.addEvt($api.dom('#sc_jianjie_pic'), 'click', function () {
+            if (apibox.data.jianjie_url.length <= 5) {
+                add_img('jianjie_url')
+            } else {
+                toast('最多添加6张图片')
+            }
+        })
+
+        $api.addEvt($api.dom('#add'), 'click', function () {
+            apibox.data.user = $api.getStorage('user')
+            let xinche = ['zhaopai_url', 'jianjie_url', 'jianjie', 'jiage', 'leibie', 'chexing']
+            let ershouche = ['zhaopai_url', 'jianjie_url', 'jianjie', 'jiage', 'leibie', 'chexing', 'ershou']
+            let qita = ['zhaopai_url', 'jianjie_url', 'jianjie', 'jiage', 'leibie', 'name']
+            if (apibox.data.leibie == '请选择') {
+                toast('请选择商品类别')
+                return
+            }
+            if (apibox_data.leibie == '新车') {
+                let ss = true;
+                xinche.forEach(element => {
+                    if (!apibox_data[element]) {
+                        ss = false
+                    }
+                });
+                if (!ss) {
+                    toast('信息填写不完整')
+                    return
+                }
+            } else if (apibox_data.leibie == '二手车') {
+                let ss = true;
+
+                ershouche.forEach(element => {
+                    if (!apibox_data[element]) {
+                        ss = false
+                    }
+
+                    for (const a in apibox_data['ershou']) {
+                        if (apibox_data.ershou.hasOwnProperty(a)) {
+                            let element = (apibox_data.ershou)[a];
+                            if (!element) {
+                                ss = false
+                            }
+                        }
+                    }
+                });
+
+                if (!ss) {
+                    toast('信息填写不完整')
+                    return
+                }
+            } else {
+                let ss = true;
+
+                qita.forEach(element => {
+                    if (!apibox_data[element]) {
+                        ss = false
+
+                    }
+                });
+                if (!ss) {
+                    toast('信息填写不完整')
+                    return
+                }
+            }
+
+
+
+            let reg = /(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9](0-9)?$)/;
+            if (!reg.test(apibox.data.jiage - 0)) {
+                toast('价格格式不对')
+                return
+            }
+
+            let ajaxurl = server + '/api/add_dianpu_sp'
+            if (isupdata) {
+                ajaxurl = server + '/api/updata_dianpu_sp'
+            }
+
+            // alert(JSON.stringify(apibox.data))
+            api.ajax({
+                url: ajaxurl,
+                method: 'post',
+                timeout: 5,
+                dataType: 'json',
+                returnAll: false,
+                data: {
+                    values: apibox.data,
+                    files: {
+                        zhaopai_url: apibox.data.zhaopai_url,
+                        jianjie_url: apibox.data.jianjie_url
+                    }
+                }
+            }, function (ret, err) {
+                if (ret.zhuangtai) {
+                    api.hideProgress();
+                    alert('添加成功')
+                    api.closeWin();
+                } else {
+                    api.hideProgress();
+                    alert('非法添加')
+                };
+            });
+            showProgress('', '提交中')
+
+
+        })
+
+        function add_img(type) {
+            api.getPicture({
+                sourceType: 'library',
+                encodingType: 'jpg',
+                mediaValue: 'pic',
+                destinationType: 'url',
+                allowEdit: true,
+                quality: 50,
+                targetWidth: 500,
+                // targetHeight: ,
+                saveToPhotoAlbum: false
+            }, function (ret, err) {
+                if (ret.data != "") {
+
+                    apibox_data[type].push(ret.data)
+                } else {
+                    api.toast({
+                        msg: '添加图片出错',
+                        duration: 2000,
+                        location: 'bottom'
+                    });
+                }
+            });
+        }
+        function pd_dp(user) {
+            return new Promise((resolve, reject) => {
+
+                api.ajax({
+                    url: server + '/api/get_dianpu?user=' + user,
+                    method: 'get',
+                    timeout: 10,
+                    dataType: 'json',
+                    returnAll: false
+                }, function (ret, err) {
+                    if (ret) {
+                        console.log(2)
+                        setTimeout(() => {
+                            console.log(3)
+                            resolve(ret)
+                        }, 5000);
+
+                    } else {
+                        setTimeout(() => { reject(err) }, 2000)
+
+                    }
+
+                })
+            })
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+</html>

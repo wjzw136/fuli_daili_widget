@@ -1,0 +1,170 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+
+	</style>
+</head>
+
+<body>
+	<div style="position: relative;">
+		<div
+			style="font-size: 16px;background-color: #000; width: 100%;;color: #fff; position: fixed;bottom: 0;height: 50px; display: flex; justify-content:space-between;padding: 0 15px;align-items: center;">
+			<div id="queding">确定</div>
+			<div id="quxiao">取消</div>
+		</div>
+	</div>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+
+		let width = api.pageParam.width;
+		let height = api.pageParam.height;
+		let apiurl = api.pageParam.apiurl;
+		let event = api.pageParam.event;
+		add_img(width, height)
+		var FNImageClip = api.require('FNImageClip');
+		var user = $api.getStorage('user');
+
+		$api.addEvt($api.dom('#queding'), 'click', function () {
+			// var FNImageClip = api.require('FNImageClip');
+			FNImageClip.save({
+				destPath: 'fs://imageClip/' + user + '.png',
+				copyToAlbum: false,
+				quality: 1
+			}, function (ret, err) {
+				if (ret) {
+
+
+					api.showProgress({
+						title: ' 上传中。。',
+						text: ' 请稍等',
+						modal: true
+					});
+
+					api.ajax({
+						url: server + apiurl,
+						method: 'post',
+						timeout: 30,
+						dataType: 'json',
+						returnAll: false,
+						data: {
+							values: {
+								user: $api.getStorage('user'),
+								md5password: $api.getStorage('md5password')
+							},
+							files: {
+								file: ret.destPath
+							}
+						}
+					}, function (ret1, err) {
+						if (ret1) {
+							toast('修改成功');
+
+							api.showProgress({
+								title: '上传完毕',
+								text: ' text',
+								modal: true
+							});
+
+							api.sendEvent({
+								name: 'autologin'
+							});
+							api.sendEvent({
+								name: event,
+								extra: { imgpath: ret1.imgpath }
+							});
+							setInterval(() => {
+								api.hideProgress();
+								api.closeWin();
+							}, 1000);
+
+
+
+						} else {
+							toast('连接服务器失败');
+						};
+					});
+				}
+			});
+		});
+		$api.addEvt($api.dom('#quxiao'), 'click', function () {
+
+			api.closeWin();
+
+		})
+		function add_img() {
+			api.getPicture({
+				sourceType: 'library',
+				encodingType: 'jpg',
+				mediaValue: 'pic',
+				destinationType: 'url',
+				allowEdit: true,
+				quality: 100,
+				targetWidth: 480,
+				// targetHeight: ,
+				saveToPhotoAlbum: false
+			}, function (ret, err) {
+				if (ret.data != "") {
+					bjimg(ret.data, width, height)
+				} else {
+					setTimeout(() => {
+						api.closeWin({
+							animation: {
+								type: "fade",                //动画类型（详见动画类型常量）
+								subType: "from_right",       //动画子类型（详见动画子类型常量）
+								duration: 200                //动画过渡时间，默认300毫秒
+							}
+						});
+					}, 500);
+				}
+			})
+		}
+
+
+		function bjimg(srcPath, width, height) {
+			// var FNImageClip = api.require('FNImageClip');
+			FNImageClip.open({
+				rect: {
+					x: 0,
+					y: 0,
+					w: api.winWidth,
+					h: api.winHeight - 50
+				},
+				srcPath: srcPath,
+				isHideGrid: true,
+				style: {
+					mask: 'rgba(0,0,0,0.3)',
+					clip: {
+						w: width,
+						h: height,
+						x: (api.winWidth - width) / 2,
+						y: (api.winHeight - 100 - height) / 2,
+						borderColor: '#fff',
+						borderWidth: 1,
+						appearance: 'rectangle'
+					}
+				},
+				mode: 'image',
+				fixedOn: api.frameName
+			}, function (ret, err) {
+
+			});
+		}
+	};
+</script>
+
+</html>

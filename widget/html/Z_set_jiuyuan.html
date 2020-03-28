@@ -1,0 +1,337 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		.header {
+			height: 50px;
+			padding: 0px 20px;
+			font-size: 20px;
+			/* background-image: url(../image/7.png); */
+			position: fixed;
+			width: 100%;
+			background-color: #03a9f4;
+			color: #fff;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background-image: linear-gradient(#03a9f4, #67D1E8);
+		}
+
+		.aui-list {
+			background-color: #fff;
+		}
+
+		.xuanxiangActive {
+			border-bottom: #ff8000 2px solid;
+			color: #ff8000;
+		}
+		.tingdan{
+			opacity: 0.5;
+		}
+		.xuanxiang {
+			margin: 0px 15px;
+			font: bold;
+			padding: 10px 0;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="apibox" class="aui-content">
+		<div
+			style="display: flex;justify-content: center;align-items: center; flex-direction: column;background-color: #fff;">
+			<div class="lunbotu" style="width: 100%;height: 200px;overflow: hidden;">
+
+			</div>
+		</div>
+		<div class="aui-content" style="background-color: #fff;">
+			<ul class="aui-list aui-list-in">
+				<li class="aui-list-item aui-list-item-middle">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-title">救援团队名称</div>
+						<div class="aui-list-item-right">
+							{{data.name}}
+						</div>
+					</div>
+				</li>
+				<li id="fuzeren" class="aui-list-item aui-list-item-middle">
+					<div class="aui-list-item-inner ">
+						<div class="aui-list-item-title">负责人</div>
+						<div class="aui-list-item-right">
+							{{data.fuzeren}}
+						</div>
+					</div>
+				</li>
+				<li id='dadian' class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-title">搭电</div>
+						<div class="aui-list-item-right">
+							<div v-if='data.dadian==1' style="color: green;">已开通</div>
+							<div v-else style="color: red;">未开通</div>
+						</div>
+					</div>
+				</li>
+				<li id='tuoche' class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-title">拖车</div>
+						<div class="aui-list-item-right">
+
+							<div v-if='data.tuoche==1' style="color: green;">已开通</div>
+							<div v-else style="color: red;">未开通</div>
+						</div>
+					</div>
+				</li>
+				<li id='butai' class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-title">补胎</div>
+						<div class="aui-list-item-right">
+							<div v-if='data.butai==1' style="color: green;">已开通</div>
+							<div v-else style="color: red;">未开通</div>
+						</div>
+					</div>
+				</li>
+				<li id="phone" class="aui-list-item aui-list-item-middle">
+					<div class="aui-list-item-inner aui-list-item-arrow">
+						<div class="aui-list-item-title">电话</div>
+						<div class="aui-list-item-right">
+							{{data.phone}}
+						</div>
+					</div>
+				</li>
+
+				<li id="jianjie" class="aui-list-item aui-list-item-middle">
+					<div class="aui-list-item-inner aui-list-item-arrow">
+						<div class="aui-list-item-title">简介</div>
+						<div class="aui-list-item-right">
+							{{data.jianjie}}
+						</div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="aui-content" style="background-color: #fff">
+			<div style="background-color: #F2F2F2;padding: 15px;font-size: 20px;">听单设置</div>
+			<ul :class='{tingdan:disabled}' class="aui-list aui-list-in">
+				<li id='dadian' v-if='data.dadian==1' class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-title">开启搭电 <span v-if='disabled' class="aui-font-size-12" style="color:red">（听单中）</span></div>
+						<div class="aui-list-item-right" v-on:click='dianji'>
+							<input type="checkbox" class="aui-switch" :disabled='disabled' v-model="data.isdadian">
+						</div>
+					</div>
+				</li>
+				<li id='tuoche' v-if='data.tuoche==1' class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-title">开启拖车<span v-if='disabled' class="aui-font-size-12" style="color:red">（听单中）</span></div>
+						<div class="aui-list-item-right" v-on:click='dianji'>
+							<input type="checkbox" class="aui-switch" :disabled='disabled' v-model="data.istuoche">
+						</div>
+					</div>
+				</li>
+				<li id='butai' v-if='data.butai==1' class="aui-list-item">
+					<div class="aui-list-item-inner">
+						<div class="aui-list-item-title">开启补胎<span v-if='disabled' class="aui-font-size-12" style="color:red">（听单中）</span></div>
+						<div class="aui-list-item-right" v-on:click='dianji'>
+							<input type="checkbox" class="aui-switch" :disabled='disabled' v-model="data.isbutai">
+						</div>
+					</div>
+				</li>
+
+
+			</ul>
+			<div style="background-color: #fff;padding: 15px;">
+				<div id="start_tingdan" :socket='socket' class="aui-btn aui-btn-info aui-btn-block">
+					<span v-if="socket=='start'">开始听单</span>
+					<span v-if="socket=='stop'">停止听单</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+		let data = api.pageParam.data;
+
+
+
+		let paths = []
+
+		paths.push(server + data.img_url)
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				server: server,
+				data: data,
+				socket: 'start',
+				disabled: false
+			},
+			updated() {
+				// console.log(JSON.stringify(this.data))
+			},
+			methods: {
+				dianji: function () {
+					if (this.disabled) {
+						api.toast({
+							msg: '请停止听单后更改',
+							duration: 2000,
+							location: 'bottom'
+						});
+					}
+				}
+			},
+			computed: {
+				jianting_class:function() {
+					if (this.disabled) {
+						
+					}
+					
+				}
+			},
+		})
+		getlunbotu(paths)
+		let socketisstart = api.getGlobalData({
+			key: 'socketisstart',
+		});
+		if (socketisstart == 'start') {
+			apibox.disabled = false
+		} else {
+			apibox.disabled = true
+		}
+		apibox.socket = api.getGlobalData({ key: 'socketisstart' });
+
+		$api.addEvt($api.dom('#back'), 'click', function () {
+			api.closeWin();
+		});
+
+		$api.addEvt($api.dom('#phone'), 'click', function () {
+			let reg = /^1[3456789]\d{9}$/;
+			dialogBoxinput2('手机号', ' ', reg, function (ss) {
+				updata_jiayouzhan('jyz_phone', ss)
+			})
+		});
+
+
+		api.addEventListener({
+			name: 'start_tingdan'
+		}, function (ret, err) {
+			if (ret.value.isstart == 'start') {
+				apibox.socket = 'stop'
+				apibox.disabled = true
+				api.setGlobalData({
+					key: 'socketisstart',
+					value: 'stop'
+				});
+
+			}
+			if (ret.value.isstart == 'stop') {
+				apibox.socket = 'start'
+				apibox.disabled = false
+				api.setGlobalData({
+					key: 'socketisstart',
+					value: 'start'
+				});
+			}
+		});
+		$api.addEvt($api.dom('#start_tingdan'), 'click', function () {
+			let isstart = $api.attr($api.dom('#start_tingdan'), 'socket');
+			if (apibox.data.isdadian || apibox.data.istuoche || apibox.data.isbutai) {
+				api.ajax({
+					url: server + '/api/update_jiuyuan',
+					method: 'post',
+					timeout: 30,
+					dataType: 'json',
+					data: {
+						values: {
+							isdadian: apibox.data.isdadian,
+							istuoche: apibox.data.istuoche,
+							isbutai: apibox.data.isbutai,
+							user: $api.getStorage('user'),
+							md5password: $api.getStorage('md5password')
+						}
+					},
+					returnAll: false
+				}, function (ret, err) {
+					if (ret.zhuangtai) {
+						api.sendEvent({
+							name: 'start_tingdan',
+							extra: { isstart: isstart }
+						});
+					}
+				});
+			} else {
+
+				api.toast({
+					msg: '至少选择一项进行听单',
+					duration: 2000,
+					location: 'bottom'
+				});
+
+			}
+
+
+		});
+
+
+
+
+
+		function getlunbotu(paths) {
+			var UIScrollPicture = api.require('UIScrollPicture');
+			UIScrollPicture.open({
+				rect: {
+					x: 0,
+					y: $api.dom('.lunbotu').offsetTop,
+					w: api.winWidth,
+					h: $api.dom('.lunbotu').offsetHeight
+				},
+				data: {
+					paths: paths,
+					captions: []
+				},
+				styles: {
+					caption: {
+						height: 30,
+						color: '#6ab494',
+						size: 14,
+						bgColor: '#ffffff',
+						position: 'bottom'
+					},
+					indicator: {
+						dot: {
+							w: 10,
+							h: 10,
+							r: 5,
+							margin: 5
+						},
+						align: 'center',
+						color: '#FFFFFF',
+						activeColor: '#DA70D6'
+					}
+				},
+				placeholderImg: 'widget://image/0613224546_3.png',
+				contentMode: 'scaleToFill',
+				interval: 3,
+				fixedOn: api.frameName,
+				loop: true,
+				fixed: false
+			}, function (ret, err) {
+				if (ret.eventType == 'click') {
+				}
+			});
+		}
+	};
+</script>
+
+</html>

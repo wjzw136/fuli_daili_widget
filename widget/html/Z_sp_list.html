@@ -1,0 +1,210 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        .header {
+            height: 50px;
+            padding: 0px 20px;
+            font-size: 20px;
+            width: 100%;
+            top: 0;
+            left: 0;
+            /* background-image: url(../image/7.png); */
+            background-color: #03a9f4;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-image: linear-gradient(#03a9f4, #67D1E8);
+            position: fixed;
+        }
+        body{
+            background-color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header" id="header">
+        <div>
+            <span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+            <span id="biaoti" style="margin-left:15px">养车</span>
+        </div>
+    </div>
+    <div id="sp_box"  style="padding-top: 50px">
+        <div v-if='data' class="aui-font-size-14" style="display: flex;width: 100%;padding: 15px; flex-wrap: wrap;justify-content:space-between;">
+            <div v-for='items in data' :spid='items.id' :leibie='items.leibie' class="spclick"
+                style="width:48%;background-color: #fff;flex-shrink: 0;margin-bottom: 15px;">
+                <div style="border-radius: 5px;overflow: hidden;">
+                    <img width="100%" height="150px" :src="server+ items.zhaopai_url[0]" alt="" srcset="">
+                </div>
+                <div style="margin-top: 10px;" class="aui-font-size-16">
+                    <span style="margin-right:5px">{{items.name}}</span>
+                </div>
+                <div class="aui-font-size-14">
+                    <span style="margin-right:5px">{{items.jianjie}}</span>
+                </div>
+                <div class="aui-font-size-18" style="color: red;margin-top: 10px;">
+                    <span v-if="items.jiage>items.huaxianjia">
+                        <span v-if='items.huaxianjia'>
+                            ￥{{items.huaxianjia}}
+                            <span class="aui-font-size-14"
+                                style="text-decoration: line-through;">￥{{items.jiage}}</span>
+                        </span>
+                    <span v-else>￥{{items.jiage}}</span>
+                </div>
+            </div>
+        </div>
+        <div v-else class="aui-font-size-12" style="text-align: center;padding:10px">{{msg}}</div>
+    </div>
+
+
+
+</body>
+
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript" src="../script/vue.js">
+</script>
+<script type="text/javascript" src="../script/anime.min.js"></script>
+<script type="text/javascript">
+
+    var sp_box = new Vue({
+        el: '#sp_box',
+        data: {
+            server: server,
+            error: true,
+            data: '',
+            msg: '加载中'
+        },
+        computed: {
+
+        },
+        updated: function () {
+            var spclick = $api.domAll('.spclick');
+            Array.prototype.forEach.call(spclick, function (btn) {
+                btn.addEventListener('click', function (event) {
+                    var spid = event.currentTarget.getAttribute('spid')
+                    let leibie = event.currentTarget.getAttribute('leibie')
+                    let data = {
+                        spid: spid,
+                        leibie: leibie
+                    }
+                    api.openWin({
+                        name: 'spclick',
+                        url: './Z_pt_header.html',
+                        bounces: false,
+                        pageParam: {
+                            spid: data,
+                            biaoti: '商品',
+                            html: 'Z_dianpu_sp_xq'
+                        }
+                    });
+                })
+            });
+        }
+    })
+    apiready = function () {
+        let guanjianci = api.pageParam.guanjianci
+        let title = api.pageParam.title
+
+
+        $api.html($api.dom("#biaoti"), title);
+        var bMap = api.require('bMap');
+        var lat;
+        var lon;
+        if (api.systemType == 'ios') {
+            bMap.initMapSDK(function (ret) {
+                if (ret.status) {
+                    get_fujin_sp()
+                }
+            });
+        } else {
+            get_fujin_sp()
+        }
+
+        function get_fujin_sp() {
+            new Promise(function (resolve, reject) {
+                bMap.getLocation({
+                    accuracy: '100m',
+                    autoStop: true,
+                    filter: 1
+                }, function (ret, err) {
+                    if (ret.status) {
+                        lat = ret.lat;
+                        lon = ret.lon
+                        resolve(ret)
+                    } else {
+                        reject('获取GPS失败');
+                    }
+                })
+            }).then(function (res) {
+                return new Promise(function (resolve, reject) {
+                    bMap.getNameFromCoords({
+                        lon: res.lon,
+                        lat: res.lat
+                    }, function (ret, err) {
+                        if (ret.status) {
+                            resolve(ret)
+                        } else {
+                            reject('获取adcode失败');
+                        }
+                    })
+
+                })
+
+            }).then(function (res) {
+
+                api.ajax({
+                    url: server + '/api/fujin_sp',
+                    method: 'post',
+                    timeout: 10,
+                    dataType: 'json',
+                    returnAll: false,
+                    data: {
+                        values: {
+                            adCode: res.adCode,
+                            guanjianci: guanjianci
+                        }
+                    }
+                }, function (ret, err) {
+                    if (ret) {
+                        // TODO 
+                        sp_box.data = ret
+                    } else {
+                        sp_box.msg = '无数据'
+                    }
+                });
+            }).catch(function (error) {
+                sp_box.data = ''
+                sp_box.msg = '加载失败'
+                jyz_box.data = ''
+                jyz_box.msg = '加载失败'
+            });
+        }
+
+        $api.addEvt($api.dom('#back'), 'click', function () {
+            api.closeWin();
+        });
+
+    }
+
+
+
+
+
+
+
+
+</script>
+
+</html>

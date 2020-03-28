@@ -1,0 +1,239 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		.header {
+			height: 50px;
+			padding: 0px 20px;
+			font-size: 20px;
+			/* background-image: url(../image/7.png); */
+			background-color: #03a9f4;
+			color: #fff;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background-image: linear-gradient(#03a9f4, #67D1E8);
+		}
+	</style>
+</head>
+
+<body>
+	<div class="header" id="header">
+		<div>
+			<span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+			<span id="biaoti" style="margin-left:15px">修改密码</span>
+		</div>
+	</div>
+
+	<section class="aui-content" id="apibox">
+		<div
+			style="background-color: #fff;display: flex;justify-content: center;align-items: center; flex-direction: column;padding: 15px 0;">
+			<div style="width: 150px;height:150px;margin-bottom: 15px;border-radius: 75px;overflow: hidden;">
+				<img id="touxiang" width="100%" height="100%" :src="server+ userinfo.touxiang" alt="">
+			</div>
+			<div>{{userinfo.name}}</div>
+		</div>
+		<ul class="aui-list aui-form-list" style="background-color: #ffffff;">
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner">
+					<div class="aui-list-item-label">
+						旧密码
+					</div>
+					<div class="aui-list-item-input">
+						<input v-model='oldmima' type="password" placeholder="旧密码" id="oldmima">
+					</div>
+				</div>
+			</li>
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner">
+					<div class="aui-list-item-label">
+						新密码
+					</div>
+					<div class="aui-list-item-input">
+						<input v-model='newmima' type="password" placeholder="新密码" id="newmima">
+					</div>
+				</div>
+			</li>
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner">
+					<div class="aui-list-item-label">
+						重复新密码
+					</div>
+					<div class="aui-list-item-input">
+						<input v-model='remima' type="password" placeholder="重复新密码" id="remima">
+					</div>
+				</div>
+			</li>
+			<li class="aui-list-item">
+
+				<div class="aui-list-item-input" style="width: 60%;">
+					<input v-model='yanzhengma' type="text" placeholder="验证码" >
+				</div>
+				<div style="right: 0px;position: absolute;height: 55px;width:40%" id="yz_code">
+
+				</div>
+			</li>
+
+
+		</ul>
+	</section>
+
+	<section class="aui-content-padded">
+		<div id="gaimima" class="aui-btn aui-btn-block aui-btn-info aui-btn-xs">确定</div>
+
+	</section>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/GVerify.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+		let userinfo = api.pageParam.userinfo
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				server: server,
+				userinfo: userinfo,
+				newmima: '',
+				oldmima: '',
+				remima: '',
+				yanzhengma: ''
+			}
+		})
+		var verifyCode = new GVerify("yz_code");
+		$api.addEvt($api.dom('#back'), 'click', function () {
+			api.closeWin();
+		});
+
+		
+		$api.addEvt($api.dom('#gaimima'), 'click', function () {
+			var deviceid = api.deviceId;
+			var password_reg = new RegExp("^[a-zA-Z0-9]{6,18}$")
+			var reg_zhanghao = new RegExp("^[a-zA-Z][a-zA-Z0-9]{4,18}$");
+			var res_yzm = verifyCode.validate(apibox.yanzhengma);
+			if (!res_yzm) {
+				api.toast({
+					msg: '验证码错误',
+					duration: 2000,
+					location: 'bottom'
+				});
+			} else if (!password_reg.test(apibox.newmima)) {
+				api.toast({
+					msg: '密码必须是的6-18位',
+					duration: 2000,
+					location: 'bottom'
+				});
+			} else if (apibox.remima != apibox.newmima) {
+				api.toast({
+					msg: '两次密码不相同',
+					duration: 2000,
+					location: 'bottom'
+				});
+			} else {
+				api.ajax({
+					url: server + '/api/gaimima',
+					method: 'post',
+					timeout: 15,
+					dataType: 'json',
+					returnAll: false,
+					data: {
+						values: {
+							zhanghao: $api.getStorage('user'),
+							oldmima: apibox.oldmima,
+							newmima: apibox.newmima,
+							deviceid: deviceid
+						}
+					}
+				}, function (ret, err) {
+					if (ret.zhuangtai) {
+						toast('修改成功')
+						api.closeWin();
+					} else {
+						toast(ret.msg)
+						verifyCode.refresh()
+					}
+				});
+
+			}
+		})
+	};
+	
+
+	//验证验证码
+
+
+
+
+
+	// $api.addEvt($api.dom('#getcode'), 'click', function () {
+	// 	var reg = new RegExp("^1[345678][0-9]{9}$");
+	// 	var mobile = $api.val($api.dom('#mobile'));
+	// 	code = Math.floor(Math.random() * 900000 + 99999);
+	// 	if (!reg.test(mobile)) {
+	// 		api.toast({
+	// 			msg: '手机号号码格式错误',
+	// 			duration: 2000,
+	// 			location: 'bottom'
+	// 		});
+	// 	} else {
+	// 		var countdown = 60;
+	// 		settime($api.dom('#getcode input'))
+	// 		function settime(obj) {
+	// 			if (countdown == 0) {
+	// 				obj.removeAttribute("disabled");
+	// 				obj.value = "获取验证码";
+	// 				countdown = 60;
+	// 				return;
+	// 			} else {
+	// 				obj.setAttribute("disabled", true);
+	// 				obj.value = "重新发送(" + countdown + ")";
+	// 				countdown--;
+	// 			}
+	// 			setTimeout(function () {
+	// 				settime(obj)
+	// 			}
+	// 				, 1000)
+	// 		}
+	// 		dianhua = mobile;
+	// 		api.ajax({
+	// 			headers: {
+	// 				'Authorization': 'APPCODE f48d189498f94aeab177b97404ff82ed'
+	// 			},
+	// 			url: 'http://fesms.market.alicloudapi.com/sms/?code=' + code + '&phone=' + dianhua + '&skin=17&sign=1',
+	// 			method: 'get',
+	// 			timeout: 30,
+	// 			returnAll: false
+	// 		}, function (ret, err) {
+	// 			//alert(JSON.stringify(ret));
+	// 			if (ret.Code) {
+
+	// 				yanzhengma = code
+	// 				// $api.html($api.first($api.dom('.tqbox')), ret.result.date + ' ' + ret.result.week + " " + ret.result.city + ' ' + ret.result.weather);
+	// 				// $api.html($api.last($api.dom('.tqbox')), ret.result.winddirect + ' ' + ret.result.windpower + " 当前温度" + ret.result.temp + '℃' + " 温度范围" + ret.result.templow + "～" + ret.result.temphigh + '℃');
+	// 			} else {
+	// 				api.toast({
+	// 					msg: '验证码服务出错',
+	// 					duration: 2000,
+	// 					location: 'bottom'
+	// 				});
+
+	// 			}
+	// 		})
+	// 	}
+
+	// });
+
+</script>
+
+</html>

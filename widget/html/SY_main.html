@@ -1,0 +1,799 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        .lunbotubox {
+            height: 150px;
+        }
+
+        .aui-card-list-header {
+            color: #0080ff
+        }
+
+        .color-1 {
+            color: #fff;
+            background-color: #F7C9E0
+        }
+
+        .color-2 {
+            color: #fff;
+            background-color: #E5D0C7
+        }
+
+        .color-3 {
+            color: #fff;
+            background-color: #AEBBDD
+        }
+
+        .color-4 {
+            color: #fff;
+            background-color: #88D1BE
+        }
+
+        .border {
+            overflow: hidden;
+        }
+
+        .center {
+            flex-direction: column;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .bottom-line {
+            border-bottom: coral solid 1px;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <div class=""
+        style="display: flex; justify-content:space-between;width: 100%;flex-wrap: wrap;padding-bottom: 15px; background-color: #fff;">
+        <div id="yangche" class="border" style=" width: 50%;padding:15px 7.5px 0px 15px;">
+            <div class="color-4" style="padding: 10px;border-radius: 5px;overflow: hidden;">
+                <div style="margin-bottom: 10px;font-size: 25px;">养车</div>
+                <!-- <div><span>商业险</span> | <span>交强险</span></div> -->
+                <!-- <div style=" font-size:smaller;display: flex; justify-content: space-between;flex-wrap:nowrap;align-items: center;"> -->
+                <div class="aui-font-size-14 aui-ellipsis-1"><span>保养</span> | <span>修车</span> | <span>装饰</span> |
+                    <span>喷漆</span></div>
+                <!-- <img height="60px" width="60px" style="border-radius:5px;flex-shrink: 0;" :src="item.tupian_url" alt="" srcset=""> -->
+                <!-- </div> -->
+            </div>
+        </div>
+        <div class="border" style=" width: 50%;padding:15px 15px 0px 7.5px;">
+            <div id="maiche" class="color-1" style="padding: 10px;border-radius: 5px;overflow: hidden;">
+                <div style="margin-bottom: 10px;font-size: 25px;">买车</div>
+                <!-- <div><span>商业险</span> | <span>交强险</span></div> -->
+                <div class="aui-font-size-14 aui-ellipsis-1"><span>新车</span> | <span>二手车</span></div>
+            </div>
+        </div>
+        <div id="daiban" class="border" style=" width: 50%;padding:15px 7.5px 0px 15px;">
+            <div class="color-3" style="padding: 10px;border-radius: 5px;overflow: hidden;">
+                <div style="margin-bottom: 10px;font-size: 25px;">代办</div>
+                <!-- <div><span>商业险</span> | <span>交强险</span></div> -->
+                <!-- <div style=" font-size:smaller;display: flex; justify-content: space-between;flex-wrap:nowrap;align-items: center;"> -->
+                <div class="aui-font-size-14 aui-ellipsis-1"><span>检车</span> | <span>违章查询</span></div>
+                <!-- <img height="60px" width="60px" style="border-radius:5px;flex-shrink: 0;" :src="item.tupian_url" alt="" srcset=""> -->
+                <!-- </div> -->
+            </div>
+        </div>
+        <div class="border" style=" width: 50%;padding:15px 15px 0px 7.5px;">
+            <div id="jiuyuan" class="color-2" style="padding: 10px;border-radius: 5px;overflow: hidden;">
+                <div style="margin-bottom: 10px;font-size: 25px;">车辆救援</div>
+                <!-- <div><span>搭电</span> | <span>换胎</span> | <span>拖车</span></div> -->
+                <!-- <div style=" font-size:smaller;display: flex; justify-content: space-between;flex-wrap:nowrap;align-items: center;"> -->
+
+                <div class="aui-font-size-14 aui-ellipsis-1">
+                    <span>搭电</span> | <span>换胎</span> | <span>拖车</span>
+                    <!-- <span>人保</span> | <span>人寿</span> | <span>安邦</span> |<span>大地</span> -->
+                </div>
+                <!-- <img height="60px" width="60px" style="border-radius:5px;flex-shrink: 0;" :src="item.tupian_url" alt="" srcset=""> -->
+                <!-- </div> -->
+            </div>
+
+        </div>
+        <div class="border" style=" width: 50%;padding:15px 7.5px 0px 15px;">
+            <div id="cherenhuzhao" class="color-2" style="padding: 10px;border-radius: 5px;overflow: hidden;">
+                <div style="margin-bottom: 10px;font-size: 25px;">车人互找</div>
+
+                <div class="aui-font-size-14 aui-ellipsis-1">
+                    <span>车找人</span> | <span>人找车</span>
+                    <!-- <span>人保</span> | <span>人寿</span> | <span>安邦</span> |<span>大地</span> -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <div id="jianting" style="padding:15px;display:none;">
+        <div
+            style="border-radius: 10px;display:flex;width: 100%;align-items: center; color: #fff; background-color: cornflowerblue;padding: 5px 15px ;">
+            <div id="jianting_xinxi" style="flex-grow: 1;">正在监听救援订单</div>
+            <div id="close_Socket" style="padding: 5px 10px;">X</div>
+        </div>
+    </div>
+
+
+    <div v-if='data' id='jyz_box' style="background-color: #fff;">
+        <ul class="aui-list aui-media-list aui-list-noborder bt">
+            <li class="aui-list-header bt-li">
+                <div class="aui-font-size-16 bt-li-div">
+                    优惠加油站
+                </div>
+                <div id="jyz_list">更多</div>
+            </li>
+        </ul>
+        <transition name='fade'>
+            <div class="aui-font-size-14" style="display: flex;width: 100%;flex-wrap: wrap;">
+                <div class="jyz_chakan" index='0'
+                    style="width:50%;padding: 15px;border-bottom: #f2f2f2 1px solid;border-right: #f2f2f2 1px solid;flex-shrink: 0;">
+                    <div style="color:#03a9f4">92#汽油优惠<span style="padding: 0 5px;color: red">{{youhui_92}}</span>元/L
+                    </div>
+                    <div class="aui-font-size-12"><span style="margin-right:5px">{{data[0].jyz_youhui_time}}</span><span
+                            style="margin-right:5px">{{data[0].jyz_pingpai}}</span></div>
+                    <div class="aui-font-size-12">{{data[0].jyz_name}}</div>
+                </div>
+                <div class="jyz_chakan" index='1'
+                    style="width: 50%;padding: 15px;border-bottom: #f2f2f2 1px solid;flex-shrink: 0;">
+                    <div style="color:#03a9f4">95#汽油优惠<span style="padding: 0 5px;color: red">{{youhui_95}}</span>元/L
+                    </div>
+                    <div class="aui-font-size-12"><span style="margin-right:5px">{{data[1].jyz_youhui_time}}</span><span
+                            style="margin-right:5px">[周日]</span><span
+                            style="margin-right:5px">{{data[1].jyz_pingpai}}</span></div>
+                    <div class="aui-font-size-12">{{data[1].jyz_name}}</div>
+                </div>
+                <div class="jyz_chakan" index='2'
+                    style="width: 50%;padding: 15px;border-right: #f2f2f2 1px solid;flex-shrink: 0;">
+                    <div style="color:#03a9f4">86#柴油优惠<span style="padding: 0 5px;color: red">{{youhui_86}}</span>元/L
+                    </div>
+                    <div class="aui-font-size-12"><span style="margin-right:5px">{{data[2].jyz_youhui_time}}</span><span
+                            style="margin-right:5px">[周日]</span><span
+                            style="margin-right:5px">{{data[2].jyz_pingpai}}</span></div>
+                    <div class="aui-font-size-12">{{data[2].jyz_name}}</div>
+                </div>
+                <div style="width: 50%;padding: 15px;">
+                    更多
+                </div>
+            </div>
+            <!-- <div v-else style="width: 100%;display:flex; justify-content: center;align-items: center;">
+                <div class="aui-font-size-12" style="padding: 15px;">{{msg}} <span id="shuaxin_jyz"
+                        style="padding: 0 10px;color:blue;">刷新</span></div>
+            </div> -->
+        </transition>
+    </div>
+    <div style="background-color: #fff;margin-top: 15px;">
+        <ul class="aui-list aui-media-list aui-list-noborder">
+            <li class="aui-list-header bt-li">
+                <div class="aui-font-size-16 bt-li-div">
+                    各类保险公司
+                </div>
+            </li>
+        </ul>
+        <div class="" style="display: flex; justify-content:space-between;width: 100%;flex-wrap: wrap;padding: 15px;">
+
+            <div class="border baoxiangongsi" id="abbx" style=" width: 32% ;padding-bottom: 10px;">
+                <img src="../image/abbx.jpg" width="100%" height="60px" alt="">
+            </div>
+
+            <div class="border baoxiangongsi" id="rsbx" style=" width: 32%;padding-bottom: 10px">
+                <img src="../image/rsbx.jpg" width="100%" height="60px" alt="">
+            </div>
+            <div class="border baoxiangongsi" id="rmbx" style=" width: 32%;padding-bottom: 10px">
+                <img src="../image/rmbx.jpg" width="100%" height="60px" alt="">
+            </div>
+            <div class="border baoxiangongsi" id="pabx" style=" width: 32%;padding-bottom: 10px">
+                <img src="../image/pabx.jpg" width="100%" height="60px" alt="">
+            </div>
+        </div>
+    </div>
+
+
+
+    <div id="sp_box" v-if='data' style="margin-top: 15px;background-color: #fff;">
+        <ul style="background-color: #fff;" class="aui-list aui-media-list aui-list-noborder">
+            <li class="aui-list-header bt-li">
+                <div class="aui-font-size-16 bt-li-div">
+                    附近店铺商品
+                </div>
+            </li>
+        </ul>
+        <div class="aui-font-size-14"
+            style="display: flex;width: 100%;padding: 15px; flex-wrap: wrap;justify-content:space-between;">
+            <div v-for='items in data' :spid='items.id' :leibie='items.leibie' class="spclick"
+                style="width:48%;background-color: #fff;flex-shrink: 0;margin-bottom: 15px;">
+                <div style="border-radius: 5px;overflow: hidden;">
+                    <img width="100%" height="150px" :src="server+ items.zhaopai_url[0]" alt="" srcset="">
+                </div>
+                <div style="margin-top: 10px;" class="aui-font-size-16">
+                    <span style="margin-right:5px">{{items.name}}</span>
+                </div>
+                <div class="aui-font-size-14">
+                    <span style="margin-right:5px">{{items.jianjie}}</span>
+                </div>
+                <div class="aui-font-size-18" style="color: red;margin-top: 10px;">
+                    <span v-if="items.jiage>items.huaxianjia">
+                        <span v-if='items.huaxianjia'>
+                            ￥{{items.huaxianjia}}
+                            <span class="aui-font-size-14"
+                                style="text-decoration: line-through;">￥{{items.jiage}}</span>
+                        </span>
+                        <span v-else>￥{{items.jiage}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- <div style="background-color: #fff;margin-top: 15px;">
+        <ul class="aui-list aui-media-list aui-list-noborder">
+            <li class="aui-list-header bt-li">
+                <div class="aui-font-size-16 bt-li-div">
+                    各种车型保险代理
+                </div>
+            </li>
+        </ul>
+
+        <div id="chexingbox" class="" style="display: flex; width: 100%;flex-wrap: wrap;">
+            <div v-for="(items,key) in data" class="border center chexing" :chexing='key'
+                style=" width: 33% ;padding: 10px">
+                <img :src="items.url" width="100%" height="100px" alt="">
+                <div>{{items.name}}</div>
+            </div>
+        </div>
+    </div> -->
+</body>
+
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript" src="../script/vue.js">
+</script>
+<script type="text/javascript" src="../script/anime.min.js"></script>
+<script type="text/javascript">
+    // var chexingbox = new Vue({
+    //     el: '#chexingbox',
+    //     data: {
+    //         error: true,
+    //         data: public_chexing,
+    //     }
+    // })
+
+    var jyz_box = new Vue({
+        el: '#jyz_box',
+        data: {
+            error: true,
+            data: '',
+            msg: '加载中',
+            jinriyoujia: ''
+        },
+        computed: {
+            youhui_92: function () {
+                return (this.jinriyoujia.p92 - (this.data)[0].jyz_92jiage).toFixed(2)
+
+            },
+            youhui_95: function () {
+                return (this.jinriyoujia.p95 - (this.data)[1].jyz_95jiage).toFixed(2)
+
+            },
+            youhui_86: function () {
+                return (this.jinriyoujia.p0 - (this.data)[2].jyz_86jiage).toFixed(2)
+
+            }
+        },
+        methods: {
+
+        },
+        updated: function () {
+            $api.addEvt($api.byId('jyz_list'), 'click', function () {
+                api.openWin({
+                    name: 'Z_jiayouzhan_list',
+                    url: './Z_pt_map_header.html',
+                    bounces: false,
+                    pageParam: {
+                        biaoti: '加油站',
+                        html: 'Z_jiayouzhan_list'
+                    }
+                });
+            })
+            var chakandom = $api.domAll('.jyz_chakan');
+            Array.prototype.forEach.call(chakandom, function (btn) {
+                btn.addEventListener('click', function (event) {
+                    var index = event.currentTarget.getAttribute('index')
+                    api.openWin({
+                        name: 'jyz',
+                        url: './Z_jiayouzhan.html',
+                        bounces: false,
+                        pageParam: {
+                            data: jyz_box.data[index]
+                        }
+                    });
+                })
+            });
+
+            anime({
+                targets: '#jianting',
+                scale: '0.9',
+                direction: 'alternate',
+                loop: true,
+                easing: 'easeInOutQuad',
+                duration: 1000
+            });
+
+
+
+        }
+    })
+
+
+    var sp_box = new Vue({
+        el: '#sp_box',
+        data: {
+            server: server,
+            error: true,
+            data: '',
+            msg: '加载中'
+        },
+        computed: {
+
+        },
+        updated: function () {
+            var spclick = $api.domAll('.spclick');
+            Array.prototype.forEach.call(spclick, function (btn) {
+                btn.addEventListener('click', function (event) {
+                    var spid = event.currentTarget.getAttribute('spid')
+                    let leibie = event.currentTarget.getAttribute('leibie')
+                    let data = {
+                        spid: spid,
+                        leibie: leibie
+                    }
+                    api.openWin({
+                        name: 'spclick',
+                        url: './Z_pt_header.html',
+                        bounces: false,
+                        pageParam: {
+                            spid: data,
+                            biaoti: '商品',
+                            html: 'Z_dianpu_sp_xq'
+                        }
+                    });
+                })
+            });
+        }
+    })
+    apiready = function () {
+        var bMap = api.require('bMap');
+        var lat;
+        var lon;
+        if (api.systemType == 'ios') {
+            bMap.initMapSDK(function (ret) {
+                if (ret.status) {
+                    get_jyz()
+                }
+            });
+        } else {
+            get_jyz()
+        }
+
+
+
+        // setTimeout(() => {
+        //     console.log(JSON.stringify(jyz_box.$data))
+        // }, 5000);
+
+
+        function get_jyz() {
+            new Promise(function (resolve, reject) {
+                bMap.getLocation({
+                    accuracy: '100m',
+                    autoStop: true,
+                    filter: 1
+                }, function (ret, err) {
+                    if (ret.status) {
+                        lat = ret.lat;
+                        lon = ret.lon
+                        resolve(ret)
+                    } else {
+                        reject('获取GPS失败');
+                    }
+                })
+            }).then(function (res) {
+                return new Promise(function (resolve, reject) {
+                    bMap.getNameFromCoords({
+                        lon: res.lon,
+                        lat: res.lat
+                    }, function (ret, err) {
+                        if (ret.status) {
+                            resolve(ret)
+                        } else {
+                            reject('获取adcode失败');
+                        }
+                    })
+
+                })
+
+            }).then(function (res) {
+                return new Promise(function (resolve, reject) {
+
+                    api.ajax({
+                        url: server + '/api/jinriyoujia',
+                        method: 'post',
+                        timeout: 10,
+                        dataType: 'json',
+                        returnAll: false,
+                        data: {
+                            values: { sheng: res.province }
+                        }
+                    }, function (ret1, err) {
+
+                        api.setGlobalData({
+                            key: 'jinriyoujia',
+                            value: ret1
+                        });
+                        jyz_box.jinriyoujia = ret1
+                        resolve(res.adCode)
+                    });
+                })
+
+
+
+            }).then(data => {
+                api.ajax({
+                    url: server + '/api/fujin_sp',
+                    method: 'post',
+                    timeout: 10,
+                    dataType: 'json',
+                    returnAll: false,
+                    data: {
+                        values: { adCode: data }
+                    }
+                }, function (ret, err) {
+                    if (ret) {
+                        // TODO 
+                        sp_box.data = ret
+                    } else {
+                        sp_box.msg = '无数据'
+                    }
+                });
+
+
+
+                api.ajax({
+                    url: server + '/api/jyz',
+                    method: 'post',
+                    timeout: 10,
+                    dataType: 'json',
+                    returnAll: false,
+                    data: {
+                        values: { adCode: data }
+                    }
+                }, function (ret, err) {
+                    if (ret) {
+
+                        jyz_box.data = ret
+                    } else {
+                        jyz_box.msg = '无数据'
+                    }
+                });
+
+
+
+            })
+
+                .catch(function (error) {
+                    sp_box.data = ''
+                    sp_box.msg = '加载失败'
+                    jyz_box.data = ''
+                    jyz_box.msg = '加载失败'
+                });
+        }
+
+        var gllis = $api.domAll('.baoxiangongsi');
+        Array.prototype.forEach.call(gllis, function (btn) {
+            btn.addEventListener('click', function (event) {
+                var id = event.currentTarget.getAttribute('id');
+                api.openWin({
+                    name: id,
+                    url: './Z_new_header.html',
+                    bounces: false,
+                    pageParam: {
+                        biaoti: '保险公司',
+                        html: 'Z_baoxiangongsi',
+                        name: id
+                    }
+                });
+            })
+        })
+
+        $api.addEvt($api.byId('shuaxin_jyz'), 'click', function () {
+            get_jyz()
+        })
+
+
+        $api.addEvt($api.byId('jianting_xinxi'), 'click', function () {
+            open_jiuyuan_xinxi()
+        })
+
+        $api.addEvt($api.byId('close_Socket'), 'click', function () {
+            api.sendEvent({
+                name: 'start_tingdan',
+                extra: { isstart: 'stop' }
+            });
+        })
+
+        let socketid;
+        function stop_shangjia_socket() {
+            var socketManager = api.require('socketManager');
+            socketManager.closeSocket({
+                sid: socketid
+            }, function (ret, err) {
+                if (ret.status) {
+
+                } else {
+
+                }
+            })
+        }
+        function start_shangjia_socket() {
+            let user = $api.getStorage('user')
+            let md5password = $api.getStorage('md5password');
+            let userinfo = {
+                user: user,
+                md5password: md5password,
+                type: 'shangjia'
+            }
+            var socketManager = api.require('socketManager');
+            socketManager.createSocket({
+                host: '192.168.137.1',
+                port: 8080
+            }, function (ret, err) {
+                if (ret) {
+                    //连接成功
+                    if (ret.state == 102) {
+                        socketid = ret.sid
+                        let objdata = { data: '', userinfo: userinfo }
+                        let str_mapdata = JSON.stringify(objdata)
+                        socketManager.write({
+                            sid: socketid,
+                            data: str_mapdata
+                        }, function (ret1, err) {
+                        });
+                    }
+                    if (ret.state == 103) {
+                        if (JSON.parse(ret.data).state == 500) {
+                            alert(JSON.parse(ret.data).msg)
+                            stop_shangjia_socket()
+                            return
+                        }
+                        if (JSON.parse(ret.data).state == 300) {
+                            let msg = JSON.parse(ret.data).msg
+
+                            if (msg.length > 0) {
+                                let annotations = [];
+                                let i = 1
+                                msg.forEach(element => {
+                                    let ss = {
+                                        id: i,
+                                        lon: element.lon,
+                                        lat: element.lat
+                                    }
+                                    annotations.push(ss)
+                                    i++
+                                });
+                                bMap.addAnnotations({
+                                    annotations: annotations,
+                                    icon: 'widget://image/ui/map_dadian.png',
+                                    draggable: true
+                                }, function (ret) {
+
+                                });
+                            }
+                            return
+                        }
+
+                        if (JSON.parse(ret.data).state == 200) {
+                            let msg = JSON.parse(ret.data).msg
+                            api.notification({
+                                notify: {
+                                    title: '通知',
+                                    content: msg,
+                                    vibrate: [100, 500, 200, 500, 300, 500, 400, 500]
+                                }
+                            }, function (ret, err) {
+                                write_jiuyuan_tongzhi(ret.id)
+                            });
+                            return
+                        }
+                        if (JSON.parse(ret.data).state == 666) {
+                            let msg = JSON.parse(ret.data).msg
+
+
+
+                            api.notification({
+                                notify: {
+                                    title: '有人发单了',
+                                    content: msg,
+                                    extra: 'jiuyuan',
+                                    vibrate: [100, 500, 200, 500, 300, 500, 400, 500]
+                                }
+                            }, function (ret, err) {
+                                write_jiuyuan_tongzhi(ret.id)
+                            });
+                            write_jiuyuan_xinxi(ret.data)
+                            return
+                        }
+
+                    }
+                    //异常断开
+                    if (ret.state == 203 || ret.state == 204) {
+                        toast('已退出')
+                        api.sendEvent({
+                            name: 'start_tingdan',
+                            extra: { isstart: 'stop' }
+                        });
+                    }
+                }
+            });
+        }
+
+        function write_jiuyuan_xinxi(data) {
+            let jiuyuan_xinxi = api.getGlobalData({
+                key: 'jiuyuan_xinxi'
+            });
+            let xinxi = JSON.parse(jiuyuan_xinxi)
+            xinxi.push(JSON.parse(data))
+            api.setGlobalData({
+                key: 'jiuyuan_xinxi',
+                value: JSON.stringify(xinxi)
+            });
+        }
+        function remove_jiuyuan_xinxi() {
+            api.setGlobalData({
+                key: 'jiuyuan_xinxi',
+                value: '[]'
+            });
+        }
+
+        api.addEventListener({
+            name: 'noticeclicked'
+        }, function (ret, err) {
+            if (ret.value == 'jiuyuan') {
+                open_jiuyuan_xinxi();
+            }
+        });
+
+
+        api.addEventListener({
+            name: 'offline'
+        }, function (ret, err) {
+            //alert('断网了');
+            api.sendEvent({
+                name: 'start_tingdan',
+                extra: { isstart: 'stop' }
+            });
+
+        });
+
+
+
+        api.addEventListener({
+            name: 'start_tingdan'
+        }, function (ret, err) {
+            if (ret.value.isstart == 'start') {
+                start_shangjia_socket()
+                $api.css($api.byId('jianting'), 'display:block');
+                api.setGlobalData({
+                    key: 'socketisstart',
+                    value: 'stop'
+                });
+            }
+            if (ret.value.isstart == 'stop') {
+                stop_shangjia_socket()
+                close_jiuyuan_tongzhi()
+                $api.css($api.byId('jianting'), 'display:none');
+                remove_jiuyuan_xinxi()
+                api.setGlobalData({
+                    key: 'socketisstart',
+                    value: 'start'
+                });
+
+            }
+        });
+        api.addEventListener({
+            name: 'updataapp'
+        }, function (ret, err) {
+            // var resultList = api.hasPermission({
+            //     list: ['location']
+            // });
+            // api.requestPermission({
+            //     list: resultList,
+            //     code: 1
+            // }, function (ret1, err) {
+            // });
+            // alert(api.version)
+            updataapp()
+        });
+    };
+
+
+    // var gllis = $api.domAll('.chexing');
+    // Array.prototype.forEach.call(gllis, function (btn) {
+    //     btn.addEventListener('click', function (event) {
+    //         var chexing = event.currentTarget.getAttribute('chexing');
+
+    //         api.openWin({
+    //             name: 'chexing_fandian',
+    //             url: './Z_new_header.html',
+    //             bounces: false,
+    //             pageParam: {
+    //                 biaoti: '车型返点',
+    //                 html: 'Z_chexing_fandian',
+    //                 chexing: chexing
+    //             }
+    //         })
+    //     })
+    // })
+
+
+    $api.addEvt($api.byId('jiuyuan'), 'click', function () {
+        api.openWin({
+            name: 'jiuyuan',
+            url: './Z_jiuyuan.html',
+            bounces: false,
+        });
+    })
+    $api.addEvt($api.byId('daiban'), 'click', function () {
+        api.openWin({
+            name: 'daiban',
+            url: './Z_pt_header.html',
+            bounces: false,
+            pageParam: {
+                biaoti: '代办',
+                html: 'Z_daiban'
+            }
+        });
+    })
+    $api.addEvt($api.byId('yangche'), 'click', function () {
+
+        api.openWin({
+            name: 'yangche',
+            url: './Z_yangche.html',
+            bounces: false
+        });
+
+    })
+    $api.addEvt($api.byId('maiche'), 'click', function () {
+        api.openWin({
+            name: 'maiche',
+            url: './Z_maiche_header.html',
+            bounces: false,
+            pageParam: { key: 'value' }
+        });
+    })
+
+
+    $api.addEvt($api.byId('cherenhuzhao'), 'click', function () {
+        api.openWin({
+            name: 'che_ren_huzhao_header',
+            url: './Z_che_ren_huzhao_header.html',
+            bounces: false,
+            pageParam: { key: 'value' }
+        });
+    })
+
+</script>
+
+</html>

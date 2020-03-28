@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>发攻略</title>
+    <link rel="stylesheet" type="text/css" href="api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-slide.css" />
+    <style>
+        .bgcolor-fff {
+            background-color: #ffffff
+        }
+    </style>
+    
+</head>
+
+<body>
+    <!-- <div class="aui-content aui-margin-b-15">
+        <ul class="aui-list aui-form-list xinxibox">
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+
+                    <div class="aui-list-item-input">
+                        <input name="biaoti" type="text" placeholder="标题">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-input">
+                        <input name="neirong" style="height: 80px;width: 100%;margin: 3px 0px" type="Textarea"
+                            placeholder="填写想说的话。。。">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item " id="anniou">
+                <div class="aui-list-item-inner aui-list-item-btn">
+                    <div>
+                        <div id="add_img" class="aui-btn aui-btn-info aui-margin-r-5">+图片</div>
+                        <div id="add_text" class="aui-btn aui-btn-info aui-margin-l-5">+文字</div>
+                    </div>
+                    <div id="fabu" class="aui-btn aui-btn-danger">发布</div>
+                </div>
+            </li>
+        </ul>
+    </div> -->
+    <div class="aui-content"
+        style="background-color: burlywood;font-size: 15px;text-align: center;height: 30px;line-height: 30px;color: #fff;">
+        简易被采纳后，将给予积分奖励
+    </div>
+    <div id='xinxi' class="aui-content aui-margin-b-15 bgcolor-fff">
+        <ul  class="aui-list aui-form-list ">
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+
+                    <div class="aui-list-item-input">
+                        <input v-model="biaoti" name="biaoti" type="text" placeholder="标题">
+                    </div>
+                </div>
+            </li>
+            <li class="aui-list-item">
+                <div class="aui-list-item-inner">
+                    <div class="aui-list-item-input">
+                        <textarea v-model="neirong" name="neirong"
+                            style="min-height:80px;line-height: 20px; width: 100%;margin: 3px 0px;font-size: 14px"
+                            placeholder="想说的话">
+                        </textarea>
+                    </div>
+                </div>
+            </li>
+            <div v-for='text_imgsrc in text_imgsrc_types'>
+                <li v-if="text_imgsrc.type==='img'" class="aui-list-item imgbox">
+                    <div class="aui-list-item-inner aui-list-item-btn">
+                        <img class="img" height="120px" width='100%' style="margin-right:15px"
+                            :src="text_imgsrc.imgsrc" alt="">
+                    </div>
+
+                </li>
+
+                <li v-if="text_imgsrc.type==='text'" class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-input">
+                            <input v-model='text_imgsrc.text' name="neirong1"
+                                style="height: 80px;width: 100%;margin: 3px 0px" type="Textarea"
+                                placeholder="填写想说的话。。。">
+                        </div>
+                    </div>
+                </li>
+            </div>
+
+            <li class="aui-list-item " id="anniou">
+                <div class="aui-list-item-inner aui-list-item-btn">
+                    <div>
+                        <div id="add_img2" class="aui-btn aui-btn-info aui-margin-r-5">+图片</div>
+                        <div id="add_text2" class="aui-btn aui-btn-info aui-margin-l-5">+文字</div>
+                    </div>
+                    <div id="fabu2" class="aui-btn aui-btn-danger">提交</div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+
+    
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        user = $api.getStorage('user');
+        var list = new Vue({
+            el: '#xinxi',
+            data: {
+                biaoti: '',
+                neirong: '',
+                text_imgsrc_types: [],
+                imgsrcs: [],
+                user: user
+            },
+            updated: function () {
+
+
+
+            },
+        })
+
+        $api.addEvt($api.dom('#add_img2'), 'click', function () {
+            api.getPicture({
+                sourceType: 'library',
+                encodingType: 'jpg',
+                mediaValue: 'pic',
+                destinationType: 'url',
+                allowEdit: true,
+                quality: 50,
+                targetWidth: 500,
+                // targetHeight: ,
+                saveToPhotoAlbum: false
+            }, function (ret, err) {
+                if (ret.data != "") {
+                    var add_img = { imgsrc: ret.data, type: 'img' }
+                    list.text_imgsrc_types.splice(list.text_imgsrc_types.length, 0, add_img)//jixu
+                    list.imgsrcs.push(ret.data);
+
+                } else {
+                    api.toast({
+                        msg: '添加图片出错',
+                        duration: 2000,
+                        location: 'bottom'
+                    });
+                }
+            });
+
+        })
+
+        $api.addEvt($api.dom('#add_text2'), 'click', function () {
+
+            var add_text = { text: '', type: 'text' }
+            list.text_imgsrc_types.splice(list.text_imgsrc_types.length, 0, add_text)//jixu
+        })
+        $api.addEvt($api.dom('#fabu2'), 'click', function () {
+            if (list.biaoti == '' || list.neirong == '') {
+                api.toast({
+                    msg: '标题和内容不能为空哦',
+                    duration: 2000,
+                    location: 'bottom'
+                });
+                return
+            }
+            api.showProgress({
+                title: '上传中',
+                text: '',
+                modal: true,
+                animationType: 'zoom'
+            });
+            api.ajax({
+                url: server + '/api/add_jianyi',
+                method: 'post',
+                data: {
+                    values: {
+                        data: list.$data
+                    },
+                    files: {
+                        file: list.imgsrcs
+                    }
+                },
+                timeout: 30,
+                dataType: 'json',
+                returnAll: false
+            }, function (ret, err) {
+                if (ret) {
+                    api.showProgress({
+                        title: '上传完毕',
+                        text: '',
+                        modal: true,
+                        animationType: 'zoom'
+                    });
+                    setTimeout(function () {
+                        api.hideProgress();
+                        api.closeWin();
+                    }, 1000);
+
+                } else {
+                    api.showProgress({
+                        title: '上传出错',
+                        text: '',
+                        modal: true,
+                        animationType: 'zoom'
+                    });
+                    setTimeout(function () {
+                        api.hideProgress();
+                    }, 1000);
+                };
+            });
+
+        })
+        
+    }
+    
+
+
+
+    
+
+
+
+
+   
+
+
+
+    //添加图片
+    // function add_img() {
+    //     $api.addEvt($api.dom('#add_img'), 'click', function () {
+
+    //         api.getPicture({
+    //             sourceType: 'library',
+    //             encodingType: 'jpg',
+    //             mediaValue: 'pic',
+    //             destinationType: 'url',
+    //             allowEdit: true,
+    //             quality: 50,
+    //             targetWidth: 500,
+    //             // targetHeight: ,
+    //             saveToPhotoAlbum: false
+    //         }, function (ret, err) {
+    //             if (ret.data != "") {
+    //                 if (img_xuhao.length > 0) {
+    //                     img_xuhao.push(img_xuhao.length)
+    //                 } else {
+    //                     img_xuhao.push('0')
+    //                 }
+    //                 ejsimg = $api.html($api.dom('#ejsimg'));
+    //                 html = ejs.render(ejsimg, {
+    //                     res: ret.data,
+    //                     xuhao: img_xuhao.length
+    //                 });
+    //                 $api.before($api.dom('#anniou'), html);
+    //                 gonglue_paixu.push('img')
+    //             } else {
+    //                 api.toast({
+    //                     msg: '添加图片出错',
+    //                     duration: 2000,
+    //                     location: 'bottom'
+    //                 });
+    //             }
+    //         });
+
+    //     })
+
+    // }
+
+    //添加文字
+    // function add_text() {
+    //     $api.addEvt($api.dom('#add_text'), 'click', function () {
+    //         if (text_xuhao.length > 0) {
+    //             text_xuhao.push(text_xuhao.length)
+    //         } else {
+    //             text_xuhao.push('0')
+    //         }
+    //         var html = $api.html($api.dom('#ejstext'))
+    //         $api.before($api.dom('#anniou'), html);
+    //         var imgs = $api.domAll('.imgbox');
+    //         gonglue_paixu.push('text')
+    //     })
+
+    // }
+
+    // $api.addEvt($api.dom('#fabu'), 'click', function () {
+    //     //fabu()
+
+    //     biaoti_html = $api.val($api.dom('input[name=biaoti]'));
+    //     neirong_html = $api.val($api.dom('input[name=neirong]'));
+    //     if (biaoti_html == "" || neirong_html == "") {
+    //         api.toast({
+    //             msg: '信息填写不完整',
+    //             duration: 2000,
+    //             location: 'bottom'
+    //         });
+    //     } else if (!user) {
+    //         api.toast({
+    //             msg: '您还未登陆',
+    //             duration: 2000,
+    //             location: 'bottom'
+    //         })
+    //     } else {
+    //         add_sql_gonglue()
+    //     }
+    // })
+
+    function add_sql_gonglue() {
+        var data = {};
+        data.user = user
+        data.imgsrcs = [];
+        data.neirong = {}
+        data.paixu = gonglue_paixu
+        data.biaoti = $api.val($api.dom('input[type=text]'));
+        var imgsrcs = $api.domAll('.img');
+
+        if (imgsrcs.length > 0) {
+            for (var i = 0; i < imgsrcs.length; i++) {
+                data.imgsrcs.push($api.attr(imgsrcs[i], 'src'))
+            }
+        } else {
+            data.imgsrcs = ""
+        }
+        var neirong = $api.domAll('input[name=neirong]');
+        for (var i = 0; i < neirong.length; i++) {
+            data.neirong[i] = $api.val(neirong[i]);
+        }
+
+        api.ajax({
+            url: server + '/api/add_jianyi',
+            method: 'post',
+            data: {
+                values: {
+                    data: data
+                },
+                files: {
+                    file: data.imgsrcs
+                }
+            },
+            timeout: 30,
+            dataType: 'json',
+            returnAll: false
+        }, function (ret, err) {
+            if (ret) {
+                showProgress('上传成功', '')
+                setTimeout(function () {
+                    api.closeWin();
+                }, 1000);
+            } else {
+                api.toast({
+                    msg: '添加出错',
+                    duration: 2000,
+                    location: 'bottom'
+                })
+            };
+        });
+        showProgress('上传中', '请稍等')
+    }
+</script>
+
+</html>

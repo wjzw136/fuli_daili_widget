@@ -1,0 +1,348 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        .icon {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .aui-list-item-inner {
+            padding: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div style="background-color:#fff;width: 100%;padding: 15px;">
+
+        <div v-cloak id="hot_qiche"
+            style="background-color:#fff;display:flex;justify-content:space-around;  align-items: center;">
+            <div v-for="item in data" class="icon pinpai"  :id='item.pinpaiid' :pinpai='item.pinpai'>
+                <img :src="imgurl+item.daihao+'.png'" style="border-radius: 30px;" width="45px" height="45px" alt="">
+                <div style="margin-top: 10px;" class="aui-font-size-12">{{item.pinpai}}</div>
+            </div>
+        </div>
+        <div v-cloak id="xuanxiang"
+            style="font-size: 14px;display: flex;justify-content: center;flex-direction: column; background-color: #fff;margin-top: 10px;">
+            <div style="display: flex;flex-wrap: wrap;align-items: center;">
+                <div v-for='(item,index) in qujian' style="text-align: center;width: 25%;margin: 5px 0;">
+                    <div v-on:click='xuanze(index)'
+                        style="border-radius: 20px; margin: 0 10px;padding: 3px 0px; background-color: gainsboro;">
+                        {{item.title}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-cloak id="apibox" style="width: 100%;background-color: #fff;">
+        <div v-for='items in data.brandList' :id='items.letter'>
+            <div class="sss" :pinpaiid='items.id' :brandName='items.brandName'
+                style="padding: 10px 15px;border-bottom: 1px solid #ECECEC; display: flex;align-items: center;">
+                <img width="50px" height="50px" :src="server+path+items.id+'.png'" alt="" srcset="">
+                <span style="margin-left: 10px;">{{items.brandName}}</span>
+            </div>
+        </div>
+        <div
+            style="position: fixed; width: 40px;height: 100%;display: flex;right: 0;top: 0; flex-direction: column;justify-content: center; z-index: 999">
+            <div style="text-align: center;" v-for='acd in abcd' :zimu='acd' class="zimuspan">{{acd}}</div>
+        </div>
+    </div>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        let config=get_config()
+        let type;
+        if (api.frameName == '新车') {
+            type = 'xinche'
+        }
+        if (api.frameName == '二手车') {
+            type = 'ershou'
+        }
+
+        hot_qiche_data = [
+            {
+                pinpai: '大众',
+                daihao: '4431',
+                
+            }, {
+                pinpai: '丰田',
+                daihao: '4631',
+                
+            }, {
+                pinpai: '本田',
+                daihao: '4232',
+                
+            }, {
+                pinpai: '现代',
+                daihao: '5831',
+            }, {
+                pinpai: '宝骏',
+                daihao: '4236',
+            }
+
+
+        ]
+        var hot_qiche = new Vue({
+            el: '#hot_qiche',
+            data: {
+                server: server,
+                path: '/qiche_logo/',
+                data: hot_qiche_data,
+            },
+            computed: {
+                imgurl:function() {
+                    return this.server + this.path
+                }
+            },
+        })
+        var xuanxiang = new Vue({
+            el: '#xuanxiang',
+            data: {
+                xinche_jiage_qujian: config.jiage_qujian.xinche_jiage_qujian,
+                ershouche_jiage_qujian: config.jiage_qujian.ershouche_jiage_qujian,
+                qujian: ''
+            },
+            mounted: function () {
+                if (type == 'xinche') {
+                    this.qujian = this.xinche_jiage_qujian
+                } else {
+                    this.qujian = this.ershouche_jiage_qujian
+                }
+
+            },
+            updated: function () {
+
+            },
+            methods: {
+                xuanze: function (ss) {
+
+                    let tiaojian = {
+                        type: 'jiage',
+                        title: (this.qujian)[ss].title,
+                        min: (this.qujian)[ss].min,
+                        max: (this.qujian)[ss].max
+                    }
+                    api.openWin({
+                        name: 'xinche',
+                        url: './Z_xinche_header.html',
+                        bounces: false,
+                        pageParam: {
+                            biaoti: '筛选' + api.frameName,
+                            html: 'Z_xinche',
+                            type: type,
+                            tiaojian: tiaojian
+
+                        }
+
+                    });
+
+                }
+
+            },
+            computed: {
+
+
+            }
+        });
+
+
+        api.showProgress({
+            title: ' 加载中，请稍后',
+            // text: ' text',
+            modal: true
+        });
+
+        let chexing = api.getGlobalData({
+            key: 'chexing'
+        });
+
+
+        api.addEventListener({
+            name: type
+        }, function (ret, err) {
+
+            api.openWin({
+                name: 'xinche',
+                url: './Z_xinche_header.html',
+                bounces: false,
+                pageParam: {
+                    biaoti: '筛选' + api.frameName,
+                    html: 'Z_xinche',
+                    type: type,
+                    tiaojian: {
+                        type: 'chexing',
+                        chexing: ret.value.data.typeName
+                    }
+                }
+            });
+        });
+
+
+        // let pinpai = api.pageParam.pinpai;
+        let abcd = "顶ABCDFGHIJKLMNOQRSTVWXYZ";
+        var apibox = new Vue({
+            el: '#apibox',
+            data: {
+                server: server,
+                path: '/qiche_logo/',
+                data: '',
+                abcd: abcd.split('')
+            },
+            updated() {
+                for (let i = 0; i < abcd.length; i++) {
+                    let element = abcd[i];
+                    let el = $api.byId(element);
+                    $api.prepend(el, '<div style="background-color: #F2F2F2;padding: 15px;font-size: 20px;">' + element + '</div>');
+                }
+                var chakandom = $api.domAll('.sss');
+                Array.prototype.forEach.call(chakandom, function (btn) {
+                    btn.addEventListener('click', function (event) {
+                        var pinpaiid = event.currentTarget.getAttribute('pinpaiid')
+                        var brandName = event.currentTarget.getAttribute('brandName')
+                        api.showProgress({
+                            title: '正在加载',
+                            // text: ' text',
+                            modal: true
+                        });
+
+                        api.ajax({
+                            url: server + '/api/qiche_pingpai_list',
+                            method: 'post',
+                            timeout: 30,
+                            dataType: 'json',
+                            data: {
+                                values: {
+                                    pinpaiid: pinpaiid, 
+                                }
+                            },
+                            returnAll: false
+                        }, function (ret, err) {
+                            if (ret) {
+                                api.hideProgress();
+                                api.openWin({
+                                    name: 'qiche_chexing',
+                                    url: 'Z_qiche_chexing.html',
+                                    bounces: false,
+                                    pageParam: {
+                                        pinpai: ret,
+                                        pinpaiid: pinpaiid,
+                                        brandName: brandName,
+                                        data: {
+                                            type: 'chexing',
+                                            page: 'maiche',
+                                            event: type
+                                        }
+                                    }
+                                });
+
+                            }
+                        });
+                    })
+                });
+
+            }
+        })
+
+        if (chexing) {
+            api.hideProgress();
+            apibox.data = chexing
+        } else {
+            api.ajax({
+                url: server + '/api/get_qiche_pinpai',
+                method: 'post',
+                timeout: 30,
+                dataType: 'json',
+                returnAll: false
+            }, function (ret, err) {
+                if (ret) {
+                    apibox.data = ret
+                    api.setGlobalData({
+                        key: 'chexing',
+                        value: ret
+                    });
+                    api.hideProgress();
+                }
+            });
+        }
+
+
+
+        var xuanxiang = $api.domAll('.pinpai');
+        Array.prototype.forEach.call(xuanxiang, function (btn) {
+            btn.addEventListener('click', function (event) {
+                // let spid = event.currentTarget.getAttribute('spid');
+                let pinpai = event.currentTarget.getAttribute('pinpai');
+               api.openWin({
+                    name: 'xinche',
+                    url: './Z_xinche_header.html',
+                    bounces: false,
+                    pageParam: {
+                        biaoti: '筛选' + api.frameName,
+                        html: 'Z_xinche',
+                        type: type,
+                        tiaojian: {
+                            type: 'pinpai',
+                            chexing: pinpai
+                        }
+                    }
+                });
+            })
+        })
+
+
+        var xuanxiang = $api.domAll('.zimuspan');
+        Array.prototype.forEach.call(xuanxiang, function (btn) {
+            btn.addEventListener('click', function (event) {
+                // let spid = event.currentTarget.getAttribute('spid');
+                let zimu = event.currentTarget.getAttribute('zimu');
+                if (zimu == '顶') {
+                    window.scrollTo(0, 0)
+                } else {
+                    let zimu = event.currentTarget.getAttribute('zimu');
+                    let el = $api.byId(zimu);
+                    let top = $api.offset(el).t;
+                    window.scrollTo(0, top)
+                }
+
+
+            })
+        })
+        // pinpai.brandList.forEach(element => {
+        // 	let url=element.imgUrl
+        // 		api.download({
+        // 		url: url,
+        // 		savePath: 'fs://ss/'+element.id+'.png',
+        // 		report: true,
+        // 		cache: true,
+        // 		allowResume: true
+        // 	}, function (ret, err) {
+        // 		if (ret.state == 1) {
+        // 			//下载成功
+        // 		} else {
+
+        // 		}
+        // 	});
+        // });
+
+    };
+</script>
+
+</html>

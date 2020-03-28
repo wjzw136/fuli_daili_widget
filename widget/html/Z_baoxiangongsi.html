@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no" />
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style></style>
+</head>
+
+<body>
+    <div id="apibox">
+        <div>
+            <img width="100%" height=" 100px" :src="data.imgurl" alt="" />
+        </div>
+        <div style="background-color: #fff;padding: 15px;margin-bottom: 15px;">
+            <p>{{data.jianjie}}</p>
+        </div>
+        <div style="padding:0 15px;">
+
+            <div
+                style="display: flex;align-items: center;justify-content: space-between;padding:5px 15px; margin: 10px 0;background-color:#fff;color:#03A9F4;border-radius: 27.5px;">
+                <div>{{data.name}}电话</div>
+                <div style="font-size: 25px;">{{data.dianhua}}</div>
+            </div>
+            <div v-for="items in data.fandian" class="aui-font-size-14"
+                style="border-radius: 15px;overflow: hidden; background-color: #fff; display: flex;margin: 15px 0;padding: 10px;align-items: center;">
+                <div
+                    style="display: flex;align-items: center;flex-direction: column;justify-content: center;justify-items: center;">
+                    <img width="80px" height="50px" :src="items.imgurl" alt="" srcset="" />
+                    <div>
+                        {{items.name}}
+                    </div>
+                </div>
+                <div style="padding-left:15px;flex-grow: 1;">
+                    <div v-if="items.show"
+                        style="display: flex;align-items: center; margin-bottom: 5px;padding-bottom: 5px; border-bottom: lightblue solid 1px;">
+                        <div style="padding: 0px 15px;border:#03A9F4  solid 1px;border-radius: 20px;color: #03A9F4; margin-right: 10px; flex-shrink: 0; flex-grow: 0;"
+                            class="aui-font-size-16">新车</div>
+                        <div style="flex-grow: 1">
+                            <div v-if="items.shangye_new">
+                                商业险最高返<span style=" color: red; ">{{items.shangye_new}}</span>%
+                            </div>
+                            <div v-else>商业险暂无</div>
+                            <div v-if="items.jiaoqiang_new">
+                                交强险最高返
+                                <span style="color: red;">{{items.jiaoqiang_new}}</span>%
+                            </div>
+                            <div v-else>交强险暂无</div>
+                        </div>
+
+
+                    </div>
+                    <div v-if="items.show" style="display: flex;align-items: center">
+                        <div style="padding: 0px 15px;border: #03A9F4 solid 1px;border-radius: 20px;color: #03A9F4;margin-right: 10px; flex-shrink: 0; flex-grow: 0;"
+                            class="aui-font-size-16">旧车</div>
+                        <div style="flex-grow: 1">
+                            <div v-if="items.shangye_old">
+                                商业险最高返<span style="color: red;">{{items.shangye_old}}</span>%
+                            </div>
+                            <div v-else>商业险暂无</div>
+                            <div v-if="items.jiaoqiang_old">
+                                交强险最高返
+                                <span style="color: red;">{{items.jiaoqiang_old}}</span>%
+                            </div>
+                            <div v-else>交强险暂无</div>
+
+                        </div>
+                    </div>
+                    <div v-if="!items.show" style="flex-grow: 1;">
+                        未开通代理
+                    </div>
+                </div>
+                <div v-if="items.show" style="margin-left: 15px;">
+                    <div class="aui-btn aui-btn-info qubaojia">去报价</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    var apibox = new Vue({
+        el: "#apibox",
+        data: {
+            error: false,
+            data: '',
+            imgurl: "../image/",
+            errormsg: "没有找到您需要的数据"
+        },
+        updated: function () {
+            var qubaojia = $api.domAll('.qubaojia');
+            Array.prototype.forEach.call(qubaojia, function (btn) {
+                btn.addEventListener('click', function (event) {
+                    api.openWin({
+                        name: 'baojia',
+                        url: './Z_baojia.html',
+                        bounces: false
+                    });
+                })
+            });
+        }
+
+    });
+    apiready = function () {
+        var bxgs = api.pageParam.name;
+        let config=get_config()
+        if (bxgs == undefined) {
+            bxgs = "pabx";
+            apibox.data = (config.BX_xinxi)[bxgs]
+        } else {
+            apibox.data = (config.BX_xinxi)[bxgs]
+        }
+
+        var weizhi = $api.getStorage('weizhi');
+        if (!weizhi) {
+            weizhi = '北京市'
+        }
+        get_bxgs_fandian(weizhi, bxgs)
+        api.addEventListener({
+            name: 'dizhi'
+        }, function (ret, err) {
+            var weizhi = $api.getStorage('weizhi')
+            get_bxgs_fandian(weizhi, bxgs)
+        });
+        function get_bxgs_fandian(weizhi, bxgs) {
+            api.ajax({
+                url: server + '/api/fandian/bxgs',
+                method: 'post',
+                timeout: 10,
+                dataType: 'json',
+                returnAll: false,
+                data: {
+                    values: {
+                        bxgs: bxgs,
+                        weizhi: weizhi
+                    }
+                }
+            }, function (ret, err) {
+               let BX_xinxi= config.BX_xinxi
+                for (var key in BX_xinxi) {
+                    if (BX_xinxi.hasOwnProperty(key)) {
+                        var element = BX_xinxi[key].fandian;
+                        for (var key2 in element) {
+                            if (element.hasOwnProperty(key2)) {
+                                fandian = element[key2];
+                                fandian.show = false
+                            }
+                        }
+                    }
+                }
+                if (ret.length > 0) {
+                    // apibox_data.data[framename] = ret[0]
+                    for (var i = 0; i < ret.length; i++) {
+                        var chexing_fandian = BX_xinxi[ret[i].baoxiangongsi].fandian[ret[i].chexing];
+                        if (ret[i].xin_jiu == '新') {
+                            chexing_fandian.show = true
+                            chexing_fandian.jiaoqiang_new = ret[i].jiaoqiang
+                            chexing_fandian.shangye_new = ret[i].shangye
+                        } else if (ret[i].xin_jiu == '旧') {
+                            chexing_fandian.show = true
+                            chexing_fandian.jiaoqiang_old = ret[i].jiaoqiang
+                            chexing_fandian.shangye_old = ret[i].shangye
+                        }
+                    }
+                }
+            })
+        }
+    }
+</script>
+
+</html>

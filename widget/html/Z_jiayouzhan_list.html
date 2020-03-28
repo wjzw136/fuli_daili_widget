@@ -1,0 +1,300 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        html body {
+            height: 100%;
+        }
+
+        .aui-list-item-inner {
+            padding: 15px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="apibox">
+        <div v-if="moshi=='list'">
+            <div v-for="(items,index) in data" class="chakan" :index='index'
+                style="display: flex;padding: 10px;margin-bottom: 10px; background-color: #fff;align-items:stretch;">
+                <div style="width: 150px;height: 90px;padding-right: 10px; flex-shrink: 0;">
+                    <img :src="server+ items.jyz_zhaopai_url" width="100%" height="100%" alt="">
+                </div>
+                <div style="flex-grow: 1;display: flex;flex-direction: column;justify-content: space-between;">
+                    <div class="aui-font-size-16">
+                        {{items.jyz_name}}
+                    </div>
+                    
+                    <div style="display: flex;">
+                        <div class="aui-label aui-label-danger aui-label-outlined" v-if="items.jyz_pingpai" style="margin-right: 8px;">
+                            {{items.jyz_pingpai}}
+                        </div>
+                        <div class="aui-label aui-label-info aui-label-outlined" v-if="items.jyz_92jiage" style="margin-right: 8px;">
+                            92#{{items.jyz_92jiage}}
+                        </div>
+                        <div class="aui-label aui-label-info aui-label-outlined" v-if="items.jyz_95jiage" style="margin-right: 8px;">
+                           95#{{items.jyz_95jiage}}
+                        </div>
+                        <div class="aui-label aui-label-info aui-label-outlined" v-if="items.jyz_86jiage" >
+                            86#{{items.jyz_86jiage}}
+                        </div>
+                    </div>
+
+                    <div class="aui-font-size-14">
+                        距你{{items.juli}}Km
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center;color: darkgray;font-size: 14px;padding: 10px 0;">这里是底线了</div>
+
+
+        </div>
+        <div v-if="moshi=='map'">
+
+
+            <div v-if="mapdata"
+                style="background-image: linear-gradient(#67D1E8,#03a9f4);color: #fff; width: 100%;height: 120px;overflow: hidden; position: fixed; bottom: 0;left: 0;background-color: #fff;display: flex;padding: 10px;align-items: center;">
+
+
+                <div style="flex-grow: 1;">
+                    <div v-if="mapdata.jyz_name" style="padding: 10px 0;" class="aui-font-size-18">
+                        {{mapdata.jyz_name}}
+                    </div>
+                    <div>
+
+                        <div v-if="mapdata.jyz_92jiage" class="aui-label">92#<span style="padding: 0 10px;">|</span>
+                            {{mapdata.jyz_92jiage-mapdata.jyz_92youhui}}</div>
+                        <div v-if="mapdata.jyz_95jiage" class="aui-label">95#<span style="padding: 0 10px;">|</span>
+                            {{mapdata.jyz_95jiage-mapdata.jyz_95youhui}}</div>
+                        <div v-if="mapdata.jyz_86jiage" class="aui-label">86#<span style="padding: 0 10px;">|</span>
+                            {{mapdata.jyz_86jiage-mapdata.jyz_86youhui}}</div>
+                    </div>
+
+                    <div class="aui-font-size-14">
+                        距你{{mapdata.juli}}Km <span v-if="mapdata.jyz_dizhi"><span
+                                style="padding: 0 10px;">|</span>{{mapdata.jyz_dizhi}}</span>
+                    </div>
+                </div>
+                <div style="flex-shrink: 1;">
+                    <div id="quzheli" class="aui-btn aui-btn-outlined">去这里</div>
+
+                </div>
+            </div>
+            <div v-else
+                style="background-image: linear-gradient(#03a9f4, #67D1E8);color: #fff; width: 100%;height: 120px;overflow: hidden; position: fixed; bottom:0;left: 0;background-color: #fff;display: flex;padding: 10px; align-items:center;">
+                <div style="flex-grow: 1;">
+                    <div style="padding: 10px 0" class="aui-font-size-18">
+                        无数据
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    </div>
+
+
+
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        var bMap = api.require('bMap');
+        var button = api.require('UIButton');
+        bMap.customStyle({ customConfig: 'lightblue' });
+        var lat;
+        var lon;
+        api.refreshHeaderLoading();
+        api.addEventListener({
+            name: 'ismap'
+        }, function (ret, err) {
+            let ismap = ret.value.ismap;
+            if (ismap == 1) {
+                apibox.moshi = 'map'
+                let set_bottom_data = function (bottom_data) {
+                    apibox.mapdata = (apibox.data)[bottom_data]
+                }
+                open_bmap(apibox.data, 'jyz_lon', 'jyz_lat', 'jyz_name', set_bottom_data)
+            } else {
+                apibox.mapdata = '';
+                apibox.moshi = 'list';
+                bMap.hide()
+                button.hide({ id: 0 });
+                api.setFrameAttr({
+                    name: api.frameName,
+                    bounces: true
+                });
+            }
+        });
+
+
+
+        api.setRefreshHeaderInfo({
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...',
+            showTime: false
+        }, function (ret, err) {
+            if (api.systemType == 'ios') {
+                bMap.initMapSDK(function (ret) {
+                    if (ret.status) {
+                        get_data()
+                    }
+                });
+            } else {
+                get_data()
+            }
+
+
+            function get_data() {
+                new Promise(function (resolve, reject) {
+                    bMap.getLocation({
+                        accuracy: '100m',
+                        autoStop: true,
+                        filter: 1
+                    }, function (ret, err) {
+                        if (ret.status) {
+                            lat = ret.lat;
+                            lon = ret.lon
+                            resolve(ret)
+                        } else {
+                            reject('获取GPS失败');
+                        }
+                    })
+                }).then(function (res) {
+                    return new Promise(function (resolve, reject) {
+                        bMap.getNameFromCoords({
+                            lon: res.lon,
+                            lat: res.lat
+                        }, function (ret, err) {
+                            if (ret.status) {
+                                resolve(ret)
+                            } else {
+                                reject('获取adcode失败');
+                            }
+                        })
+
+                    })
+
+                }).then(function (res) {
+                    api.ajax({
+                        url: server + '/api/get_jiayouzhan_list',
+                        method: 'post',
+                        timeout: 10,
+                        dataType: 'json',
+                        returnAll: false,
+                        data: {
+                            values: { adCode: res.adCode }
+                        }
+                    }, function (ret, err) {
+                        if (ret.length > 0) {
+                            ret.forEach(element => {
+                                element.juli = getDistance(lat, lon, element.jyz_lat, element.jyz_lon)
+                            });
+                            ret.sort((a, b) => { return a.juli - b.juli })
+                            apibox.data = ret
+
+                        } else {
+                            apibox.data = ''
+                        }
+                        api.refreshHeaderLoadDone()
+                    })
+                })
+                    .catch(function (error) {
+                        api.refreshHeaderLoadDone()
+                        apibox.data = ''
+                    });
+            }
+            //在这里从服务器加载数据，加载完成后调用api.refreshHeaderLoadDone()方法恢复组件到默认状态
+
+
+        });
+
+
+
+        var apibox = new Vue({
+            el: "#apibox",
+            data: {
+                moshi: 'list',
+                server: server,
+                loading: false,
+                error: false,
+                data: '',
+                mapdata: '',
+                errormsg: "没有找到您需要的数据"
+            },
+            updated: function () {
+                var chakandom = $api.domAll('.chakan');
+                Array.prototype.forEach.call(chakandom, function (btn) {
+                    btn.addEventListener('click', function (event) {
+                        var index = event.currentTarget.getAttribute('index')
+                        api.openWin({
+                            name: 'jyz',
+                            url: './Z_jiayouzhan.html',
+                            bounces: false,
+                            pageParam: {
+                                data: apibox.data[index]
+                            }
+                        });
+                    })
+                });
+
+                $api.addEvt($api.byId('quzheli'), 'click', function () {
+                    let lat = apibox.mapdata.jyz_lat
+                    let lon = apibox.mapdata.jyz_lon
+                    let name = apibox.mapdata.jyz_name
+                    map_start_info(lat, lon, name)
+                });
+            }
+        });
+
+
+
+
+        //addtianqi()
+        $api.addEvt($api.byId('erweima'), 'click', function () {
+
+            var FNScanner = api.require('FNScanner');
+            FNScanner.encodeImg({
+                content: 'ghfhjvj',
+                saveToAlbum: true,
+                saveImg: {
+                    path: 'fs://album222.png',
+                    w: 200,
+                    h: 200
+                }
+            }, function (ret, err) {
+                if (ret.status) {
+                    alert(JSON.stringify(ret));
+                } else {
+                    alert(JSON.stringify(err));
+                }
+            });
+        });
+
+
+
+
+
+    };
+</script>
+
+</html>

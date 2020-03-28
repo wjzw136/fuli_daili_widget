@@ -1,0 +1,233 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		/* body{
+			position: absolute;
+		} */
+		.header {
+			width: 100%;
+			height: 50px;
+			padding: 0px 20px;
+			font-size: 20px;
+			/* background-image: url(../image/7.png); */
+			background-color: #03a9f4;
+			color: #fff;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background-image: linear-gradient(#03a9f4, #67D1E8);
+			position: fixed;
+		}
+
+		.zimuactive {
+			color: red;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="header" id="header">
+		<div>
+			<span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+			<span id="biaoti" style="margin-left:15px">汽车</span>
+		</div>
+
+	</div>
+	<div v-cloak id="apibox" style="width: 100%;background-color: #fff;padding:65px 15px 15px 15px;">
+		<div v-for='(items,dex) in data.cars'>
+			<div>{{items.secBrand}}</div>
+			<div v-for='(item,index) in items.typeList' v-if="item.guidePrice!='暂无'" class="sss" :pinpaiid='items.id'
+				style="padding: 10px 15px; display: flex;flex-direction: column">
+				<div v-on:click='getchexing(dex,index)' style="margin-left: 10px;">
+					<div style="color: red;">{{item.typeName}} </div>
+					<div class="aui-font-size-14">{{item.guidePrice}} </div>
+					<!-- <div v-for='lis in item.specList' v-if="lis.status=='在售'"  class="aui-font-size-12" style="margin-left: 20px;margin-top: 15px;">
+						<div class="aui-font-size-14">{{lis.specName}}</div>
+						<div >{{lis.status}} <span style="margin:0 10px">|</span> {{lis.guidePrice}}</div>
+						<div >{{lis.engine}}</div>
+						<div>{{lis.transMode}}</div>
+					</div> -->
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+		let pinpai = api.pageParam.pinpai;
+		let pinpaiid = api.pageParam.pinpaiid;
+		let brandName = api.pageParam.brandName;
+		let data = api.pageParam.data
+		// let abcd = "ABCDFGHIJKLMNOQRSTVWXYZ";
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				server: server,
+				path: '/qiche_logo/',
+				data: pinpai,
+				xuanzhong: '',
+				// abcd: abcd.split('')
+			},
+			updated() {
+			},
+			methods: {
+				getchexing: function (i, n) {
+					let typeList = (this.data.cars)[i].typeList
+					let pinpai = (this.data.cars)[i].secBrand
+					typeList[n].secBrand = pinpai;
+					this.xuanzhong = typeList[n];
+					this.xuanzhong.brandName = brandName
+					this.xuanzhong.pinpaiid = pinpaiid
+					if (data.type == 'chexing') {
+						api.sendEvent({
+							name: data.event,
+							extra: { data: this.xuanzhong }
+						});
+						setTimeout(() => {
+							api.closeWin({
+								name: 'qiche_pinpai'
+							});
+							api.closeWin({
+								name: 'qiche_chexing'
+							});
+						},650);
+						
+						return
+					}
+
+					openchexing()
+				}
+			},
+
+		})
+
+		$api.addEvt($api.dom('#back'), 'click', function () {
+			api.closeWin();
+		});
+
+
+		function openchexing() {
+			api.openWin({
+				name: 'qiche_cheliang',
+				url: 'Z_pt_header.html',
+				bounces: false,
+				pageParam: {
+					biaoti: '选择车型',
+					html: 'Z_qiche_cheliang',
+					data: apibox.xuanzhong,
+					spid: data
+				}
+			});
+		}
+		// for (let i = 0; i < abcd.length; i++) {
+		// 	let element = abcd[i];
+		// 	let el = $api.byId(element);
+		// 	$api.prepend(el, '<div style="background-color: #F2F2F2;padding: 15px;font-size: 20px;">' + element + '</div>');
+		// }
+
+		// var chakandom = $api.domAll('.sss');
+		// Array.prototype.forEach.call(chakandom, function (btn) {
+		// 	btn.addEventListener('click', function (event) {
+		// 		var pinpaiid = event.currentTarget.getAttribute('pinpaiid')
+		// 		alert(pinpaiid)
+		// 		api.ajax({
+		// 			url: server + '/api/qiche_pingpai_list',
+		// 			method: 'post',
+		// 			timeout: 30,
+		// 			dataType: 'json',
+		// 			data: {
+		// 				values: {
+		// 					pinpaiid: pinpaiid
+		// 				}
+		// 			},
+		// 			returnAll: false
+		// 		}, function (ret, err) {
+		// 			if (ret) {
+
+		// 				api
+
+
+
+		// 			} else {
+
+		// 			};
+		// 		});
+		// 	})
+		// });
+
+
+		// var xuanxiang = $api.domAll('.zimuspan');
+		// Array.prototype.forEach.call(xuanxiang, function (btn) {
+		// 	btn.addEventListener('click', function (event) {
+		// 		// let spid = event.currentTarget.getAttribute('spid');
+		// 		let zimu = event.currentTarget.getAttribute('zimu');
+		// 		let el = $api.byId(zimu);
+		// 		let top = $api.offset(el).t;
+		// 		// xuanxiang.forEach(element => {
+		// 		// 	$api.removeCls(element, 'zimuactive');
+		// 		// });	
+		// 		// let scrolltop = el.scrollTop
+		// 		// document.onscroll = function () {
+		// 		// 	scrollTop = el.scrollTop
+		// 		// 	alert(scrolltop)
+		// 		// }
+
+		// 		// let height = 0;
+
+		// 		// let timer=	setInterval(() => {
+		// 		// 		height=height+30
+		// 		// 		if (top-100-height<0) {
+		// 		// 			window.scrollTo(0, top - 100)
+		// 		// 			clearInterval(timer);
+		// 		// 		}else{
+		// 		window.scrollTo(0, top)
+		// 		// 		}
+
+		// 		// 	}, 1);
+
+
+		// 		// $api.addCls(btn, 'zimuactive');
+		// 		// alert(zimu)
+		// 	})
+		// })
+		// pinpai.brandList.forEach(element => {
+		// 	let url=element.imgUrl
+		// 		api.download({
+		// 		url: url,
+		// 		savePath: 'fs://ss/'+element.id+'.png',
+		// 		report: true,
+		// 		cache: true,
+		// 		allowResume: true
+		// 	}, function (ret, err) {
+		// 		if (ret.state == 1) {
+		// 			//下载成功
+		// 		} else {
+
+		// 		}
+		// 	});
+		// });
+
+
+
+
+	};
+</script>
+
+</html>

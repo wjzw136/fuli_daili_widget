@@ -1,0 +1,100 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        .header {
+            height: 50px;
+            padding: 0px 20px;
+            font-size: 20px;
+            /* background-image: url(../image/7.png); */
+            background-color: #03a9f4;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-image: linear-gradient(#03a9f4, #67D1E8);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header" id="header">
+        <div>
+            <span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+            <span id="biaoti" style="margin-left:15px">-</span>
+        </div>
+        <div id="map" ismap='1' class="aui-font-size-16">
+            地图查看
+        </div>
+    </div>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+        $api.addEvt($api.dom('#back'), 'click', function () {
+            api.closeWin();
+        });
+        var biaoti = api.pageParam.biaoti
+        $api.html($api.byId('biaoti'), biaoti);
+        var framename = api.pageParam.html
+        var user = api.pageParam.user//店铺使用
+        var spid = api.pageParam.spid//店铺使用
+        var leibie = api.pageParam.leibie//qixiu_yeiwu使用
+        
+        api.openFrame({
+            name: framename,
+            url: framename + '.html',
+            bounces: false,
+            rect: {
+                x: 0,
+                y: 50,
+                w: 'auto',
+                h: api.winHeight - 50
+            },
+            pageParam: {
+                user: user,
+                spid: spid,
+                leibie:leibie
+            }
+        });
+        $api.addEvt($api.dom('#map'), 'click', function () {
+            let ismap = $api.attr($api.dom('#map'), 'ismap');
+            if (ismap == 1) {
+                api.sendEvent({
+                    name: 'ismap',
+                    extra: {
+                        ismap: 1,
+                        winName: api.winName
+                    }
+                });
+                $api.attr($api.dom('#map'), 'ismap', '0')
+                $api.html($api.dom('#map'), '列表查看');
+            } else {
+                api.sendEvent({
+                    name: 'ismap',
+                    extra: {
+                        ismap: 0,
+                        winName: api.winName
+                    }
+                });
+                $api.attr($api.dom('#map'), 'ismap', '1')
+                $api.html($api.dom('#map'), '地图查看');
+
+            }
+
+        });
+    };
+</script>
+
+</html>

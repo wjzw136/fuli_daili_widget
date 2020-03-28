@@ -1,0 +1,210 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		body,
+		html {
+			height: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	
+	<section id="apibox" class="aui-content" style="height: 100%;display: flex;flex-direction: column;" >
+
+		<div class="aui-font-size-14" style="display: flex;align-items: center;padding: 30px 15px;">
+			<!-- <div style="width: 80px;height: 80px;border-radius: 50%;overflow: hidden;margin-right: 10px;">
+				<img src="../image/1156557950_6.png" alt="" width="100%" height="100%" srcset="">
+			</div> -->
+			<div>
+				<div>{{sp.biaoti}}</div>
+				<div>{{sp.miaoshu}}</div>
+			</div>
+		</div>
+		<section style="display: flex;flex-grow:1; flex-direction: column;align-items: center;">
+			<div
+				style="display: flex;flex-direction: column;justify-content: center;align-items: center;flex-grow: 1;height: 100%;">
+				<div style="width: 300px;height: 300px;margin-bottom: 15px;">
+					<img :src="zhanshi.imgPath" width="100%" height="100%" alt="" srcset="">
+				</div>
+
+				<div>{{zhanshi.tishi}}</div>
+				<section class="aui-content-padded">
+					<div class="aui-row">
+						<div id="yizhifu" class="aui-btn aui-btn-block aui-btn-info aui-btn-xs">我已付款</div>
+					</div>
+				</section>
+			</div>
+
+		</section>
+	</section>
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+
+		let sp = api.pageParam.sp;
+		
+		var FNScanner = api.require('FNScanner');
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				sp: sp,
+				zhanshi: {
+					imgPath: '',
+					dingdanhao: '',
+					total_amount: '',
+					tishi: '正在生成二维码'
+				}
+
+			},
+			updated() {
+				$api.addEvt($api.byId('yizhifu'), 'click', function () {
+					if (!apibox.zhanshi.dingdanhao) {
+						return
+					}
+
+					let dingdanhao = apibox.zhanshi.dingdanhao;
+					api.ajax({
+						url: server + '/zhifu/chongzhichaxun',
+						method: 'post',
+						timeout: 65,
+						dataType: 'json',
+						returnAll: false,
+						data: {
+							values: {
+								dingdanhao: dingdanhao,
+							}
+
+						}
+					}, function (ret, err) {
+						if (ret.code == '10000') {
+							apibox.zhanshi.tishi = '付款成功'
+							setTimeout(() => {
+								api.closeWin();
+							}, 2000);
+						}
+					});
+
+
+				})
+			}
+		})
+
+
+		get_qr_code(sp.biaoti, sp.rmb_jiage, sp)
+
+
+
+		function get_qr_code(subject, total_amount, sp) {
+
+			return new Promise(function (resolve, reject) {
+				api.ajax({
+					url: server + '/zhifu/chongzhi',
+					method: 'post',
+					timeout: 30,
+					dataType: 'json',
+					returnAll: false,
+					data: {
+						values: {
+							total_amount: total_amount,
+							subject: subject,
+							sp: sp,
+							user:$api.getStorage('user')
+						}
+					}
+				}, function (ret, err) {
+					if (ret) {
+						resolve(ret)
+					} else {
+						reject(err)
+					}
+				});
+			}).then(ss => {
+				apibox.zhanshi.dingdanhao = ss.outTradeNo
+				let qr_code = ss.qrCode
+				FNScanner.encodeImg({
+					content: qr_code,
+					saveToAlbum: false,
+					saveImg: {
+						path: 'fs://album.png',
+						w: 300,
+						h: 300
+					}
+				}, function (ret, err) {
+					if (ret.status) {
+						apibox.zhanshi.tishi = '请用支付宝扫码支付'
+						apibox.zhanshi.imgPath = ret.imgPath
+					}
+				})
+				api.ajax({
+					url: server + '/zhifu/chongzhitongzhi',
+					method: 'post',
+					timeout: 30,
+					dataType: 'json',
+					returnAll: false,
+					data: {
+						values: {
+							dingdanhao: ss.outTradeNo,
+						}
+					}
+				}, function (ret, err) {
+
+					if (ret) {
+						if (ret.code == '10000') {
+							apibox.zhanshi.tishi = '付款成功'
+							setTimeout(() => {
+								api.closeWin();
+							}, 1000);
+						}
+					}
+				})
+			}).catch(data => {
+				apibox.zhanshi.tishi = '发生错误'
+			})
+
+
+
+		}
+
+		api.addEventListener({
+			name: 'keyback'
+		}, function (ret, err) {
+			api.ajax({
+				url: server + '/zhifu/cancel',
+				method: 'post',
+				timeout: 15,
+				dataType: 'json',
+				returnAll: false,
+				data: {
+					values: {
+						dingdanhao: apibox.zhanshi.dingdanhao,
+					}
+				}
+			}, function (ret, err) {
+				
+			});
+
+			api.closeWin();
+		});
+
+
+
+	};
+</script>
+
+</html>

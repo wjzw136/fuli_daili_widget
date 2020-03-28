@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+
+	</style>
+</head>
+
+<body>
+	<div id="" style="height: 50px;background-color: #fff;">sdsdsd</div>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+		var images = api.pageParam.images;
+		var photoBrowser = api.require('photoBrowser');
+		photoBrowser.open({
+			images: images,
+			placeholderImg: 'widget://res/img/apicloud.png',
+			bgColor: '#000'
+		}, function (ret, err) {
+			if (ret) {
+				if (ret.eventType == 'change') {
+					show_biaoti(ret.index, images)
+				}
+			}
+		});
+		
+		show_biaoti(0, images)
+
+
+	};
+	function show_biaoti(index, images) {
+		api.openFrame({
+			name: 'Z_photoBrowser',
+			url: './Z_photoBrowser.html',
+			bounces: false, 
+			reload:true,
+			rect: {
+				x: 0,
+				y: 0,
+				w: 'auto',
+				h: 50
+			}, pageParam: {
+				index: index,
+				images:images
+			}
+		});
+	}
+</script>
+
+</html>

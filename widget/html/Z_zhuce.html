@@ -1,0 +1,355 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+
+	</style>
+</head>
+
+<body>
+	<section class="aui-content" id="apibox">
+		<ul class="aui-list aui-form-list" style="background-color: #ffffff;">
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner">
+					<div class="aui-list-item-input">
+						<input type="number"  v-model='phone' placeholder="手机号"
+							id="phone">
+					</div>
+				</div>
+			</li>
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner" style="display: flex;justify-content: space-between;">
+
+					<div class="aui-list-item-input" style="width: 40%;">
+						<input v-model='phone_yz_code' type="number" placeholder="手机验证码">
+					</div>
+					<div id='get_yzm' style="text-align: center;width: 40%;margin-right: 15px;">
+						<div style="padding: 5px 10px;border-radius: 10px;background-color: blueviolet;color: #fff;">
+							获取验证码<span class="aui-font-size-12" v-if="jishiqi>0&&jishiqi<60">({{jishiqi}})</span>
+						</div>
+					</div>
+				</div>
+			</li>
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner">
+					<div class="aui-list-item-input">
+						<input type="password" v-model='mima' placeholder="密码" id="mima">
+					</div>
+				</div>
+			</li>
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner">
+					<div class="aui-list-item-input">
+						<input type="password" v-model='remima' placeholder="重复密码" id="remima">
+					</div>
+				</div>
+			</li>
+			<li class="aui-list-item">
+
+				<div class="aui-list-item-input" style="width: 60%;">
+					<input type="text" placeholder="验证码" v-model='yanzhengma' id="yanzhengma">
+				</div>
+				<div style="right: 0px;position: absolute;height: 55px;width:40%" id="yz_code">
+
+				</div>
+			</li>
+
+			<!-- <li class="aui-list-item">
+				<div class="aui-list-item-inner">
+					<div class="aui-list-item-input">
+						<input type="number" pattern="^1[345678][0-9]{9}$" placeholder="输入短信验证码" id="code">
+						<input type="number" placeholder="输入密码" id="code">
+					</div>
+					<div id="getcode" class="aui-list-item-label" style="width: 10rem">
+						<div class="aui-btn aui-btn-info aui-btn-block aui-btn-outlined aui-btn-sm">默认按钮(info)</div>
+						<div class="aui-btn aui-btn-info">
+							<input style="background-color: transparent" type="button" id="btn" value="获取验证码" />
+						</div>
+					</div>
+				</div>
+			</li> -->
+			<!-- <li class="aui-list-item">
+				<div class="aui-list-item-inner">
+					<div class="aui-list-item-input">
+						<input id="password" type="text" placeholder="输入以字母开头8-16位密码">
+					</div>
+				</div>
+			</li> -->
+		</ul>
+	</section>
+
+
+	<!-- <section class="aui-content">
+		<ul class="aui-list aui-form-list">
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner">
+					<div class="aui-list-item-input">
+						<input type="number" pattern="^1[345678][0-9]{9}$" placeholder="输入手机号" id="mobile">
+						
+					</div>
+				</div>
+			</li>
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner">
+					<div class="aui-list-item-input">
+						<input type="number" pattern="^1[345678][0-9]{9}$" placeholder="输入短信验证码" id="code">
+						
+					</div>
+					<div id="getcode" class="aui-list-item-label" style="width: 10rem">
+						
+						<div class="aui-btn aui-btn-info">
+							<input style="background-color: transparent" type="button" id="btn" value="获取验证码" />
+						</div>
+					</div>
+				</div>
+			</li>
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner">
+					<div class="aui-list-item-input">
+						<input id="password" type="text" placeholder="输入以字母开头8-16位密码">
+					</div>
+				</div>
+			</li>
+		</ul>
+	</section> -->
+	<section class="aui-content-padded">
+		<div id="zhuce" class="aui-btn aui-btn-block aui-btn-info aui-btn-xs">注册并同意用户协议</div>
+		<p>
+			《用户协议》
+		</p>
+	</section>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/GVerify.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+		let reg_phone = /^1[345678][0-9]{9}$/;
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				yanzhengma: '',
+				jishiqi: '60',
+				phone: '',
+				mima: '',
+				remima: '',
+				phone_yz_code:'',
+				phone_yz_code_bianhao: ''
+
+			}, watch: {
+				jishiqi(newValue, oldValue) {
+					if (newValue < 0 || newValue >= 60) {
+						this.jishiqi = 60;
+					}
+				}
+			}
+
+		})
+
+		$api.addEvt($api.byId('get_yzm'), 'click', function () {
+			if (!reg_phone.test(apibox.phone)) {
+				api.toast({
+					msg: '请先填写正确的手机号',
+					duration: 2000,
+					location: 'bottom'
+				});
+				return
+			}
+			let timer = setInterval(() => {
+				apibox.jishiqi--
+				if (apibox.jishiqi < 0) {
+					clearInterval(timer)
+				}
+			}, 1000);
+
+			
+			api.ajax({
+				url: server+'/api/get_phone_yz_code',
+				method: 'post',
+				timeout: 30,
+				dataType: 'json',
+				data:{
+					values:{
+						phone:apibox.phone,
+					}
+				},
+				returnAll:false
+			},function(ret,err){
+				if (ret.zhuangtai) {
+					apibox.phone_yz_code_bianhao=ret.yz_code_bianhao
+				};
+			});
+
+		})
+		var verifyCode = new GVerify("yz_code");
+		$api.addEvt($api.dom('#zhuce'), 'click', function () {
+			let mima = apibox.mima;
+			let phone = apibox.phone;
+			let phone_yz_code = apibox.phone_yz_code;
+			let phone_yz_code_bianhao=apibox.phone_yz_code_bianhao;
+			let remima = apibox.remima;
+			let yzcode = apibox.yzcode;
+			let deviceid = api.deviceId;
+			let name = getRandomName()
+			let password_reg = new RegExp("^[a-zA-Z0-9]{6,18}$")
+			// let reg_zhanghao = new RegExp("^[a-zA-Z][a-zA-Z0-9]{4,18}$");
+			
+
+			var res_yzm = verifyCode.validate(document.getElementById("yanzhengma").value);
+			if (!res_yzm) {
+				api.toast({
+					msg: '验证码错误',
+					duration: 2000,
+					location: 'bottom'
+				});
+				return
+			}
+			if (!reg_phone.test(phone)) {
+				api.toast({
+					msg: '手机号填写有误',
+					duration: 2000,
+					location: 'bottom'
+				});
+				return
+			}
+			if (!password_reg.test(mima)) {
+				api.toast({
+					msg: '密码必须是的6-18位',
+					duration: 2000,
+					location: 'bottom'
+				});
+				return
+			}
+			if (remima != mima) {
+				api.toast({
+					msg: '两次密码不相同',
+					duration: 2000,
+					location: 'bottom'
+				});
+				return
+			}
+
+			api.ajax({
+				url: server + '/api/zhuce',
+				method: 'post',
+				timeout: 15,
+				dataType: 'json',
+				returnAll: false,
+				data: {
+					values: {
+						phone: phone,
+						password: mima,
+						name: name,
+						deviceid: deviceid,
+						phone_yz_code:phone_yz_code,
+						phone_yz_code_bianhao:phone_yz_code_bianhao
+					}
+				}
+			}, function (ret, err) {
+				if (ret.zhuangtai == 'true') {
+					$api.setStorage('user', ret.user);
+					$api.setStorage('md5password', ret.md5password);
+					$api.setStorage('touxiang', ret.touxiang);
+					$api.setStorage('islogin', 'true');
+					api.sendEvent({
+						name: 'autologin',
+						extra: { key: ' value' }
+					});
+					api.closeWin({
+						name: 'Z_denglu'
+					})
+					api.closeWin();
+				} else {
+					api.toast({
+						msg: ret.msg,
+						duration: 2000,
+						location: 'bottom'
+					});
+					verifyCode.refresh()
+				}
+			});
+
+
+		})
+
+	};
+
+
+	//验证验证码
+
+
+
+
+
+	$api.addEvt($api.dom('#getcode'), 'click', function () {
+		var reg = new RegExp("^1[345678][0-9]{9}$");
+		var mobile = $api.val($api.dom('#mobile'));
+		code = Math.floor(Math.random() * 900000 + 99999);
+		if (!reg.test(mobile)) {
+			api.toast({
+				msg: '手机号号码格式错误',
+				duration: 2000,
+				location: 'bottom'
+			});
+		} else {
+			var countdown = 60;
+			settime($api.dom('#getcode input'))
+			function settime(obj) {
+				if (countdown == 0) {
+					obj.removeAttribute("disabled");
+					obj.value = "获取验证码";
+					countdown = 60;
+					return;
+				} else {
+					obj.setAttribute("disabled", true);
+					obj.value = "重新发送(" + countdown + ")";
+					countdown--;
+				}
+				setTimeout(function () {
+					settime(obj)
+				}
+					, 1000)
+			}
+			dianhua = mobile;
+			api.ajax({
+				headers: {
+					'Authorization': 'APPCODE f48d189498f94aeab177b97404ff82ed'
+				},
+				url: 'http://fesms.market.alicloudapi.com/sms/?code=' + code + '&phone=' + dianhua + '&skin=17&sign=1',
+				method: 'get',
+				timeout: 30,
+				returnAll: false
+			}, function (ret, err) {
+				//alert(JSON.stringify(ret));
+				if (ret.Code) {
+
+					yanzhengma = code
+					// $api.html($api.first($api.dom('.tqbox')), ret.result.date + ' ' + ret.result.week + " " + ret.result.city + ' ' + ret.result.weather);
+					// $api.html($api.last($api.dom('.tqbox')), ret.result.winddirect + ' ' + ret.result.windpower + " 当前温度" + ret.result.temp + '℃' + " 温度范围" + ret.result.templow + "～" + ret.result.temphigh + '℃');
+				} else {
+					api.toast({
+						msg: '验证码服务出错',
+						duration: 2000,
+						location: 'bottom'
+					});
+
+				}
+			})
+		}
+
+	});
+
+</script>
+
+</html>

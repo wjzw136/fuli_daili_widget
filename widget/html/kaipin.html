@@ -1,0 +1,150 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        #kaipinbox {
+            height: 70%;
+            width: 100%;
+            background-color: aquamarine
+        }
+        #start{
+
+            width: 100%;
+            height: 60px;
+            line-height: 60px;
+            text-align: center;
+            font-size: 40px;
+            margin-top:20px
+        }
+    </style>
+</head>
+
+<body>
+    <div id="kaipinbox">
+        s
+    </div>
+    <div  id="start">
+        立即进入
+    </div>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript">
+    apiready = function () {
+
+        getlunbotu1()
+
+        var start = new Vue({
+            el: '#start',
+            data: {
+                start: false
+            }
+        })
+
+        $api.addEvt($api.byId('start'), 'click', function(){
+            api.sendEvent({
+                name: 'updataapp'
+            });
+            api.closeWin({
+                name: 'kaipin',
+                animation:{
+                    type:'fade'
+                }
+            });
+            
+        });
+
+
+
+
+
+        function getlunbotu1() {
+
+            var kaipin = {
+                paths: [
+                    '../image/1.jpg',
+                    '../image/2.jpg',
+                    '../image/3.jpg',
+                    '../image/4.jpg'
+                ],
+                captions: [
+                    'sjdakd',
+                    'sjdakd',
+                    'sjdakd',
+                    'sjdakd',
+                ],
+                click: [
+                    'a',
+                    'b',
+                    'c',
+                    'd'
+                ]
+            }
+            var UIScrollPicture = api.require('UIScrollPicture');
+            UIScrollPicture.open({
+                rect: {
+                    x: 0,
+                    y: 0,
+                    w: api.winWidth,
+                    h: $api.byId('kaipinbox').offsetHeight
+                },
+                data: {
+                    paths: kaipin.paths,
+                    captions: []
+                },
+                styles: {
+                    caption: {
+                        height: 100,
+                        color: '#6ab494',
+                        size: 14,
+                        bgColor: '#ffffff',
+                        position: 'bottom'
+                    },
+                    indicator: {
+                        dot: {
+                            w: 10,
+                            h: 10,
+                            r: 5,
+                            margin: 5
+                        },
+                        align: 'center',
+                        color: '#FFFFFF',
+                        activeColor: '#DA70D6'
+                    }
+                },
+                placeholderImg: 'widget://res/slide1.jpg',
+                contentMode: 'scaleToFill',
+                interval: 3,
+                auto: false,
+                // fixedOn: api.winName,
+                loop: false,
+                fixed: false
+            }, function (ret, err) {
+            });
+
+
+
+            UIScrollPicture.addEventListener({
+                name: 'scroll'
+            }, function (ret, err) {
+                if (ret.index == 3) {
+                    start.start = true
+                }
+            });
+        }
+    };
+
+
+</script>
+
+</html>

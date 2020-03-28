@@ -1,0 +1,199 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		/* body{
+			position: absolute;
+		} */
+
+		.zimuactive {
+			color: red;
+		}
+	</style>
+</head>
+
+<body>
+	<div v-cloak id="apibox" style="width: 100%;background-color: #fff;">
+		<div v-for='(items,index) in data.brandList' :id='items.letter'>
+			<div class="sss" :pinpaiid='items.id' :brandName='items.brandName'
+				style="padding: 10px 15px;border-bottom: 1px solid #ECECEC; display: flex;align-items: center;">
+				<img width="50px" height="50px" :src="server+path+items.id+'.png'"  alt="" srcset="">
+				
+				<span style="margin-left: 10px;">{{items.brandName}}</span>
+			</div>
+		</div>
+		<div
+			style="position: fixed; width: 40px;height: 100%;display: flex;right: 0;top: 0; flex-direction: column;justify-content: center; z-index: 999">
+			<div style="text-align: center;" v-for='acd in abcd' :zimu='acd' class="zimuspan">{{acd}}</div>
+		</div>
+	</div>
+	<!-- <div style="background-color: darkgrey;padding: 15px;font-size: 16px;"></div> -->
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+		let data = api.pageParam.data
+		api.showProgress({
+			title: ' 加载中，请稍后',
+			// text: ' text',
+			modal: true
+		});
+
+
+
+
+		// let pinpai = api.pageParam.pinpai;
+		let abcd = "ABCDFGHIJKLMNOQRSTVWXYZ";
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				server: server,
+				path: '/qiche_logo/',
+				data: '',
+				abcd: abcd.split('')
+			},
+			
+			updated() {
+
+				
+				for (let i = 0; i < abcd.length; i++) {
+					let element = abcd[i];
+					let el = $api.byId(element);
+					$api.prepend(el, '<div style="background-color: #F2F2F2;padding: 15px;font-size: 20px;">' + element + '</div>');
+				}
+				var chakandom = $api.domAll('.sss');
+				Array.prototype.forEach.call(chakandom, function (btn) {
+					btn.addEventListener('click', function (event) {
+						var pinpaiid = event.currentTarget.getAttribute('pinpaiid')
+						var brandName = event.currentTarget.getAttribute('brandName')
+						if (data.type == 'pinpai') {
+							api.sendEvent({
+								name: data.event,
+								extra: { pinpaiid: pinpaiid }
+							});
+							api.closeWin();
+							return
+						}
+
+						api.showProgress({
+							title: '正在加载',
+							// text: ' text',
+							modal: true
+						});
+
+						api.ajax({
+							url: server + '/api/qiche_pingpai_list',
+							method: 'post',
+							timeout: 30,
+							dataType: 'json',
+							data: {
+								values: {
+									pinpaiid: pinpaiid
+								}
+							},
+							returnAll: false
+						}, function (ret, err) {
+							if (ret) {
+								api.hideProgress();
+								api.openWin({
+									name: 'qiche_chexing',
+									url: 'Z_qiche_chexing.html',
+									bounces: false,
+									pageParam: {
+										pinpai: ret,
+										pinpaiid: pinpaiid,
+										data: data,
+										brandName: brandName
+									}
+								});
+
+							}
+						});
+					})
+				});
+
+			}
+		})
+
+		api.ajax({
+			url: server + '/api/get_qiche_pinpai',
+			method: 'post',
+			timeout: 30,
+			dataType: 'json',
+			returnAll: false
+		}, function (ret, err) {
+			if (ret) {
+				apibox.data = ret
+				api.hideProgress();
+			}
+		});
+		var xuanxiang = $api.domAll('.zimuspan');
+		Array.prototype.forEach.call(xuanxiang, function (btn) {
+			btn.addEventListener('click', function (event) {
+				// let spid = event.currentTarget.getAttribute('spid');
+				let zimu = event.currentTarget.getAttribute('zimu');
+				let el = $api.byId(zimu);
+				let top = $api.offset(el).t;
+				// xuanxiang.forEach(element => {
+				// 	$api.removeCls(element, 'zimuactive');
+				// });	
+				// let scrolltop = el.scrollTop
+				// document.onscroll = function () {
+				// 	scrollTop = el.scrollTop
+				// 	alert(scrolltop)
+				// }
+
+				// let height = 0;
+
+				// let timer=	setInterval(() => {
+				// 		height=height+30
+				// 		if (top-100-height<0) {
+				// 			window.scrollTo(0, top - 100)
+				// 			clearInterval(timer);
+				// 		}else{
+				window.scrollTo(0, top)
+				// 		}
+
+				// 	}, 1);
+
+
+				// $api.addCls(btn, 'zimuactive');
+				// alert(zimu)
+			})
+		})
+		// pinpai.brandList.forEach(element => {
+		// 	let url=element.imgUrl
+		// 		api.download({
+		// 		url: url,
+		// 		savePath: 'fs://ss/'+element.id+'.png',
+		// 		report: true,
+		// 		cache: true,
+		// 		allowResume: true
+		// 	}, function (ret, err) {
+		// 		if (ret.state == 1) {
+		// 			//下载成功
+		// 		} else {
+
+		// 		}
+		// 	});
+		// });
+
+
+
+
+	};
+</script>
+
+</html>

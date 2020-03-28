@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <script type="text/javascript" src="../script/vue.js"></script>
+</head>
+<style>
+
+</style>
+
+<body>
+    <div id="apibox">
+        <div v-if="loading!='end'" style="text-align: center;">
+            加载数据
+        </div>
+        <div v-cloak id="zhengcebox" v-for="items in data" class="aui-font-size-14" style="background-color: #fff;margin-bottom: 15px; display: flex;padding: 15px;align-items: center;">
+            <div style="display: flex;align-items: center;">
+                <img width="100px" height="60px" :src="items.imgurl" alt="" srcset="" />
+                <!-- <div style="padding-left: 10px; width: 90px;">
+                        {{items.name}}
+                    </div> -->
+            </div>
+            <div style="padding-left:15px;flex-grow: 1;">
+                <div v-if="items.fandian[framename]" style="display: flex;align-items: center; margin-bottom: 5px;padding-bottom: 5px; border-bottom: lightblue solid 1px;">
+                    <div style="padding: 0px 15px;border:#03A9F4  solid 1px;border-radius: 20px;color: #03A9F4; margin-right: 10px; flex-shrink: 0; flex-grow: 0;" class="aui-font-size-16">新车</div>
+                    <div style="flex-grow: 1">
+                        <div>
+                            商业险最高返<span style=" color: red; ">{{items.fandian[framename].shangye_new}}</span>%
+                        </div>
+                        <div>
+                            交强险最高返
+                            <span style="color: red;">{{items.fandian[framename].jiaoqiang_new}}</span>%
+                        </div>
+                    </div>
+                </div>
+                <div v-if="items.fandian[framename]" style="display: flex;align-items: center">
+                    <div style="padding: 0px 15px;border:#03A9F4  solid 1px;border-radius: 20px;color: #03A9F4; margin-right: 10px; flex-shrink: 0; flex-grow: 0;" class="aui-font-size-16">旧车</div>
+                    <div style="flex-grow: 1">
+                        <div>
+                            商业险最高返<span style="color: red;">{{items.fandian[framename].shangye_old}}</span>%
+                        </div>
+                        <div>
+                            交强险最高返
+                            <span style="color: red;">{{items.fandian[framename].jiaoqiang_new}}</span>%
+                        </div>
+                    </div>
+                </div>
+                <div v-if="!items.fandian[framename]" style="flex-grow: 1;">
+                    未开通代理
+                </div>
+
+            </div>
+
+            <div v-if="items.fandian[framename]">
+                <div class="aui-btn aui-btn-info qubaojia" style="margin-left: 15px;">去报价</div>
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    var apibox = new Vue({
+        el: "#apibox",
+        data: {
+            loading: false,
+            framename: 'jiaoche',
+            error: false,
+            data: BX_xinxi,
+            imgurl: "../image/",
+            errormsg: "没有找到您需要的数据"
+        },
+        updated: function() {
+            var qubaojia = $api.domAll('.qubaojia');
+            Array.prototype.forEach.call(qubaojia, function(btn) {
+                btn.addEventListener('click', function(event) {
+                    api.openWin({
+                        name: 'baojia',
+                        url: './Z_baojia.html',
+                        bounces: false
+                    });
+                })
+            });
+        }
+    });
+    apiready = function() {
+        var framename = api.frameName;
+        apibox.framename = framename;
+        apibox.loading = 'end';
+    };
+</script>
+
+</html>

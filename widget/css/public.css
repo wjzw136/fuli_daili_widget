@@ -1,0 +1,39 @@
+html,body {
+    height: 100%;
+}
+
+#wrap {
+    height: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-flex-flow: column;
+    flex-flow: column;
+}
+
+#main {
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    flex: 1;
+}
+
+#footer {
+    height: 50px;
+    width: 100%;
+}
+.text-color{
+    color: #BBBBBB;
+}
+.aui-list-item-inner{
+    padding: 15px 0;
+}
+.bt-li{
+    border-bottom:#f2f2f2 solid 1px
+}
+.bt-li-div{
+    border-left:#03a9f4 solid 5px;padding-left:10px;color: #03a9f4
+}
+[v-cloak] {
+    display: none;
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+
+    </style>
+</head>
+
+<body id="aa">
+    <div id="ss" style="padding: 0 15px;">
+        <div  style="background-color: red; border-radius: 10px;display:flex;width: 100%;padding: 15px;">
+
+            <div style="flex-grow: 1;">正在监听</div>
+            <div id="">×</div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript">
+    // let h = $api.offset($api.byId('aa')).h;
+
+    apiready = function () {
+        let height = $api.offset($api.byId('ss')).h;
+        api.setFrameAttr({
+            name: 'msg_box',
+            rect: {
+                h: height
+            }
+        });
+    };
+</script>
+
+</html>

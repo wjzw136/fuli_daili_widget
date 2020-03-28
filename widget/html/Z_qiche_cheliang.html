@@ -1,0 +1,237 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		/* body{
+			position: absolute;
+		} */
+		.header {
+			width: 100%;
+			height: 50px;
+			padding: 0px 20px;
+			font-size: 20px;
+			/* background-image: url(../image/7.png); */
+			background-color: #03a9f4;
+			color: #fff;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background-image: linear-gradient(#03a9f4, #67D1E8);
+			position: fixed;
+		}
+
+		.zimuactive {
+			color: red;
+		}
+	</style>
+</head>
+
+<body>	
+		<div style="background-color: #fff;padding-top: 15px;">
+	
+		<div class="aui-bar aui-bar-btn aui-bar-btn-round" style="width:45%;">
+			<div id="zaishou" class="aui-bar-btn-item aui-active">在售</div>
+			<div id="weishou" class="aui-bar-btn-item">停售/未售</div>
+		</div>
+	</div>
+	<div v-cloak id="apibox" style="width: 100%;background-color: #fff;padding:15px">
+		<div v-show='zaishou' v-for='(items,dex) in data.specList' v-on:click='getchexing(dex)' style="margin-top: 15px;"
+			v-if="items.status=='在售'">
+			<div style="color: red;">{{items.specName}} </div>
+			<div class="aui-font-size-14">{{data.secBrand}} <span style="margin:0 10px">|</span>{{data.typeName}}</div>
+			<div class="aui-font-size-14">{{items.engine}} </div>
+			<div class="aui-font-size-14">{{items.driveMode}} <span style="margin:0 10px">|</span> {{items.transMode}}
+			</div>
+			<div class="aui-font-size-14">{{items.guidePrice}} </div>
+			<!-- <div v-for='lis in item.specList' v-if="lis.status=='在售'"  class="aui-font-size-12" style="margin-left: 20px;margin-top: 15px;">
+						<div class="aui-font-size-14">{{lis.specName}}</div>
+						<div >{{lis.status}} <span style="margin:0 10px">|</span> {{lis.guidePrice}}</div>
+						<div >{{lis.engine}}</div>
+						<div>{{lis.transMode}}</div>
+					</div> -->
+		</div>
+		<div v-show='!zaishou' v-for='(items,dex) in data.specList' v-on:click='getchexing(dex)' style="margin-top: 15px;"
+			v-if="items.status!='在售'">
+			<div style="color: red;">{{items.specName}} </div>
+			<div class="aui-font-size-14">{{data.secBrand}} <span style="margin:0 10px">|</span>{{data.typeName}}</div>
+			<div class="aui-font-size-14">{{items.engine}} </div>
+			<div class="aui-font-size-14">{{items.driveMode}} <span style="margin:0 10px">|</span> {{items.transMode}}
+			</div>
+			<div class="aui-font-size-14">{{items.guidePrice}} </div>
+			<!-- <div v-for='lis in item.specList' v-if="lis.status=='在售'"  class="aui-font-size-12" style="margin-left: 20px;margin-top: 15px;">
+								<div class="aui-font-size-14">{{lis.specName}}</div>
+								<div >{{lis.status}} <span style="margin:0 10px">|</span> {{lis.guidePrice}}</div>
+								<div >{{lis.engine}}</div>
+								<div>{{lis.transMode}}</div>
+							</div> -->
+		</div>
+	</div>
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+		let data = api.pageParam.data;
+		let event = api.pageParam.spid.event
+		// let abcd = "ABCDFGHIJKLMNOQRSTVWXYZ";
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				server: server,
+				path: '/qiche_logo/',
+				data: data,
+				xuanzhong: '',
+				zaishou:true
+				// abcd: abcd.split('')
+			},
+			updated() {
+			},
+			methods: {
+				getchexing: function (i) {
+					let chexing = this.data.specList[i]
+					chexing.secBrand = this.data.secBrand;
+					chexing.typeName = this.data.typeName;
+					chexing.pinpaiid = this.data.pinpaiid
+					chexing.brandName = this.data.brandName
+					api.sendEvent({
+						name: event,
+						extra: { chexing: chexing }
+					});
+					api.closeWin({
+						name: 'qiche_pinpai'
+					});
+					api.closeWin({
+						name: 'qiche_chexing'
+					});
+
+					api.closeWin({
+						name: 'qiche_cheliang'
+					});
+
+				}
+			},
+
+		})
+
+		$api.addEvt($api.dom('#back'), 'click', function () {
+			api.closeWin();
+		});
+
+		$api.addEvt($api.byId('zaishou'), 'click', function () {
+			apibox.zaishou=true
+			$api.addCls($api.byId('zaishou'), 'aui-active');
+			$api.removeCls($api.byId('weishou'), 'aui-active');
+		});
+		$api.addEvt($api.byId('weishou'), 'click', function () {
+			apibox.zaishou = false
+			$api.addCls($api.byId('weishou'), 'aui-active');
+			$api.removeCls($api.byId('zaishou'), 'aui-active');
+
+		});
+		// for (let i = 0; i < abcd.length; i++) {
+		// 	let element = abcd[i];
+		// 	let el = $api.byId(element);
+		// 	$api.prepend(el, '<div style="background-color: #F2F2F2;padding: 15px;font-size: 20px;">' + element + '</div>');
+		// }
+
+		// var chakandom = $api.domAll('.sss');
+		// Array.prototype.forEach.call(chakandom, function (btn) {
+		// 	btn.addEventListener('click', function (event) {
+		// 		var pinpaiid = event.currentTarget.getAttribute('pinpaiid')
+		// 		alert(pinpaiid)
+		// 		api.ajax({
+		// 			url: server + '/api/qiche_pingpai_list',
+		// 			method: 'post',
+		// 			timeout: 30,
+		// 			dataType: 'json',
+		// 			data: {
+		// 				values: {
+		// 					pinpaiid: pinpaiid
+		// 				}
+		// 			},
+		// 			returnAll: false
+		// 		}, function (ret, err) {
+		// 			if (ret) {
+
+		// 				api
+
+
+
+		// 			} else {
+
+		// 			};
+		// 		});
+		// 	})
+		// });
+
+
+		// var xuanxiang = $api.domAll('.zimuspan');
+		// Array.prototype.forEach.call(xuanxiang, function (btn) {
+		// 	btn.addEventListener('click', function (event) {
+		// 		// let spid = event.currentTarget.getAttribute('spid');
+		// 		let zimu = event.currentTarget.getAttribute('zimu');
+		// 		let el = $api.byId(zimu);
+		// 		let top = $api.offset(el).t;
+		// 		// xuanxiang.forEach(element => {
+		// 		// 	$api.removeCls(element, 'zimuactive');
+		// 		// });	
+		// 		// let scrolltop = el.scrollTop
+		// 		// document.onscroll = function () {
+		// 		// 	scrollTop = el.scrollTop
+		// 		// 	alert(scrolltop)
+		// 		// }
+
+		// 		// let height = 0;
+
+		// 		// let timer=	setInterval(() => {
+		// 		// 		height=height+30
+		// 		// 		if (top-100-height<0) {
+		// 		// 			window.scrollTo(0, top - 100)
+		// 		// 			clearInterval(timer);
+		// 		// 		}else{
+		// 		window.scrollTo(0, top)
+		// 		// 		}
+
+		// 		// 	}, 1);
+
+
+		// 		// $api.addCls(btn, 'zimuactive');
+		// 		// alert(zimu)
+		// 	})
+		// })
+		// pinpai.brandList.forEach(element => {
+		// 	let url=element.imgUrl
+		// 		api.download({
+		// 		url: url,
+		// 		savePath: 'fs://ss/'+element.id+'.png',
+		// 		report: true,
+		// 		cache: true,
+		// 		allowResume: true
+		// 	}, function (ret, err) {
+		// 		if (ret.state == 1) {
+		// 			//下载成功
+		// 		} else {
+
+		// 		}
+		// 	});
+		// });
+
+
+
+
+	};
+</script>
+
+</html>

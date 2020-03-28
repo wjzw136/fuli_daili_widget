@@ -1,0 +1,201 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		.header {
+			height: 50px;
+			padding: 0px 20px;
+			font-size: 20px;
+			/* background-image: url(../image/7.png); */
+			background-color: #03a9f4;
+			color: #fff;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background-image: linear-gradient(#03a9f4, #67D1E8);
+		}
+
+		.active {
+			border: red 1px solid;
+		}
+
+		.border {
+			border: #F2F2F2 1px solid;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="header" id="header">
+		<div>
+			<span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+			<span id="biaoti" style="margin-left:15px">选择</span>
+		</div>
+	</div>
+
+	<div id="apibox" style="background-color: #fff;">
+
+		<div style="display: flex;flex-wrap: wrap;padding: 15px; justify-content: space-around;flex-wrap: wrap;">
+			<div v-for='(item,index) in sp' id="xuanxiangbox"
+				style="padding: 7.5px;width: 50%;display: flex;flex-shrink: 0;">
+				<div class="aui-font-size-12 border xuanxiang" v-on:click='xuanze(index,$event)'
+					style="overflow: hidden;padding: 10px;flex-grow: 1;border-radius: 10px;">
+					<!-- <div style="width: 80px;height: 80px;border-radius: 50%;overflow: hidden;margin-right: 10px;">
+						<img src="../image/1156557950_6.png" alt="" width="100%" height="100%" srcset="">
+					</div> -->
+					<!-- <div> -->
+					<div class="aui-font-size-14">{{item.biaoti}}</div>
+					<!-- <div>{{item.miaoshu}}</div> -->
+					<div class="aui-font-size-14" style="color: red;">￥{{item.rmb_jiage}} <span
+							class="aui-font-size-12">或积分:{{item.jifen_jiage}}</span> </div>
+					<!-- <div>{{item.sc_day}}</div> -->
+					<!-- </div> -->
+				</div>
+			</div>
+		</div>
+		<ul class="aui-list aui-list-in ">
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner ">
+					<div style="display: flex;align-items: center;">
+						<div style="width: 50px;height: 50px;border-radius: 50%;overflow: hidden;margin-right: 10px;">
+							<img src="../image/ui/zjb.jpg" alt="" width="100%" height="100%" srcset="">
+						</div>
+						<div class="aui-font-size-14">
+							<div>支付宝</div>
+							<!-- <div>ss</div> -->
+						</div>
+					</div>
+					<div>
+						<label><input class="aui-radio" type="radio" name="demo1" v-model="zhifu" value="zfb"></label>
+					</div>
+				</div>
+			</li>
+
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner ">
+					<div style="display: flex;align-items: center;">
+						<div style="width: 50px;height: 50px;border-radius: 50%;overflow: hidden;margin-right: 10px;">
+							<img src="../image/ui/jifen.png" alt="" width="100%" height="100%" srcset="">
+						</div>
+						<div class="aui-font-size-14">
+							<div>积分支付</div>
+							<!-- <div>ss</div> -->
+						</div>
+					</div>
+					<div>
+						<label><input class="aui-radio" type="radio" name="demo1" v-model="zhifu" value="jifen"></label>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<div style="padding: 20px 20px;">
+		<div id="next" class="aui-btn aui-btn-success aui-btn-block ">下一步</div>
+
+	</div>
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+
+
+
+	apiready = function () {
+		let sp = api.pageParam.sp
+		let user=$api.getStorage('user');
+		let md5password= $api.getStorage('md5password');
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				server: server,
+				sp: '',
+				zhifu: 'zfb',
+				xuanzedata: ''
+			},
+			updated() {
+				// var xuanxiang = $api.domAll('.xuanxiang');
+
+				// // $api.addCls($api.eq($api.byId('xuanxiangbox'),0), 'active');
+				// Array.prototype.forEach.call(xuanxiang, function (btn) {
+				// 	btn.addEventListener('click', function (event) {
+				// 		// let src = event.currentTarget.getAttribute('src')
+				// 		xuanxiang.forEach(element => {
+				// 			$api.addCls(element, 'border');
+				// 			$api.removeCls(element, 'active');
+				// 		});
+				// 		// $api.addCls(xuanxiang, 'border');
+				// 		// $api.removeCls(xuanxiang, 'active');
+				// 		$api.addCls(btn, 'active');
+				// 		$api.removeCls(btn, 'border');
+
+				// 	})
+				// });
+
+					var xuanxiang = $api.domAll('.xuanxiang');
+					xuanxiang[0].style.border = 'red 1px solid'
+				
+
+			},
+			methods: {
+				xuanze: function (i, e) {
+					this.xuanzedata = (this.sp)[i]
+					var xuanxiang = $api.domAll('.xuanxiang');
+					
+					xuanxiang.forEach(element => {
+						element.style.border = '#F2F2F2 1px solid'
+					});
+					e.currentTarget.style.border = 'red 1px solid'
+				}
+			},
+		})
+		$api.addEvt($api.dom('#next'), 'click', function () {
+
+			if (apibox.zhifu == 'zfb') {
+				api.openWin({
+					name: 'Z_pay_xz_zfb',
+					url: './Z_pay_xz_zfb.html',
+					bounces: false,
+					pageParam: { sp: apibox.xuanzedata
+					}
+				});
+			}
+		})
+		api.ajax({
+			url: server + '/api/fufei_sp',
+			method: 'post',
+			timeout: 30,
+			dataType: 'json',
+			data: {
+				values: {
+					leibie: '店铺'
+				}
+			},
+			returnAll: false
+		}, function (ret, err) {
+			if (ret) {
+				apibox.sp = ret
+				apibox.xuanzedata = ret[0]
+			}
+		});
+		$api.addEvt($api.dom('#back'), 'click', function () {
+			api.closeWin();
+		});
+
+
+	};
+</script>
+
+</html>

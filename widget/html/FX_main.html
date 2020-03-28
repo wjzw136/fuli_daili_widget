@@ -1,0 +1,206 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <script type="text/javascript" src="../script/vue.js"></script>
+</head>
+<style>
+
+</style>
+
+<body>
+
+    <div id="apibox" style="padding-top: 2px;">
+        <div v-if="loading!='end'" style="text-align: center;">
+            加载数据
+        </div>
+        
+            <div v-cloak id="zhengcebox" v-for="(items,index) in data" :key='index'  class="aui-font-size-14"
+                style="background-color: #fff;margin-bottom: 15px; display: flex;padding: 15px;align-items: center;">
+                <div style="display: flex;align-items: center;">
+                    <img width="100px" height="60px" :src="items.imgurl" alt="" srcset="" />
+                    <!-- <div style="padding-left: 10px; width: 90px;">
+                        {{items.name}}
+                    </div> -->
+                </div>
+                <div style="padding-left:15px;flex-grow: 1">
+
+                    <div v-if="items.fandian[framename].show"
+                        style="display: flex;align-items: center; margin-bottom: 5px;padding-bottom: 5px; border-bottom: lightblue solid 1px;">
+                        <div style="padding: 0px 15px;border:#03A9F4  solid 1px;border-radius: 20px;color: #03A9F4; margin-right: 10px; flex-shrink: 0; flex-grow: 0;"
+                            class="aui-font-size-16">新车</div>
+                        <div style="flex-grow: 1">
+                            <div v-if="items.fandian[framename].shangye_new">
+                                商业险最高返<span style=" color: red; ">{{items.fandian[framename].shangye_new}}</span>%
+                            </div>
+                            <div v-else>
+                                商业险未开通
+                            </div>
+                            <div v-if="items.fandian[framename].jiaoqiang_new">
+                                交强险最高返
+                                <span style="color: red;">{{items.fandian[framename].jiaoqiang_new}}</span>%
+                            </div>
+                            <div v-else>
+                                交强险未开通
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="items.fandian[framename].show" style="display: flex;align-items: center">
+                        <div style="padding: 0px 15px;border:#03A9F4  solid 1px;border-radius: 20px;color: #03A9F4; margin-right: 10px; flex-shrink: 0; flex-grow: 0;"
+                            class="aui-font-size-16">旧车</div>
+                        <div style="flex-grow: 1">
+                            <div v-if="items.fandian[framename].shangye_old">
+                                商业险最高返<span style="color: red;">{{items.fandian[framename].shangye_old}}</span>%
+                            </div>
+                            <div v-else>
+                                商业险未开通
+                            </div>
+                            <div v-if="items.fandian[framename].jiaoqiang_old">
+                                交强险最高返
+                                <span style="color: red;">{{items.fandian[framename].jiaoqiang_old}}</span>%
+                            </div>
+                            <div v-else>
+                                交强险未开通
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="!items.fandian[framename].show" style="flex-grow: 1;">
+                        未开通代理
+                    </div>
+
+                </div>
+
+                <div v-if="items.fandian[framename].show">
+                    <div class="aui-btn aui-btn-info qubaojia" style="margin-left: 15px;">去报价</div>
+                </div>
+            </div>
+    </div>
+
+
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    
+
+    apiready = function () {
+        let framename = api.frameName;
+        let config=get_config()
+        let apibox = new Vue({
+            el: "#apibox",
+            data: {
+                loading: false,
+                framename: framename,
+                error: false,
+                data: config.BX_xinxi,
+                errormsg: "没有找到您需要的数据"
+            },
+            updated: function () {
+                var qubaojia = $api.domAll('.qubaojia');
+                Array.prototype.forEach.call(qubaojia, function (btn) {
+                    btn.addEventListener('click', function (event) {
+                        api.openWin({
+                            name: 'baojia',
+                            url: './Z_baojia.html',
+                            bounces: false
+                        });
+                    })
+                });
+            }
+        });
+       
+        apibox.loading = 'end';
+
+
+        if (!$api.getStorage('weizhi')) {
+            $api.setStorage('weizhi', '北京市');
+        }
+        api.refreshHeaderLoading();
+        api.setRefreshHeaderInfo({
+            visible: true,
+            loadingImg: 'widget://image/refresh.png',
+            bgColor: '#ccc',
+            textColor: '#fff',
+            textDown: '下拉刷新...',
+            textUp: '松开刷新...',
+            showTime: false,
+        }, function (ret, err) {
+            var didian = $api.getStorage('weizhi')
+            get_api_fandian(didian, framename);
+            //从服务器加载数据，完成后调用api.refreshHeaderLoadDone()方法恢复组件到默认状态
+        });
+
+        api.addEventListener({
+            name: 'dizhi'
+        }, function (ret, err) {
+            var didian = $api.getStorage('weizhi')
+            get_api_fandian(didian, framename)
+
+        });
+
+
+
+
+        function get_api_fandian(weizhi, chexing) {
+            api.ajax({
+                url: server + '/api/fandian/chexing',
+                method: 'post',
+                timeout: 10,
+                dataType: 'json',
+                returnAll: false,
+                data: {
+                    values: {
+                        chexing: chexing,
+                        weizhi: weizhi
+                    }
+                }
+            }, function (ret, err) {
+
+                let BX_xinxi= apibox.data
+                for (var key in BX_xinxi) {
+                    if (BX_xinxi.hasOwnProperty(key)) {
+                        var element = BX_xinxi[key].fandian;
+                        for (var key2 in element) {
+                            if (element.hasOwnProperty(key2)) {
+                                fandian = element[key2];
+                                fandian.show = false
+                            }
+                        }
+                    }
+                }
+                if (ret.length > 0) {
+                    // apibox_data.data[framename] = ret[0]
+                    for (var i = 0; i < ret.length; i++) {
+                        var chexing_fandian = BX_xinxi[ret[i].baoxiangongsi].fandian[chexing];
+                        if (ret[i].xin_jiu == '新') {
+                            chexing_fandian.show = true
+                            chexing_fandian.jiaoqiang_new = ret[i].jiaoqiang
+                            chexing_fandian.shangye_new = ret[i].shangye
+                        } else if (ret[i].xin_jiu == '旧') {
+                            chexing_fandian.show = true
+                            chexing_fandian.jiaoqiang_old = ret[i].jiaoqiang
+                            chexing_fandian.shangye_old = ret[i].shangye
+                        }
+                    }
+                }
+
+                api.refreshHeaderLoadDone()
+
+            })
+        }
+
+    };
+</script>
+
+</html>

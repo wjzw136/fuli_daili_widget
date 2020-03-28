@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/vant.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+
+	</style>
+</head>
+
+<body>
+	<div id="app">
+
+		<!-- <van-nav-bar title="标题" left-text="返回" right-text="按钮" left-arrow @click-left="onClickLeft"
+				@click-right="onClickRight" />
+	 -->
+
+		<van-cell-group>
+			<van-field v-model="value1" label="文本" left-icon="smile-o" right-icon="warning-o" placeholder="显示图标"
+				/van-field>
+				<van-field v-model="value2" clearable label="文本" left-icon="music-o" placeholder="显示清除图标" /van-field>
+		</van-cell-group>
+		<van-cell is-link @click="showPopup">展示弹出层</van-cell>
+		<van-popup v-model="show" position="top" :style="{ height: '30%' }">内容</van-popup>
+		<van-tabs v-model="active" animated>
+			<van-tab v-for="index in 6" :title="'选项 ' + index">
+				内容 {{ index }}
+			</van-tab>
+		</van-tabs>
+		
+		<van-tabs v-model="active" swipeable animated>
+			<van-tab v-for="index in 4" :title="'选项 ' + index">
+				内容 {{ index }}
+			</van-tab>
+		</van-tabs>
+
+		<van-index-bar :index-list="indexList">
+			<van-index-anchor index="1">标题1</van-index-anchor>
+			<van-cell title="文本" />
+			<van-cell title="文本" />
+			<van-cell title="文本" />
+		
+			<van-index-anchor index="2">标题2</van-index-anchor>
+			<van-cell title="文本" />
+			<van-cell title="文本" />
+			<van-cell title="文本" />
+		</van-index-bar>
+		<van-steps :active="active">
+			<van-step>买家下单</van-step>
+			<van-step>商家接单</van-step>
+			<van-step>买家提货</van-step>
+			<van-step>交易完成</van-step>
+		</van-steps>
+	</div>
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/vant.min.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+
+		new Vue({
+			el: '#app',
+			data: {
+
+				value1: '',
+				value2: '123', 
+				show: false,
+				active: 1,
+				indexList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+			},
+
+			methods: {
+				onClickLeft() {
+					vant.Toast('返回');
+				},
+				onClickRight() {
+					vant.Toast('按钮');
+				},
+				showPopup() {
+					this.show = true;
+				}
+			}
+		});
+		vant.Notify({ type: 'danger', message: '通知内容' });
+		// export default {
+		// 	
+		// }
+
+
+	};
+</script>
+
+</html>

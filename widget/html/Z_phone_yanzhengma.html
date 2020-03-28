@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+		.header {
+			height: 50px;
+			padding: 0px 20px;
+			font-size: 20px;
+			/* background-image: url(../image/7.png); */
+			background-color: #03a9f4;
+			color: #fff;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background-image: linear-gradient(#03a9f4, #67D1E8);
+		}
+	</style>
+</head>
+
+<body>
+	<div class="header" id="header">
+		<div>
+			<span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+			<span id="biaoti" style="margin-left:15px">
+				修改手机
+			</span>
+		</div>
+	</div>
+	<div id="apibox">
+		<div
+			style="background-color: #fff;display: flex;justify-content: center;align-items: center; flex-direction: column;padding: 15px 0;">
+			<div style="width: 150px;height:150px;margin-bottom: 15px;border-radius: 75px;overflow: hidden;">
+				<img id="touxiang" width="100%" height="100%" :src="server+ userinfo.touxiang" alt="">
+			</div>
+			<div>{{userinfo.name}}</div>
+		</div>
+		<ul class="aui-list aui-form-list" style="background-color: #ffffff;">
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner">
+					<div class="aui-list-item-label">
+						手机号
+					</div>
+					<div class="aui-list-item-input">
+						{{userinfo.phone}}
+						<!-- <input v-model='userinfo.phone'> -->
+					</div>
+				</div>
+			</li>
+			<li class="aui-list-item">
+				<div class="aui-list-item-inner" style="display: flex;justify-content: space-between;">
+
+					<div class="aui-list-item-input" style="width: 60%;">
+						<input v-model='yanzhengma' type="number" placeholder="验证码">
+					</div>
+					<div id='get_yzm'  style="text-align: center;width: 40%;margin-right: 15px;">
+						<div style="padding: 5px 10px;border-radius: 10px;background-color: blueviolet;color: #fff;">
+							获取验证码<span class="aui-font-size-12" v-if="jishiqi>0&&jishiqi<60">({{jishiqi}})</span>
+						</div>
+					</div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<div id="gaimima" class="aui-btn aui-btn-block aui-btn-info aui-btn-xs">确定</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+		let userinfo = api.pageParam.userinfo
+		if (!userinfo.phone) {
+			$api.html($api.byId('biaoti'), '绑定手机');
+		}
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				server: server,
+				userinfo: userinfo,
+				yanzhengma: '',
+				jishiqi: '60'
+			},
+			updated() {
+
+			}, watch: {
+				jishiqi(newValue, oldValue) {
+					if (newValue < 0 || newValue >= 60) {
+						this.jishiqi = 60;
+					}
+				}
+			},
+		})
+
+		$api.addEvt($api.dom('#back'), 'click', function () {
+			api.closeWin();
+		});
+		$api.addEvt($api.byId('get_yzm'), 'click', function () {
+
+			let timer = setInterval(() => {
+				apibox.jishiqi--
+				if (apibox.jishiqi < 0) {
+					clearInterval(timer)
+				}
+			}, 1000);
+		})
+	};
+</script>
+
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../css/aui.css" />
+	<link rel="stylesheet" type="text/css" href="../css/public.css" />
+	<style>
+
+	</style>
+</head>
+
+<body>
+	<div v-cloak id="apibox"
+		style="height: 50px;background-color: rgba(0,0,0,0.6); width: 100%;display: flex;align-items: center;justify-content: space-between;padding: 0 15px;color: #fff;">
+		<span id='back' class="aui-iconfont aui-icon-left aui-font-size-20"></span>
+		<span>{{dangqian}}/{{zongshu}}</span>
+		<span id="baocun">保存</span>
+	</div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+
+<script type="text/javascript">
+	apiready = function () {
+		var index = api.pageParam.index
+		var images = api.pageParam.images
+		var apibox = new Vue({
+			el: '#apibox',
+			data: {
+				zongshu: images.length,
+				dangqian: index - 0 + 1
+			}
+		})
+		$api.addEvt($api.dom('#back'), 'click', function () {
+			api.closeWin();
+		});
+		$api.addEvt($api.dom('#baocun'), 'click', function () {
+			api.saveMediaToAlbum({
+				path: images[apibox.dangqian - 1],
+			}, function (ret, err) {
+				if (ret && ret.status) {
+					api.toast({
+						msg: '保存成功',
+						duration: 2000,
+						location: 'bottom'
+					});
+				} else {
+					api.toast({
+						msg: '保存失败',
+						duration: 2000,
+						location: 'bottom'
+					});
+				}
+			});
+		});
+
+
+
+	};
+
+</script>
+
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+
+    </style>
+</head>
+
+<body>
+
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.js"></script>
+<script type="text/javascript" src="../script/GVerify.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        var NVNavigationBar = api.require('NVNavigationBar');
+        NVNavigationBar.open({
+            rect: {
+                x: 0,
+                y: 0,
+                w: api.winWidth,
+                h: 50
+            },
+            styles: {
+                orientation: 'horizontal',
+                bg: '#03a9f4',
+                bgAlpha: 1,
+                font: {
+                    size: 16,
+                    sizeSelected: 20,
+                    color: '#70686A',
+                    colorSelected: '#ffffff',
+                    alpha: 1
+                },
+                itemSize: {
+                    w: api.winWidth / 2,
+                    h: 49
+                }
+            },
+            items: [{
+                title: '上传资料报价',
+                bg: '#03a9f4',
+                bgSelected: '#03a9f4'
+            }, {
+                title: '填写资料试算',
+                bg: '#03a9f4',
+                bgSelected: '#03a9f4'
+            }],
+            selectedIndex: 0,
+            fixedOn: api.frameName,
+            id: 'first'
+        }, function(ret, err) {
+            api.setFrameGroupIndex({
+                name: 'baojia',
+                index: ret.index,
+                scroll: true
+            });
+        });
+        api.openFrameGroup({
+            name: 'baojia',
+            scrollEnabled: true,
+            rect: {
+                x: 0,
+                y: 50,
+                w: 'auto',
+                h: 'auto'
+            },
+            index: 0,
+            frames: [{
+                name: 'Z_baojia_tianxie_ziliao',
+                url: './Z_baojia_shangchuan_ziliao.html'
+            }, {
+                name: 'Z_baojia_shangchuan_ziliao',
+                url: './Z_baojia_tianxie_ziliao.html'
+            }]
+        }, function(ret, err) {
+
+            NVNavigationBar.setSelected({
+                id: 'first',
+                index: ret.index,
+                selected: true
+            });
+        });
+    };
+    // var verifyCode = new GVerify("yz_code");
+    // var res_yzm = verifyCode.validate(document.getElementById("yanzhengma").value);
+    //验证验证码
+</script>
+
+</html>

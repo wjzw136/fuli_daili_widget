@@ -1,0 +1,168 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>Hello APP</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/public.css" />
+    <style>
+        #header {
+            height: 50px;
+            padding: 0px 20px;
+            font-size: 20px;
+            line-height: 50px;
+            /* background-image: url(../image/7.png); */
+            position: fixed;
+            z-index: 12;
+            top: 0px;
+            left: 0px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <header id="header">
+        <!-- <span id='back' class="aui-iconfont aui-icon-left"></span> -->
+        <!-- <span id="biaoti" style="margin-left:15px">
+			klsajd
+        </span> -->
+        <i id="back" style="float: right; font-size:40px" class="aui-iconfont aui-icon-close"></i>
+        <!-- <span id="queding" style="float: right">确定</span> -->
+    </header>
+
+
+
+    <div id="main" style="padding-bottom:15px;padding-top: 50px">
+        <div id="dizhibox">
+            <div
+                style="display: flex;flex-wrap:wrap;justify-content:space-between; border-bottom: darkorange dashed 1px;padding:15px;">
+                <div v-for="(items,index) in data" v-on:click="xuanze_sheng(index)" class="aui-font-size-14"
+                    style=" padding:5px 10px;margin:5px 0; text-align: center;">
+                    {{items.name}}
+                </div>
+                <!-- <div v-for="shi in items.sub" class="aui-font-size-14" style="padding:5px 0 5px 40px;background-color: #fff;">
+                    {{shi.name}}
+                </div> -->
+            </div>
+            <div style="display: flex;flex-direction: column;align-items: center;">
+                <div style="padding:5px 15px; margin: 20px 0;background-color: coral;color: #fff;border-radius: 10px;">
+                    {{sheng.name}}
+                </div>
+
+                <div
+                    style="width: 0;height: 0;border-width: 20px;border-style: solid;border-color:#FFCCCC transparent transparent transparent;">
+                </div>
+            </div>
+            <div
+                style="display: flex;flex-wrap: wrap;padding: 15px;justify-content:space-between;border-top: coral dashed 1px; ">
+                <div v-for="(items,index) in sheng.sub" v-on:click="xuanze_shi(index)" class="aui-font-size-14"
+                    style="margin-bottom: 15px; padding:5px 20px;border-radius: 10px; text-align: center;color: #fff; background-color:#03A9F4;">
+                    {{items.name}}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type=" text/javascript " src="../script/api.js "></script>
+<script type="text/javascript " src="../script/vue.js "></script>
+<script type="text/javascript " src="../script/public.js "></script>
+<script type="text/javascript ">
+    apiready = function() {
+
+        var yxlist = api.pageParam.pingdao;
+        $api.addEvt($api.dom('#back'), 'click', function() {
+            api.closeWin();
+        });
+
+        var citydata = api.readFile({
+            sync: true,
+            path: 'widget://css/city_shengshi.json'
+        });
+        var objdata = JSON.parse(citydata)
+        var dizhibox = new Vue({
+            el: '#main',
+            data: {
+                data: objdata,
+                sheng: objdata[0]
+            },
+            methods: {
+                xuanze_sheng: function(index) {
+                    dizhibox.sheng = objdata[index]
+                },
+                xuanze_shi: function(index) {
+                    $api.setStorage('weizhi', dizhibox.sheng.sub[index].name);
+                    api.sendEvent({
+                        name: 'dizhi',
+                        extra: {
+                            name: dizhibox.sheng.sub[index].name,
+                            id: dizhibox.sheng.sub[index].id
+                        }
+                    });
+                    
+                    
+                    api.closeWin({
+                        name: api.winName
+                    });
+                }
+            }
+        })
+
+
+
+
+        function get_yxlist() {
+            api.ajax({
+                url: server + '/api/yxlist',
+                method: 'get',
+                timeout: 15,
+                dataType: 'json',
+                returnAll: false
+            }, function(ret, err) {
+                if (ret) {
+                    var pc = [];
+                    var shouyou = [];
+                    var yeyou = [];
+                    var yixuan = [];
+                    for (let i = 0; i < ret.length; i++) {
+                        ret[i].imgurl = server + ret[i].imgurl
+
+                        if (ret[i].leibie == 'pc') {
+
+                            pc.push(ret[i])
+
+                        } else if (ret[i].leibie == 'shouyou') {
+
+                            shouyou.push(ret[i])
+
+                        } else if (ret[i].leibie == 'yeyou') {
+
+                            yeyou.push(ret[i])
+
+                        }
+                    }
+                    list.pc = pc
+                    list.shouyou = shouyou
+                    list.yeyou = yeyou
+                } else {
+                    api.toast({
+                        msg: '数据加载失败',
+                        duration: 2000,
+                        location: 'bottom'
+                    });
+                };
+            });
+        }
+
+
+
+        // get_yxlist()
+    };
+</script>
+
+</html>

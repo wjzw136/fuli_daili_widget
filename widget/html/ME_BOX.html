@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>Hello APP</title>
+	<link rel="stylesheet" type="text/css" href="../css/api.css" />
+	<style>
+
+	</style>
+</head>
+
+<body>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/public.js"></script>
+<script type="text/javascript">
+	apiready = function () {
+
+		
+
+		// if(zhuangtai.denglu.isdenglu){
+		// 	headerheight=150
+		// }else{
+		// 	headerheight = 80
+		// }
+		api.openFrame({
+			name: 'ME_header',
+			url: './ME_header.html',
+			bounces: false,
+			rect: {
+				x: 0,
+				y: 0,
+				w: 'auto',
+				h: Group.ME_BOX.headerh
+			}
+		});
+		var SY_GroupHtml = ['ME_main'];
+		cj_group(Group.ME_BOX.Group, SY_GroupHtml);
+		setTimeout(function () {
+			hiddenframegroup([Group.FX_BOX.header, Group.ME_BOX.header], [Group.FX_BOX.Group, Group.ME_BOX.Group])
+		}, 800);
+
+		
+	};
+	
+	function cj_group(GroupName, FramesName) {
+		var frames = [];
+		for (var i = 0, len = FramesName.length; i < len; i++) {
+			frames.push({
+				name: FramesName[i],
+				url: './' + FramesName[i] + '.html',
+				bounces: false
+			})
+		}
+		api.openFrameGroup({
+			name: GroupName,
+			scrollEnabled: false,
+			rect: {
+				x: 0,
+				y: Group.ME_BOX.headerh,
+				w: api.winWidth,
+				h: api.winHeight - 55- Group.ME_BOX.headerh
+			},
+			preload: FramesName.length,
+			index: 0,
+			frames: frames
+		}, function (ret, err) {
+		})
+
+	}
+	 
+</script>
+
+</html>
